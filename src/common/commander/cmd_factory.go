@@ -2,7 +2,6 @@ package commander
 
 import (
 	"common/json"
-	"common/logger"
 )
 
 type function_callback func(*json.JSONObject)
@@ -23,7 +22,6 @@ func RemoveCmd(cmd string) {
 func ExecuteCmd(cmd string, json *json.JSONObject) {
 	call, ok := func_map[cmd]
 	if ok {
-		logger.LogInfo("call ")
 		call(json)
 	}
 }

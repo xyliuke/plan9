@@ -2,13 +2,13 @@ package commander
 
 import (
 	"common/json"
-	"log"
+	"common/logger"
 	"testing"
 )
 
 func Test_ExecuteCmd(t *testing.T) {
 	RegisterCmd("hello", func(json *json.JSONObject) {
-		log.Println("json result :", json)
+		// glog
 	})
 	body := []byte(`{
 		"test": {
@@ -28,10 +28,3 @@ func Test_ExecuteCmd(t *testing.T) {
 	RemoveCmd("hello")
 	ExecuteCmd("hello", json)
 }
-
-// func Test_GetNum(t *testing.T) {
-// 	num := GetNum()
-// 	if num != 1 {
-// 		t.Error("返回值错误")
-// 	}
-// }
