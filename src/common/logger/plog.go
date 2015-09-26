@@ -24,6 +24,10 @@ var logTypeFileMap = make(map[string]string)
 
 var loggerMap = make(map[string]*Logger)
 
+func SetLogPath(path string) {
+	logPath = path
+}
+
 func AddLog(logType string, fileName string) {
 	// logTypeFileMap[logType] = fileName
 	logger, ok := loggerMap[logType]
@@ -37,16 +41,15 @@ func AddLog(logType string, fileName string) {
 }
 
 func (log Logger) LogI(msg string) {
-	log.writeLog2File(msg, "info")
+	go log.writeLog2File(msg, "info")
 }
 
 func (log Logger) LogW(msg string) {
-	log.writeLog2File(msg, "warn")
+	go log.writeLog2File(msg, "warn")
 }
 
 func (log Logger) LogE(msg string) {
-	fmt.Println("loge")
-	log.writeLog2File(msg, "error")
+	go log.writeLog2File(msg, "error")
 }
 
 func PLog(logType string) *Logger {
