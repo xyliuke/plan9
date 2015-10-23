@@ -2,3 +2,15 @@
 *.a
 
 *.log
+
+common/.idea/workspace.xml
+
+common/.idea/.name
+
+common/.idea/common.iml
+
+common/.idea/misc.xml
+
+common/.idea/modules.xml
+
+common/.idea/vcs.xml
