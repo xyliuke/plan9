@@ -1,62 +1,72 @@
 package main
 
 import (
+	_ "bufio"
 	"fmt"
 	"io"
-	"net/http"
-	"runtime"
+	"log"
+	"net"
+	"os"
+	// "net/http"
+	// "runtime"
 )
 
-func op(rw http.ResponseWriter, req *http.Request) {
-	// fmt.Println("hi")
-
-	// req.ParseForm()
-
-	// fmt.Print("url:\t")
-	// fmt.Println(req.URL.Path)
-
-	// fmt.Print("form:\t")
-	// fmt.Println(req.Form)
-
-	// for k, v := range req.Form {
-	// fmt.Println("key:", k, "value:", v)
-	// }
-
-	// io.WriteString(rw, "hi!\n")
-}
-
-func handler_hi(rw http.ResponseWriter, req *http.Request) {
-	go op(rw, req)
-}
-
-func handler_hello(rw http.ResponseWriter, req *http.Request) {
-	fmt.Println("hello")
-
-	fmt.Print("scheme:\t")
-	fmt.Println(req.URL.Scheme)
-
-	fmt.Print("form:\t")
-	fmt.Println(req.Form)
-
-	fmt.Print("postform:\t")
-	fmt.Println(req.PostForm)
-
-	fmt.Print("trailer:\t")
-	fmt.Println(req.Trailer)
-
-	fmt.Print("url:\t")
-	fmt.Println(req.URL.Path)
-	fmt.Println(req.URL.RawPath)
-	fmt.Println(req.URL.Query().Get("a"))
-	fmt.Println(req.URL.Query().Get("b"))
-
-	io.WriteString(rw, "hello\n")
-}
-
 func main() {
-	fmt.Println("设置", runtime.NumCPU(), "核")
-	runtime.GOMAXPROCS(runtime.NumCPU())
-	http.HandleFunc("/hello", handler_hello)
-	http.HandleFunc("/hi", handler_hi)
-	http.ListenAndServe(":8080", nil)
+	// fmt.Println("设置", runtime.NumCPU(), "核")
+	// runtime.GOMAXPROCS(runtime.NumCPU())
+	listener, err := net.Listen("tcp", ":8888")
+	if err != nil {
+		fmt.Println("listen error", err)
+	}
+
+	defer listener.Close()
+	for {
+		conn, err := listener.Accept()
+		if err != nil {
+			fmt.Println("Error accepting: ", err)
+			os.Exit(1)
+		}
+		//logs an incoming message
+		fmt.Printf("Received message %s -> %s \n", conn.RemoteAddr(), conn.LocalAddr())
+		// Handle connections in a new goroutine.
+		go handleRequest(conn)
+		// go doServerStuff(conn)
+	}
+}
+
+func handleRequest(conn net.Conn) {
+	defer conn.Close()
+	for {
+		io.Copy(conn, conn)
+	}
+}
+
+//处理客户端消息
+func doServerStuff(conn net.Conn) {
+	nameInfo := make([]byte, 512) //生成一个缓存数组
+	_, err := conn.Read(nameInfo)
+	checkError(err)
+
+	for {
+		buf := make([]byte, 512)
+		_, err := conn.Read(buf) //读取客户机发的消息
+		flag := checkError(err)
+		if flag == 0 {
+			break
+		}
+		fmt.Println(string(buf)) //打印出来
+	}
+}
+
+//检查错误
+func checkError(err error) int {
+	if err != nil {
+		if err.Error() == "EOF" {
+			//fmt.Println("用户退出了")
+			return 0
+		}
+		log.Fatal("an error!", err.Error())
+		return -1
+	}
+	return 1
 }
