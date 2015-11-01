@@ -9,7 +9,7 @@ include_directories(../3rd/googletest/googletest/ ../3rd/googletest/googletest/i
 link_directories(../3rd/googletest/googletest/make/ ../3rd/glog/lib/)
 
 
-set(SOURCE_FILES main.cpp network/tcp_client.cpp network/tcp_client.h test/test.h log/log.cpp log/log.h thread/thread_dispatch.cpp thread/thread_dispatch.h thread/thread_wrap.cpp thread/thread_wrap.h)
+set(SOURCE_FILES main.cpp network/tcp_client.cpp network/tcp_client.h test/test.h log/log.cpp log/log.h thread/thread_dispatch.cpp thread/thread_dispatch.h thread/thread_wrap.cpp thread/thread_wrap.h log/log_wrap.cpp log/log_wrap.h)
 add_executable(common ${SOURCE_FILES})
 
 target_link_libraries(common libgtest.a libglog.a)
