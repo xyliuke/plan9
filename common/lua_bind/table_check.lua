@@ -18,6 +18,9 @@ end
 -- @prarm val 数据
 -- @return 返回值为string/boolean/number/object/array中其一
 local function json_type(val)
+	if val == nil then
+		return "nil"
+	end
 	t = type(val)
 	if t == "table" then
 		if #val == 0 then
@@ -34,6 +37,34 @@ local function json_type(val)
 	end
 end
 
+--- 判断所给的table中，属性是否合法。合法的属性定义在data_check_style文件的dt中
+-- @prarm style table格式数据
+-- @return 属性合法返回true,"success";不合法返回false,"reason"
+function is_legal_property(style, key)
+	if json_type(style) == "object" then
+		local s_s = style["__property_type__"]
+		if s_s == nil then
+			return false, key .. " value must has __property_type__ in style"
+		end
+		if s_s == "number" or s_s == "string" or s_s == "boolean" or s_s == "array" or s_s == "object" then
+			
+		else
+			return false, key .. " __propterty_type__ is illegal in style, must be one of number/string/boolean/object/array"
+		end
+
+		local s_req = style["__property_require__"]
+		if s_req == nil then
+			return false, key .. " must has __property_type__ in style"
+		end
+
+		if json_type(s_req) ~= "boolean" then
+			return false, key .. " __property_type__ value must true or false in style"
+		end
+		return true, "success"
+	end
+	return false, "is not object"
+end
+
 
 --- 检测json数据是否符合style标准，如果json数据是style的超集（即style中所有数据都在json中），也判断为符合
 -- @param data 数据
@@ -42,12 +73,11 @@ end
 local function json_check_json_from_style(data, style)
 	for k,v in pairs(style) do
 		if not is_style_property(k) then
-			if v["__property_require__"] == nil then
-				return false, k .. " value must has __property_require__ in style"
+			local r1, re1 = is_legal_property(v, k)
+			if not r1 then
+				return r1, re1
 			end
-			if v["__property_type__"] == nil then
-				return false, k .. " must has __property_type__ in style"
-			end
+
 			if v["__property_require__"] then
 				local d_value = data[k]
 				if d_value == nil then
