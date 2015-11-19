@@ -19,6 +19,9 @@ public:
     bool connect(std::string addr, int port);
     void close();
     void write(std::string msg);
+    inline void set_recv_function(std::function<void(char* data, int len)> function) {
+        recv_ = function;
+    }
 
     /**
      * 根据网址url得到所有ip地址
@@ -28,6 +31,7 @@ public:
 private:
     class tcp_client_impl;
     std::shared_ptr<tcp_client_impl> impl_;
+    std::function<void(char* data, int len)> recv_;
 };
 
 

@@ -54,14 +54,13 @@ void tcp_client::tcp_client_impl::close()
 void tcp_client::tcp_client_impl::write(std::string msg)
 {
     ::write(sockfd, msg.c_str(), strlen(msg.c_str()));
-    read();
 }
 
 void tcp_client::tcp_client_impl::read()
 {
-    char buf[100];
-    bzero(buf, 100);
-    ssize_t size = ::read(sockfd, buf, 100);
+    char buf[10000];
+    bzero(buf, 10000);
+    ssize_t size = ::read(sockfd, buf, 10000);
     std::cout << buf << std::endl;
 }
 std::shared_ptr<std::set<std::string>> tcp_client::tcp_client_impl::getipbyname(std::string url)
