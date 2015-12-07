@@ -1,0 +1,650 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		1FEBB3861C148751008C5172 /* libstdc++.6.0.9.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 1FEBB3851C148751008C5172 /* libstdc++.6.0.9.dylib */; };
+		E73EAEC617D532E400DC9A30 /* ClientHandler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E79F39BB17D4F5B30081FCA7 /* ClientHandler.cpp */; };
+		E73EAEC917D5496100DC9A30 /* ClientV8ExtensionHandler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E73EAEC717D5496100DC9A30 /* ClientV8ExtensionHandler.cpp */; };
+		E73EAECA17D5496100DC9A30 /* ClientV8ExtensionHandler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E73EAEC717D5496100DC9A30 /* ClientV8ExtensionHandler.cpp */; };
+		E76E32CF17DAA70E00E3AF5C /* Helper Process Main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E76E32CE17DAA70E00E3AF5C /* Helper Process Main.cpp */; };
+		E79F38B417D4DDFD0081FCA7 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E79F38B317D4DDFD0081FCA7 /* Cocoa.framework */; };
+		E79F38D517D4DE730081FCA7 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = E79F38D317D4DE730081FCA7 /* main.m */; };
+		E79F38D717D4DE800081FCA7 /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = E79F38D117D4DE650081FCA7 /* AppDelegate.mm */; };
+		E79F38DD17D4DE900081FCA7 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = E79F38D917D4DE900081FCA7 /* MainMenu.xib */; };
+		E79F38DE17D4DE900081FCA7 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = E79F38DB17D4DE900081FCA7 /* InfoPlist.strings */; };
+		E79F391F17D4E2EF0081FCA7 /* html in Resources */ = {isa = PBXBuildFile; fileRef = E79F391E17D4E2EF0081FCA7 /* html */; };
+		E79F39BA17D4E58F0081FCA7 /* ClientApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E79F39B817D4E58F0081FCA7 /* ClientApp.cpp */; };
+		E79F39BD17D4F5B30081FCA7 /* ClientHandler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E79F39BB17D4F5B30081FCA7 /* ClientHandler.cpp */; };
+		E79F39EA17D4FDFB0081FCA7 /* ClientApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E79F39B817D4E58F0081FCA7 /* ClientApp.cpp */; };
+		E79F39ED17D4FDFB0081FCA7 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E79F38B317D4DDFD0081FCA7 /* Cocoa.framework */; };
+		E79F3A7A17D4FFDB0081FCA7 /* CEF3 Simple Sample Helper.app in CopyFiles */ = {isa = PBXBuildFile; fileRef = E79F3A2B17D4FDFB0081FCA7 /* CEF3 Simple Sample Helper.app */; };
+		E7A14E751AE01418005672E7 /* Chromium Embedded Framework.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E7A14E741AE01418005672E7 /* Chromium Embedded Framework.framework */; };
+		E7A14E761AE01418005672E7 /* Chromium Embedded Framework.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = E7A14E741AE01418005672E7 /* Chromium Embedded Framework.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		E7A14E771AE01427005672E7 /* libcef_dll_wrapper.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E79F38DF17D4DF770081FCA7 /* libcef_dll_wrapper.a */; };
+		E7A14E781AE01446005672E7 /* libcef_dll_wrapper.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E79F38DF17D4DF770081FCA7 /* libcef_dll_wrapper.a */; };
+		E7A14E791AE01457005672E7 /* Chromium Embedded Framework.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E7A14E741AE01418005672E7 /* Chromium Embedded Framework.framework */; };
+		E7A14E7A1AE01457005672E7 /* Chromium Embedded Framework.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = E7A14E741AE01418005672E7 /* Chromium Embedded Framework.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		E79F3A7617D4FF890081FCA7 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E79F38A817D4DDFD0081FCA7 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = E79F39E617D4FDFB0081FCA7;
+			remoteInfo = "CEF3 Simple Sample Helper";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		E79F3A7917D4FFD20081FCA7 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				E79F3A7A17D4FFDB0081FCA7 /* CEF3 Simple Sample Helper.app in CopyFiles */,
+				E7A14E7A1AE01457005672E7 /* Chromium Embedded Framework.framework in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E7F810521AE00D0E00B143D5 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				E7A14E761AE01418005672E7 /* Chromium Embedded Framework.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		1FEBB3851C148751008C5172 /* libstdc++.6.0.9.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libstdc++.6.0.9.dylib"; path = "../../../../../../usr/lib/libstdc++.6.0.9.dylib"; sourceTree = "<group>"; };
+		E73EAEBF17D5284F00DC9A30 /* CEF3SimpleSampleHelper-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "CEF3SimpleSampleHelper-Info.plist"; path = "Mac/CEF3SimpleSampleHelper-Info.plist"; sourceTree = "<group>"; };
+		E73EAEC717D5496100DC9A30 /* ClientV8ExtensionHandler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ClientV8ExtensionHandler.cpp; path = Independente/ClientV8ExtensionHandler.cpp; sourceTree = "<group>"; };
+		E73EAEC817D5496100DC9A30 /* ClientV8ExtensionHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ClientV8ExtensionHandler.h; path = Independente/ClientV8ExtensionHandler.h; sourceTree = "<group>"; };
+		E76E32CE17DAA70E00E3AF5C /* Helper Process Main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "Helper Process Main.cpp"; path = "Mac/Helper Process Main.cpp"; sourceTree = "<group>"; };
+		E79F38B017D4DDFD0081FCA7 /* CEF3 Simple Sample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "CEF3 Simple Sample.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		E79F38B317D4DDFD0081FCA7 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
+		E79F38B617D4DDFD0081FCA7 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
+		E79F38B717D4DDFD0081FCA7 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
+		E79F38B817D4DDFD0081FCA7 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		E79F38D017D4DE650081FCA7 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = Mac/AppDelegate.h; sourceTree = "<group>"; };
+		E79F38D117D4DE650081FCA7 /* AppDelegate.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = AppDelegate.mm; path = Mac/AppDelegate.mm; sourceTree = "<group>"; };
+		E79F38D217D4DE730081FCA7 /* CEF3SimpleSample-Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "CEF3SimpleSample-Prefix.pch"; path = "Mac/CEF3SimpleSample-Prefix.pch"; sourceTree = "<group>"; };
+		E79F38D317D4DE730081FCA7 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = Mac/main.m; sourceTree = "<group>"; };
+		E79F38D417D4DE730081FCA7 /* CEF3SimpleSample-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "CEF3SimpleSample-Info.plist"; path = "Mac/CEF3SimpleSample-Info.plist"; sourceTree = "<group>"; };
+		E79F38DA17D4DE900081FCA7 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = Mac/Resources/en.lproj/MainMenu.xib; sourceTree = "<group>"; };
+		E79F38DC17D4DE900081FCA7 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = Mac/Resources/en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		E79F38DF17D4DF770081FCA7 /* libcef_dll_wrapper.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcef_dll_wrapper.a; path = CEF3SimpleSample/CEF/Mac/lib/libcef_dll_wrapper.a; sourceTree = "<group>"; };
+		E79F391E17D4E2EF0081FCA7 /* html */ = {isa = PBXFileReference; lastKnownFileType = folder; name = html; path = CEF3SimpleSample/Independente/html; sourceTree = "<group>"; };
+		E79F39B817D4E58F0081FCA7 /* ClientApp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ClientApp.cpp; path = Independente/ClientApp.cpp; sourceTree = "<group>"; };
+		E79F39B917D4E58F0081FCA7 /* ClientApp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ClientApp.h; path = Independente/ClientApp.h; sourceTree = "<group>"; };
+		E79F39BB17D4F5B30081FCA7 /* ClientHandler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ClientHandler.cpp; path = Independente/ClientHandler.cpp; sourceTree = "<group>"; };
+		E79F39BC17D4F5B30081FCA7 /* ClientHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ClientHandler.h; path = Independente/ClientHandler.h; sourceTree = "<group>"; };
+		E79F3A2B17D4FDFB0081FCA7 /* CEF3 Simple Sample Helper.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "CEF3 Simple Sample Helper.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		E7A14E741AE01418005672E7 /* Chromium Embedded Framework.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = "Chromium Embedded Framework.framework"; path = "CEF3SimpleSample/CEF/Mac/lib/Chromium Embedded Framework.framework"; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		E79F38AD17D4DDFD0081FCA7 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1FEBB3861C148751008C5172 /* libstdc++.6.0.9.dylib in Frameworks */,
+				E7A14E791AE01457005672E7 /* Chromium Embedded Framework.framework in Frameworks */,
+				E79F38B417D4DDFD0081FCA7 /* Cocoa.framework in Frameworks */,
+				E7A14E781AE01446005672E7 /* libcef_dll_wrapper.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E79F39EC17D4FDFB0081FCA7 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E7A14E771AE01427005672E7 /* libcef_dll_wrapper.a in Frameworks */,
+				E79F39ED17D4FDFB0081FCA7 /* Cocoa.framework in Frameworks */,
+				E7A14E751AE01418005672E7 /* Chromium Embedded Framework.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		E79F38A717D4DDFD0081FCA7 = {
+			isa = PBXGroup;
+			children = (
+				E79F38B917D4DDFD0081FCA7 /* CEF3SimpleSample */,
+				E79F38B217D4DDFD0081FCA7 /* Frameworks */,
+				E79F38B117D4DDFD0081FCA7 /* Products */,
+				E79F38E717D4DF7D0081FCA7 /* CEF Libraries */,
+				E79F391E17D4E2EF0081FCA7 /* html */,
+			);
+			sourceTree = "<group>";
+		};
+		E79F38B117D4DDFD0081FCA7 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				E79F38B017D4DDFD0081FCA7 /* CEF3 Simple Sample.app */,
+				E79F3A2B17D4FDFB0081FCA7 /* CEF3 Simple Sample Helper.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		E79F38B217D4DDFD0081FCA7 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				1FEBB3851C148751008C5172 /* libstdc++.6.0.9.dylib */,
+				E7A14E741AE01418005672E7 /* Chromium Embedded Framework.framework */,
+				E79F38B317D4DDFD0081FCA7 /* Cocoa.framework */,
+				E79F38B517D4DDFD0081FCA7 /* Other Frameworks */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		E79F38B517D4DDFD0081FCA7 /* Other Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				E79F38B617D4DDFD0081FCA7 /* AppKit.framework */,
+				E79F38B717D4DDFD0081FCA7 /* CoreData.framework */,
+				E79F38B817D4DDFD0081FCA7 /* Foundation.framework */,
+			);
+			name = "Other Frameworks";
+			sourceTree = "<group>";
+		};
+		E79F38B917D4DDFD0081FCA7 /* CEF3SimpleSample */ = {
+			isa = PBXGroup;
+			children = (
+				E76E32CE17DAA70E00E3AF5C /* Helper Process Main.cpp */,
+				E73EAEC717D5496100DC9A30 /* ClientV8ExtensionHandler.cpp */,
+				E73EAEC817D5496100DC9A30 /* ClientV8ExtensionHandler.h */,
+				E79F39BB17D4F5B30081FCA7 /* ClientHandler.cpp */,
+				E79F39BC17D4F5B30081FCA7 /* ClientHandler.h */,
+				E79F38D117D4DE650081FCA7 /* AppDelegate.mm */,
+				E79F38D017D4DE650081FCA7 /* AppDelegate.h */,
+				E79F39B817D4E58F0081FCA7 /* ClientApp.cpp */,
+				E79F39B917D4E58F0081FCA7 /* ClientApp.h */,
+				E79F38BA17D4DDFD0081FCA7 /* Supporting Files */,
+			);
+			path = CEF3SimpleSample;
+			sourceTree = "<group>";
+		};
+		E79F38BA17D4DDFD0081FCA7 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				E79F38D917D4DE900081FCA7 /* MainMenu.xib */,
+				E79F38DB17D4DE900081FCA7 /* InfoPlist.strings */,
+				E79F38D217D4DE730081FCA7 /* CEF3SimpleSample-Prefix.pch */,
+				E79F38D317D4DE730081FCA7 /* main.m */,
+				E73EAEBF17D5284F00DC9A30 /* CEF3SimpleSampleHelper-Info.plist */,
+				E79F38D417D4DE730081FCA7 /* CEF3SimpleSample-Info.plist */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		E79F38E717D4DF7D0081FCA7 /* CEF Libraries */ = {
+			isa = PBXGroup;
+			children = (
+				E79F38DF17D4DF770081FCA7 /* libcef_dll_wrapper.a */,
+			);
+			name = "CEF Libraries";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		E79F38AF17D4DDFD0081FCA7 /* CEF3 Simple Sample */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = E79F38CD17D4DDFE0081FCA7 /* Build configuration list for PBXNativeTarget "CEF3 Simple Sample" */;
+			buildPhases = (
+				E79F38AC17D4DDFD0081FCA7 /* Sources */,
+				E79F38AD17D4DDFD0081FCA7 /* Frameworks */,
+				E79F38AE17D4DDFD0081FCA7 /* Resources */,
+				E79F3A7917D4FFD20081FCA7 /* CopyFiles */,
+				E73EAEC217D52AF200DC9A30 /* Run - Make More Helpers */,
+				E7F810541AE0103600B143D5 /* ShellScript */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				E79F3A7717D4FF890081FCA7 /* PBXTargetDependency */,
+			);
+			name = "CEF3 Simple Sample";
+			productName = CEF3SimpleSample;
+			productReference = E79F38B017D4DDFD0081FCA7 /* CEF3 Simple Sample.app */;
+			productType = "com.apple.product-type.application";
+		};
+		E79F39E617D4FDFB0081FCA7 /* CEF3 Simple Sample Helper */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = E79F3A2817D4FDFB0081FCA7 /* Build configuration list for PBXNativeTarget "CEF3 Simple Sample Helper" */;
+			buildPhases = (
+				E79F39E717D4FDFB0081FCA7 /* Sources */,
+				E79F39EC17D4FDFB0081FCA7 /* Frameworks */,
+				E79F39F017D4FDFB0081FCA7 /* Resources */,
+				E73EAEC017D529C000DC9A30 /* Run - Change libcef.dylib reference */,
+				E73EAEC117D52A4600DC9A30 /* Run - Change Mach-O Flags */,
+				E7F810521AE00D0E00B143D5 /* Embed Frameworks */,
+				E7F810531AE00FC700B143D5 /* ShellScript */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "CEF3 Simple Sample Helper";
+			productName = CEF3SimpleSample;
+			productReference = E79F3A2B17D4FDFB0081FCA7 /* CEF3 Simple Sample Helper.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		E79F38A817D4DDFD0081FCA7 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0630;
+				ORGANIZATIONNAME = "Álan Crístoffer";
+			};
+			buildConfigurationList = E79F38AB17D4DDFD0081FCA7 /* Build configuration list for PBXProject "CEF3SimpleSample" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				am,
+				ar,
+				bg,
+				bn,
+				ca,
+				cs,
+				da,
+				de,
+				el,
+				en_GB,
+				es,
+				es_419,
+				et,
+				fa,
+				fi,
+				fil,
+				fr,
+				gu,
+				he,
+				hi,
+				hr,
+				hu,
+				id,
+				it,
+				ja,
+				kn,
+				ko,
+				lt,
+				lv,
+				ml,
+				mr,
+				ms,
+				nb,
+				nl,
+				pl,
+				pt_BR,
+				pt_PT,
+				ro,
+				ru,
+				sk,
+				sl,
+				sr,
+				sv,
+				sw,
+				ta,
+				te,
+				th,
+				tr,
+				uk,
+				vi,
+				zh_CN,
+				zh_TW,
+			);
+			mainGroup = E79F38A717D4DDFD0081FCA7;
+			productRefGroup = E79F38B117D4DDFD0081FCA7 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				E79F38AF17D4DDFD0081FCA7 /* CEF3 Simple Sample */,
+				E79F39E617D4FDFB0081FCA7 /* CEF3 Simple Sample Helper */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		E79F38AE17D4DDFD0081FCA7 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E79F38DD17D4DE900081FCA7 /* MainMenu.xib in Resources */,
+				E79F38DE17D4DE900081FCA7 /* InfoPlist.strings in Resources */,
+				E79F391F17D4E2EF0081FCA7 /* html in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E79F39F017D4FDFB0081FCA7 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		E73EAEC017D529C000DC9A30 /* Run - Change libcef.dylib reference */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"$(BUILT_PRODUCTS_DIR)/$(EXECUTABLE_PATH)",
+			);
+			name = "Run - Change libcef.dylib reference";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "exec install_name_tool -change @executable_path/libcef.dylib \"@executable_path/../../../../MacOS/libcef.dylib\" \"${BUILT_PRODUCTS_DIR}/${EXECUTABLE_PATH}\"\nexit 1";
+		};
+		E73EAEC117D52A4600DC9A30 /* Run - Change Mach-O Flags */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"$(BUILT_PRODUCTS_DIR)/$(EXECUTABLE_PATH)",
+			);
+			name = "Run - Change Mach-O Flags";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "exec CEF3SimpleSample/Mac/tools/change_mach_o_flags_from_xcode.sh\nexit 1\n";
+		};
+		E73EAEC217D52AF200DC9A30 /* Run - Make More Helpers */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"$(BUILT_PRODUCTS_DIR)/$(EXECUTABLE_PATH)",
+			);
+			name = "Run - Make More Helpers";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "exec CEF3SimpleSample/Mac/tools/make_more_helpers.sh Frameworks \"CEF3 Simple Sample\"\nexit 1\n";
+		};
+		E7F810531AE00FC700B143D5 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/bash;
+			shellScript = "install_name_tool -change \"@executable_path/Chromium Embedded Framework\" \"@loader_path/../Frameworks/Chromium Embedded Framework.framework/Chromium Embedded Framework\" \"$TARGET_BUILD_DIR/$TARGET_NAME.app/Contents/MacOS/$PRODUCT_NAME\"";
+		};
+		E7F810541AE0103600B143D5 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/bash;
+			shellScript = "install_name_tool -change \"@executable_path/Chromium Embedded Framework\" \"@executable_path/../Frameworks/Chromium Embedded Framework.framework/Chromium Embedded Framework\" \"$TARGET_BUILD_DIR/$TARGET_NAME.app/Contents/MacOS/$PRODUCT_NAME\"";
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		E79F38AC17D4DDFD0081FCA7 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E79F38D517D4DE730081FCA7 /* main.m in Sources */,
+				E79F38D717D4DE800081FCA7 /* AppDelegate.mm in Sources */,
+				E79F39BA17D4E58F0081FCA7 /* ClientApp.cpp in Sources */,
+				E79F39BD17D4F5B30081FCA7 /* ClientHandler.cpp in Sources */,
+				E73EAEC917D5496100DC9A30 /* ClientV8ExtensionHandler.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E79F39E717D4FDFB0081FCA7 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E79F39EA17D4FDFB0081FCA7 /* ClientApp.cpp in Sources */,
+				E73EAEC617D532E400DC9A30 /* ClientHandler.cpp in Sources */,
+				E73EAECA17D5496100DC9A30 /* ClientV8ExtensionHandler.cpp in Sources */,
+				E76E32CF17DAA70E00E3AF5C /* Helper Process Main.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		E79F3A7717D4FF890081FCA7 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = E79F39E617D4FDFB0081FCA7 /* CEF3 Simple Sample Helper */;
+			targetProxy = E79F3A7617D4FF890081FCA7 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		E79F38D917D4DE900081FCA7 /* MainMenu.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				E79F38DA17D4DE900081FCA7 /* en */,
+			);
+			name = MainMenu.xib;
+			sourceTree = "<group>";
+		};
+		E79F38DB17D4DE900081FCA7 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				E79F38DC17D4DE900081FCA7 /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		E79F38CB17D4DDFE0081FCA7 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LIBRARY = "libstdc++";
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				PRODUCT_NAME = "CEF3 Simple Sample";
+			};
+			name = Debug;
+		};
+		E79F38CC17D4DDFE0081FCA7 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LIBRARY = "libstdc++";
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				PRODUCT_NAME = "CEF3 Simple Sample";
+			};
+			name = Release;
+		};
+		E79F38CE17D4DDFE0081FCA7 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/CEF3SimpleSample/CEF/Mac/Release",
+					"$(PROJECT_DIR)/CEF3SimpleSample/CEF/Mac/lib",
+				);
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "CEF3SimpleSample/Mac/CEF3SimpleSample-Prefix.pch";
+				HEADER_SEARCH_PATHS = (
+					"\"$(SRCROOT)/CEF3SimpleSample/CEF/Mac\"",
+					"\"$(SRCROOT)/CEF3SimpleSample/Mac\"",
+					"\"$(SRCROOT)/CEF3SimpleSample/Independent\"",
+				);
+				INFOPLIST_FILE = "$(SRCROOT)/CEF3SimpleSample/Mac/CEF3SimpleSample-Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/CEF3SimpleSample/CEF/Mac/Release",
+					"$(PROJECT_DIR)/CEF3SimpleSample/CEF/Mac/lib",
+				);
+				OTHER_CFLAGS = "-g";
+				OTHER_LDFLAGS = (
+					"-headerpad_max_install_names",
+					"-g",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		E79F38CF17D4DDFE0081FCA7 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/CEF3SimpleSample/CEF/Mac/Release",
+					"$(PROJECT_DIR)/CEF3SimpleSample/CEF/Mac/lib",
+				);
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "CEF3SimpleSample/Mac/CEF3SimpleSample-Prefix.pch";
+				HEADER_SEARCH_PATHS = (
+					"\"$(SRCROOT)/CEF3SimpleSample/CEF/Mac\"",
+					"\"$(SRCROOT)/CEF3SimpleSample/Mac\"",
+					"\"$(SRCROOT)/CEF3SimpleSample/Independent\"",
+				);
+				INFOPLIST_FILE = "$(SRCROOT)/CEF3SimpleSample/Mac/CEF3SimpleSample-Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/CEF3SimpleSample/CEF/Mac/Release",
+					"$(PROJECT_DIR)/CEF3SimpleSample/CEF/Mac/lib",
+				);
+				OTHER_CFLAGS = "-g";
+				OTHER_LDFLAGS = (
+					"-headerpad_max_install_names",
+					"-g",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+		E79F3A2917D4FDFB0081FCA7 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LIBRARY = "libstdc++";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/CEF3SimpleSample/CEF/Mac/Release",
+					"$(PROJECT_DIR)/CEF3SimpleSample/CEF/Mac/lib",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "CEF3SimpleSample/Mac/CEF3SimpleSample-Prefix.pch";
+				HEADER_SEARCH_PATHS = (
+					"\"$(SRCROOT)/CEF3SimpleSample/CEF/Mac\"",
+					"\"$(SRCROOT)/CEF3SimpleSample/Mac\"",
+					"\"$(SRCROOT)/CEF3SimpleSample/Independent\"",
+				);
+				INFOPLIST_FILE = "$(SRCROOT)/CEF3SimpleSample/Mac/CEF3SimpleSampleHelper-Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/CEF3SimpleSample/CEF/Mac/Release",
+					"$(PROJECT_DIR)/CEF3SimpleSample/CEF/Mac/lib",
+				);
+				PRODUCT_NAME = "CEF3 Simple Sample Helper";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Debug;
+		};
+		E79F3A2A17D4FDFB0081FCA7 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LIBRARY = "libstdc++";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/CEF3SimpleSample/CEF/Mac/Release",
+					"$(PROJECT_DIR)/CEF3SimpleSample/CEF/Mac/lib",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "CEF3SimpleSample/Mac/CEF3SimpleSample-Prefix.pch";
+				HEADER_SEARCH_PATHS = (
+					"\"$(SRCROOT)/CEF3SimpleSample/CEF/Mac\"",
+					"\"$(SRCROOT)/CEF3SimpleSample/Mac\"",
+					"\"$(SRCROOT)/CEF3SimpleSample/Independent\"",
+				);
+				INFOPLIST_FILE = "$(SRCROOT)/CEF3SimpleSample/Mac/CEF3SimpleSampleHelper-Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/CEF3SimpleSample/CEF/Mac/Release",
+					"$(PROJECT_DIR)/CEF3SimpleSample/CEF/Mac/lib",
+				);
+				PRODUCT_NAME = "CEF3 Simple Sample Helper";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		E79F38AB17D4DDFD0081FCA7 /* Build configuration list for PBXProject "CEF3SimpleSample" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E79F38CB17D4DDFE0081FCA7 /* Debug */,
+				E79F38CC17D4DDFE0081FCA7 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		E79F38CD17D4DDFE0081FCA7 /* Build configuration list for PBXNativeTarget "CEF3 Simple Sample" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E79F38CE17D4DDFE0081FCA7 /* Debug */,
+				E79F38CF17D4DDFE0081FCA7 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		E79F3A2817D4FDFB0081FCA7 /* Build configuration list for PBXNativeTarget "CEF3 Simple Sample Helper" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E79F3A2917D4FDFB0081FCA7 /* Debug */,
+				E79F3A2A17D4FDFB0081FCA7 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = E79F38A817D4DDFD0081FCA7 /* Project object */;
+}

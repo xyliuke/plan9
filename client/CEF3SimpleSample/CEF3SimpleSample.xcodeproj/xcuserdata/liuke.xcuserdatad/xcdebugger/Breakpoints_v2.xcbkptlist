@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Bucket
+   type = "1"
+   version = "2.0">
+   <Breakpoints>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "CEF3SimpleSample/Independente/ClientV8ExtensionHandler.cpp"
+            timestampString = "471163653.899826"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "32"
+            endingLineNumber = "32"
+            landmarkName = "ClientV8ExtensionHandler::Execute(const CefString &amp;name, CefRefPtr&lt;CefV8Value&gt; object, const CefV8ValueList &amp;arguments, CefRefPtr&lt;CefV8Value&gt; &amp;retval, CefString &amp;exception)"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "CEF3SimpleSample/Independente/ClientApp.cpp"
+            timestampString = "471105801.314114"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "30"
+            endingLineNumber = "30"
+            landmarkName = "ClientApp::OnWebKitInitialized()"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "CEF3SimpleSample/Independente/ClientApp.cpp"
+            timestampString = "471105942.277038"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "25"
+            endingLineNumber = "25"
+            landmarkName = "ClientApp::ClientApp()"
+            landmarkType = "5">
+            <Locations>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "ClientApp::ClientApp()"
+                  moduleName = "CEF3 Simple Sample"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/liuke/workspace/plan9/client/CEF3SimpleSample/CEF3SimpleSample/CEF/Mac/include/cef_app.h"
+                  timestampString = "471106282.692033"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "132"
+                  endingLineNumber = "132"
+                  offsetFromSymbolStart = "4">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "ClientApp::ClientApp()"
+                  moduleName = "CEF3 Simple Sample"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/liuke/workspace/plan9/client/CEF3SimpleSample/CEF3SimpleSample/Independente/ClientApp.cpp"
+                  timestampString = "471106282.692373"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "25"
+                  endingLineNumber = "25"
+                  offsetFromSymbolStart = "4">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "CEF3SimpleSample/Mac/AppDelegate.mm"
+            timestampString = "471105954.714581"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "45"
+            endingLineNumber = "45"
+            landmarkName = "-applicationDidFinishLaunching:"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "CEF3SimpleSample/Independente/ClientV8ExtensionHandler.cpp"
+            timestampString = "471163649.602719"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "49"
+            endingLineNumber = "49"
+            landmarkName = "ClientV8ExtensionHandler::Execute(const CefString &amp;name, CefRefPtr&lt;CefV8Value&gt; object, const CefV8ValueList &amp;arguments, CefRefPtr&lt;CefV8Value&gt; &amp;retval, CefString &amp;exception)"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+   </Breakpoints>
+</Bucket>

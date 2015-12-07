@@ -5,10 +5,6 @@
 #include <glog/logging.h>
 #include "log.h"
 
-#include "../test/test.h"
-
-
-
 
 
 namespace plan9 {

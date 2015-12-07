@@ -1,0 +1,2 @@
+/Users/liuke/workspace/plan9/3rd/googletest/googletest/CMakeFiles/gtest.dir
+/Users/liuke/workspace/plan9/3rd/googletest/googletest/CMakeFiles/gtest_main.dir
