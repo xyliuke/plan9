@@ -20,7 +20,12 @@
 #include <iosfwd>
 #include <string>
 
-using namespace std;
+static unsigned long long uuid()
+{
+    static unsigned long long id = 0;
+    return id ++;
+}
+
 
 ClientV8ExtensionHandler::ClientV8ExtensionHandler(CefRefPtr<CefApp> app)
 {
@@ -44,7 +49,7 @@ bool ClientV8ExtensionHandler::Execute(const CefString &name, CefRefPtr<CefV8Val
              */
             return true;
         }
-    } else if (name == "jscall") {
+    } else if (name == "__jscall__") {
         if (arguments.size() == 3 && arguments[0]->IsString()) {
             CefString method = arguments[0]->GetStringValue();
             printf("call method: %s", method.ToString().c_str());
@@ -56,9 +61,18 @@ bool ClientV8ExtensionHandler::Execute(const CefString &name, CefRefPtr<CefV8Val
             if (!arguments[2]->IsNull()) {
                 //有函数名、参数和callback
                 CefRefPtr<CefV8Value> callback = arguments[2];
-                CefV8ValueList arguments_;
-                arguments_.push_back(CefV8Value::CreateString("hello wrold"));
-                callback->ExecuteFunction(NULL, arguments_);
+                
+                int browser_id = CefV8Context::GetCurrentContext()->GetBrowser()->GetIdentifier();
+                unsigned long long id = uuid();
+                CallbackItem* item = new CallbackItem();
+                item->brower_id = browser_id;
+                item->callback = callback;
+                item->context = CefV8Context::GetCurrentContext();
+                callback_map.insert(std::make_pair(id, item));
+                
+                this->callback(id, "{\"ret\":\"callback from map\"}");
+                
+                this->notify("{\"ret\":\"notify from c++\"}");
             }
             printf("\n");
         }
@@ -66,3 +80,49 @@ bool ClientV8ExtensionHandler::Execute(const CefString &name, CefRefPtr<CefV8Val
 
     return false;
 }
+
+void ClientV8ExtensionHandler::callback(unsigned long long id, std::string result)
+{
+    if (!callback_map.empty()) {
+        CallbackMap::const_iterator it = callback_map.find(id);
+        if (it != callback_map.end()) {
+            CallbackItem* item = it->second;
+            
+            int brower_id = item->brower_id;
+            CefRefPtr<CefV8Value> callback = item->callback;
+            CefRefPtr<CefV8Context> context = item->context;
+            
+            context->Enter();
+            
+            CefV8ValueList arguments_;
+            arguments_.push_back(CefV8Value::CreateString(result));
+            callback->ExecuteFunction(NULL, arguments_);
+
+            
+            context->Exit();
+            
+            callback_map.erase(id);
+            delete item;
+        }
+    }
+}
+
+void ClientV8ExtensionHandler::notify(std::string result)
+{
+    CefRefPtr<CefFrame> frame  = CefV8Context::GetCurrentContext()->GetBrowser()->GetMainFrame();
+    std::string jscall = "window.app.__notify__('";
+    jscall += result;
+    jscall += "');";
+    frame->ExecuteJavaScript(jscall, frame->GetURL(), 0);
+}
+
+
+
+
+
+
+
+
+
+
+

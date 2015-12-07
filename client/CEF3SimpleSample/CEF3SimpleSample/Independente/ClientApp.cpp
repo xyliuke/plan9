@@ -36,9 +36,9 @@ void ClientApp::OnWebKitInitialized()
         "        native function ChangeTextInJS();"
         "        return ChangeTextInJS(text);"
         "    };"
-        "    app.jscall = function(method, json, callback) {"
-        "       native function jscall();"
-        "       return jscall(method, json, callback);"
+        "    app.__jscall__ = function(method, json, callback) {"
+        "       native function __jscall__();"
+        "       return __jscall__(method, json, callback);"
         "    };"
         "})();;";
 

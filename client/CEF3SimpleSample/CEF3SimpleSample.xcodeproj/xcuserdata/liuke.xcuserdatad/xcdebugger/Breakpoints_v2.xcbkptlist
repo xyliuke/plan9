@@ -10,11 +10,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "CEF3SimpleSample/Independente/ClientV8ExtensionHandler.cpp"
-            timestampString = "471163653.899826"
+            timestampString = "471172997.737776"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "32"
-            endingLineNumber = "32"
+            startingLineNumber = "37"
+            endingLineNumber = "37"
             landmarkName = "ClientV8ExtensionHandler::Execute(const CefString &amp;name, CefRefPtr&lt;CefV8Value&gt; object, const CefV8ValueList &amp;arguments, CefRefPtr&lt;CefV8Value&gt; &amp;retval, CefString &amp;exception)"
             landmarkType = "5">
          </BreakpointContent>
@@ -96,22 +96,6 @@
             startingLineNumber = "45"
             endingLineNumber = "45"
             landmarkName = "-applicationDidFinishLaunching:"
-            landmarkType = "5">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "CEF3SimpleSample/Independente/ClientV8ExtensionHandler.cpp"
-            timestampString = "471163649.602719"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "49"
-            endingLineNumber = "49"
-            landmarkName = "ClientV8ExtensionHandler::Execute(const CefString &amp;name, CefRefPtr&lt;CefV8Value&gt; object, const CefV8ValueList &amp;arguments, CefRefPtr&lt;CefV8Value&gt; &amp;retval, CefString &amp;exception)"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
