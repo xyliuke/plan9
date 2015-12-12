@@ -2,7 +2,7 @@
 // Created by liuke on 15/11/6.
 //
 
-#include "cmd_factory.h"
+#include <commander/cmd_factory.h>
 
 namespace plan9
 {
@@ -89,5 +89,9 @@ namespace plan9
 
     void cmd_factory::callback(Json::Value json) {
         impl_->callback(json);
+    }
+
+    void cmd_factory::execute(std::string cmd, Json::Value param) {
+        impl_->call(cmd, param, nullptr);
     }
 }

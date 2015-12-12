@@ -43,9 +43,34 @@ namespace plan9
 {
     class cmd_factory {
     public:
+        /**
+         * 单例对象
+         */
         static cmd_factory instance();
+        /**
+         * 注册一个命令和对应的执行代码.当调用这个命令时,对应的注册函数会被执行,参数为一个JSON对象.
+         * 如果调用者需要callback返回结果,则必须在注册函数执行完成后,调用callback(json)函数.
+         * @param cmd 命令名
+         * @param function 注册的执行函数,参数为json对象
+         */
         void register_cmd(std::string cmd, std::function<void(Json::Value)> function);
+        /**
+         * 执行一个命令,并传递一个JSON参数,执行完成后结果可以callback返回,但这取决于被调用函数是否在结尾调用了callback(json)函数
+         * @param cmd 命令名
+         * @param param json格式参数
+         * @param callback 回调
+         */
         void execute(std::string cmd, Json::Value param, std::function<void(Json::Value)> callback);
+        /**
+         * 功能同execute(std::string cmd, Json::Value param, std::function<void(Json::Value)> callback);但没有回调
+         * @param cmd 命令名
+         * @param param json格式参数
+         */
+        void execute(std::string cmd, Json::Value param);
+        /**
+         * 这个函数用于注册函数内部使用,如果需要callback,则调用
+         * @param json 参数
+         */
         void callback(Json::Value json);
 
     private:
