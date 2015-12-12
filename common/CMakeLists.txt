@@ -11,15 +11,19 @@ link_directories(../3rd/glog/lib/ ../3rd/boost_1_55_0/lib ../3rd/googletest/goog
 set(SOURCE_FILES main.cpp)
 
 include_directories(header)
+include_directories(src)
 
 aux_source_directory(../3rd/jsoncpp/dist JSONCPP_SRC)
 aux_source_directory(src/commander COMMADNER_SRC)
 aux_source_directory(src/json JSONWRAP_SRC)
+aux_source_directory(src/util/ UTIL_SRC)
+
 aux_source_directory(test/ TEST_SRC)
 
 
+
 #生成可执行文件
-add_executable(common ${SOURCE_FILES} ${COMMADNER_SRC} ${TEST_SRC} ${JSONCPP_SRC} ${JSONWRAP_SRC})
+add_executable(common ${SOURCE_FILES} ${COMMADNER_SRC} ${TEST_SRC} ${JSONCPP_SRC} ${JSONWRAP_SRC} ${UTIL_SRC})
 
 #生成静态库
 #add_library(common ${SOURCE_FILES} ${SRC} ${JSONCPP_SRC} ${JSONWRAP_SRC})

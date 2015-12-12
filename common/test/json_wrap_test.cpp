@@ -3,7 +3,7 @@
 //
 
 #include <test/test_def.h>
-#include <json/json_wrap.h>
+#include "../src/json/json_wrap.h"
 
 #ifdef TEST_ENABLE
 
