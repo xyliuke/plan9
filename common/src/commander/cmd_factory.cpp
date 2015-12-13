@@ -3,6 +3,7 @@
 //
 
 #include <commander/cmd_factory.h>
+#include <util/UUID.h>
 
 namespace plan9
 {
@@ -10,7 +11,7 @@ namespace plan9
     {
     public:
 
-        cmd_factory_impl() : id(0){
+        cmd_factory_impl() {
 
         }
 
@@ -25,7 +26,7 @@ namespace plan9
             } else {
                 jsonWrap = json;
             }
-
+            std::string id = UUID::id();
             if (!jsonWrap["aux"].isMember("id")) {
                 jsonWrap["aux"]["id"] = id;
             }
@@ -34,7 +35,6 @@ namespace plan9
                 jsonWrap["aux"]["from"].append(id);
                 tmp_cmd_map_[id] = callback;
             }
-            id ++;
             execute_function(cmd, jsonWrap);
         }
 
@@ -46,7 +46,7 @@ namespace plan9
                 if (from.isArray() && from.size() > 0) {
                     Json::Value fv;
                     from.removeIndex(from.size() - 1, &fv);
-                    unsigned int f = fv.asUInt();
+                    string f = fv.asString();
 
                     if (tmp_cmd_map_.find(f) != tmp_cmd_map_.end()) {
                         tmp_cmd_map_[f](json);
@@ -65,8 +65,7 @@ namespace plan9
 
     private:
         std::map<std::string, std::function<void(Json::Value)>> cmd_map_;
-        std::map<unsigned int, std::function<void(Json::Value)>> tmp_cmd_map_;
-        unsigned int id;
+        std::map<std::string, std::function<void(Json::Value)>> tmp_cmd_map_;
     };
 
 
