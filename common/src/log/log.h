@@ -14,6 +14,7 @@ namespace plan9
 {
     class log {
     public:
+        virtual ~log();
         void setFile(std::string filepath);
         void write(std::string msg);
         void close();

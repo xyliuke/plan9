@@ -50,6 +50,13 @@ namespace plan9
         return ret;
     }
 
+    int time::day() {
+        auto tt = std::chrono::system_clock::to_time_t
+                (std::chrono::system_clock::now());
+        struct tm* ptm = localtime(&tt);
+        return ptm->tm_mday;
+    }
+
     int time::microsecond_in_second() {
         long long int micro = microseconds();
         long long int mili = micro / 1000000 * 1000000;

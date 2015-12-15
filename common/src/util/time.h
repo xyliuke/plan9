@@ -36,6 +36,10 @@ namespace plan9
          * 得到1970至今的秒数
          */
         static long seconds();
+        /**
+         * 今天是几号,范围（1-31)
+         */
+        static int day();
 
     private:
         //1秒中的微秒数

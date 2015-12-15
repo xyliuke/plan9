@@ -3,9 +3,16 @@
 //
 
 #include <test/test_def.h>
-#include <util/UUID.h>
+
+
+
 
 #ifdef TEST_ENABLE
+
+
+#include <util/UUID.h>
+
+
 
 TEST(util_test, uuid) {
     std::string uuid1 = plan9::UUID::uuid();

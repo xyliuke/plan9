@@ -3,9 +3,15 @@
 //
 
 #include <test/test_def.h>
-#include "../src/json/json_wrap.h"
+
+
+
 
 #ifdef TEST_ENABLE
+
+#include "../src/json/json_wrap.h"
+
+
 
 TEST(json_wrap_test, parse_string) {
     std::string string = "{\"a\":1, \"b\":\"b\",\"c\":{\"c1\":1.2},\"d\":[1,2,3]}";

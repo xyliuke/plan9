@@ -28,4 +28,8 @@ namespace plan9
     void log::close() {
         ofs.close();
     }
+
+    log::~log() {
+        close();
+    }
 }

@@ -2,11 +2,15 @@
 // Created by liuke on 15/12/9.
 //
 
-#include "commander/cmd_factory.h"
 #include "test/test_def.h"
-#include "../src/json/json_wrap.h"
+
 
 #ifdef TEST_ENABLE
+
+
+#include "commander/cmd_factory.h"
+#include "../src/json/json_wrap.h"
+
 
 TEST(cmd_factory_test, run) {
     using namespace std;

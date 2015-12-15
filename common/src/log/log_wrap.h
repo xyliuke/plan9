@@ -22,18 +22,20 @@ namespace plan9
 
         static log_wrap io();
         static log_wrap net();
-        static log_wrap debug();
+        static log_wrap ui();
         static log_wrap other();
         static void set_log_dir(std::string path);
 
-        void setLevel(log_level level);
+        void set_level(log_level level);
         void i(std::string msg);
         void w(std::string msg);
         void e(std::string msg);
 
     private:
+        log_wrap(std::string, std::string);
         static std::string path;
-        std::shared_ptr<plan9::log> log;
+        class log_wrap_impl;
+        std::shared_ptr<log_wrap_impl> impl;
     };
 }
 
