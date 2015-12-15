@@ -8,6 +8,7 @@
 #include <boost/uuid/uuid_generators.hpp>
 #include <boost/uuid/uuid_io.hpp>
 #include <sstream>
+#include <util/time.h>
 
 namespace plan9
 {
@@ -20,14 +21,10 @@ namespace plan9
     }
 
     std::string UUID::id() {
-        using namespace std::chrono;
         static char i = 0;
-        system_clock::time_point today = system_clock::now();
-        microseconds m = today.time_since_epoch();
-        long long int count = m.count();
         std::stringstream ss;
         ss << "ID";
-        ss << count;
+        ss << time::microseconds();
         ss << ALP[i];
         if (i > 24) {
             i = 0;
