@@ -5,6 +5,7 @@
 #include "log_wrap.h"
 #include <boost/date_time.hpp>
 #include <util/time.h>
+#include <boost/filesystem.hpp>
 
 
 namespace plan9
@@ -21,6 +22,7 @@ namespace plan9
             log.reset(new plan9::log);
             log->setFile(get_file(path, prefix_file));
             day = time::day();
+            set_duration(10000);
         }
 
         void write(std::string msg) {
@@ -73,6 +75,33 @@ namespace plan9
             level = lv;
         }
 
+        void set_duration(int days) {
+            duration = days;
+            delete_log_day_before(days);
+        }
+
+        void delete_log_day_before(int days) {
+            namespace fs = boost::filesystem;
+            boost::filesystem::path p(this->path);
+            if (fs::exists(p) && fs::is_directory(p)) {
+                fs::directory_iterator begin(p);
+                fs::directory_iterator end;
+                for ( ; begin != end; begin ++ ) {
+                    fs::path item = *begin;
+                    if (fs::is_regular_file(item)) {
+                        std::string file = item.filename().string();
+                        if (file.substr(0, prefix_file.size()) == prefix_file) {
+                            std::string file_date = file.substr(prefix_file.size() + 1, file.size() - prefix_file.size() - 5);
+                            if(time::duration_days(file_date) >= duration) {
+                                //删除
+                                fs::remove(item);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
     private:
         std::shared_ptr<plan9::log> log;
         std::string prefix_file;
@@ -80,6 +109,7 @@ namespace plan9
         int day;
         unsigned long long count;
         log_level level;
+        int duration;
     };
 
 
@@ -127,5 +157,9 @@ namespace plan9
 
     void log_wrap::set_level(log_level level) {
         impl->set_log_level(level);
+    }
+
+    void log_wrap::set_duration(int days) {
+        impl->set_duration(days);
     }
 }

@@ -34,6 +34,16 @@ TEST(time_test, microsecond) {
 }
 
 
+TEST(time_test, days) {
+    EXPECT_EQ(time::days(2015), 365);
+    EXPECT_EQ(time::days(2016), 366);
+    EXPECT_EQ(time::days(2015,1,1), 1);
+    EXPECT_EQ(time::days(2015,2,1), 32);
+    EXPECT_EQ(time::days(2015,12,31), 365);
+    EXPECT_EQ(time::days(2015, 2, 1, 2010, 3, 1), 365 * 5 + 1 + 28);
+    std::cout << time::duration_days("2015-12-15") << std::endl;
+}
+
 TEST(time_test, performance) {
 //    for (int i = 0; i < 1000000; ++i) {
 //        int a = time::day();
