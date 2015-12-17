@@ -21,7 +21,7 @@ TEST(lua_test, call) {
     c.append(5);
     j["c"] = c;
     plan9::lua_bind::instance().call("app", j);
-//    plan9::lua_bind::instance().call("app", j);
+    plan9::lua_bind::instance().call("app", j);
 }
 
 #endif

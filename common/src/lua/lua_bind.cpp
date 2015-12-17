@@ -20,20 +20,6 @@ namespace plan9 {
 
     static int callback(lua_State *L) {
         lua_bind::instance().lua_callback(L);
-//        luaL_checktype(L, -1, LUA_TTABLE);
-//        lua_getfield(L, -1, "h1");
-//        const char *time = lua_tostring(L, -1);
-//        lua_pop(L, 1);
-
-//        lua_getfield(L, -1, "param");
-//        const char *param = lua_tostring(L, -1);
-//        lua_pop(L, 1);
-//
-//        std::function<void(std::string)> cb = callbacks[time];
-//        if (cb != NULL) {
-//            cb(param);
-//            callbacks.erase(time);
-//        }
         return 0;
     }
 
@@ -99,11 +85,11 @@ namespace plan9 {
                     lua_settable(L, -3);
                 } else if (value.isInt()) {
                     lua_pushstring(L, key.c_str());
-                    lua_pushnumber(L, value.asInt());
+                    lua_pushinteger(L, value.asInt());
                     lua_settable(L, -3);
                 } else if (value.isInt64()) {
                     lua_pushstring(L, key.c_str());
-                    lua_pushnumber(L, value.asInt64());
+                    lua_pushinteger(L, value.asInt64());
                     lua_settable(L, -3);
                 } else if (value.isDouble()) {
                     lua_pushstring(L, key.c_str());
@@ -130,10 +116,10 @@ namespace plan9 {
                         Json::Value v = *it_arr;
                         lua_pushnumber(L, index);
                         if (v.isInt()) {
-                            lua_pushnumber(L, v.asInt());
+                            lua_pushinteger(L, v.asInt());
                             lua_settable(L, -3);
                         } else if (v.isInt64()) {
-                            lua_pushnumber(L, v.asInt64());
+                            lua_pushinteger(L, v.asInt64());
                             lua_settable(L, -3);
                         } else if (v.isDouble()) {
                             lua_pushnumber(L, v.asDouble());
@@ -273,11 +259,6 @@ namespace plan9 {
 //        return ret;
 //    }
 
-
-
-//    static void wrap(std::shared_ptr<rapidjson::Document> doc, std::string &id) {
-//        doc->AddMember("id", rapidjson::Value().SetString(id.c_str()), doc->GetAllocator());
-//    }
 
 
     lua_bind lua_bind::instance() {
