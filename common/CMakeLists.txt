@@ -19,13 +19,14 @@ aux_source_directory(src/commander COMMADNER_SRC)
 aux_source_directory(src/json JSONWRAP_SRC)
 aux_source_directory(src/util/ UTIL_SRC)
 aux_source_directory(src/log/ LOG_SRC)
+aux_source_directory(src/lua/ LUA_SRC)
 
 aux_source_directory(test/ TEST_SRC)
 
 
 
 #生成可执行文件
-add_executable(common ${SOURCE_FILES} ${COMMADNER_SRC} ${TEST_SRC} ${JSONCPP_SRC} ${JSONWRAP_SRC} ${UTIL_SRC} ${LOG_SRC})
+add_executable(common ${SOURCE_FILES} ${COMMADNER_SRC} ${TEST_SRC} ${JSONCPP_SRC} ${JSONWRAP_SRC} ${UTIL_SRC} ${LOG_SRC} ${LUA_SRC})
 
 #生成静态库
 #add_library(common ${SOURCE_FILES} ${SRC} ${JSONCPP_SRC} ${JSONWRAP_SRC})
