@@ -25,6 +25,11 @@ namespace plan9 {
 
     class lua_bind::lua_bind_impl {
     public:
+
+        lua_bind_impl() : is_load_(false) {
+
+        }
+
         bool lua_init(std::string lua_file) {
             L = luaL_newstate();
             luaopen_base(L);
@@ -35,6 +40,7 @@ namespace plan9 {
                 return false;
             }
             register_callback();
+            is_load_ = true;
             return true;
         }
 
@@ -73,6 +79,9 @@ namespace plan9 {
             return ret;
         }
 
+        /**
+         * 将JSON对象转换成Lua中的table
+         */
         void json2table(Json::Value json) {
             lua_newtable(L);
             Json::Value::iterator it = json.begin();
@@ -213,53 +222,54 @@ namespace plan9 {
         }
 
         bool call(std::string method, Json::Value param, std::function<void(Json::Value)> callback) {
-            int type = lua_getglobal(L, method.c_str());//返回6表示函数,5表示table
-            if (type == LUA_TFUNCTION) {
-                json2table(param);
-
-            } else if (type == LUA_TNIL) {
-//                std::cout << "没有在lua找到函数:" << param << std::endl;
-//                return;
+            if (!is_load_) {
+                return false;
             }
+            bool ret = false;
 
-            bool ret = lua_pcall(L, 1, 0, 0) == 0;
-            lua_pop(L, 1);
+            unsigned long pos = method.find(".");
+            if (pos == std::string::npos) {
+                //不包含 . 运算
+                int type = lua_getglobal(L, method.c_str());//返回6表示函数,5表示table
+                if (type == LUA_TFUNCTION) {
+                    json2table(param);
+                    ret = true;
+                } else if (type == LUA_TNIL) {
+                    ret = false;
+                }
+            } else {
+                std::shared_ptr<std::vector<std::string>> calls = get_call_level(method);
+                typedef std::vector<std::string>::iterator VStringIterator;
+                VStringIterator end = calls->end();
+                for (VStringIterator i = calls->begin(); i != end; ++i) {
+                    std::string call = (*i);
+                    int type = 0;
+                    if (i == calls->begin()) {
+                        type = lua_getglobal(L, call.c_str());
+                    } else {
+                        type = lua_getfield(L, -1, call.c_str());
+                    }
+
+                    if (type == LUA_TFUNCTION) {
+                        json2table(param);
+                        ret = true;
+                        break;
+                    } else if (type == LUA_TNIL) {
+                        ret = false;
+                    }
+                }
+            }
+            if (ret) {
+                ret = lua_pcall(L, 1, 0, 0) == 0;
+                lua_pop(L, 1);
+            }
             return ret;
         }
+
+
+    private:
+        bool is_load_;
     };
-
-//    static std::map<std::string, std::function<void(std::string)>> callbacks;
-//
-//    static bool isLoad = false;
-//
-//    static std::shared_ptr<std::vector<std::string>> getCallLevel(std::string name) {
-//        std::shared_ptr<std::vector<std::string>> ret(new std::vector<std::string>());
-//        unsigned long pos = name.find(".");
-//        if (pos == std::string::npos) {
-//            ret->push_back(name);
-//        } else {
-//            std::string tmp = name.substr(0, pos);
-//            ret->push_back(tmp);
-//
-//            unsigned long index = pos;
-//            pos = name.find(".", pos + 1);
-//            while (pos != std::string::npos) {
-//                std::string tmp = name.substr(index + 1, pos - index - 1);
-//                ret->push_back(tmp);
-//                index = pos;
-//
-//                pos = name.find(".", pos + 1);
-//            }
-//
-//            if (index < name.size()) {
-//                std::string tmp = name.substr(index + 1, name.size() - index - 1);
-//                ret->push_back(tmp);
-//            }
-//        }
-//        return ret;
-//    }
-
-
 
     lua_bind lua_bind::instance() {
         static lua_bind lb;
@@ -274,71 +284,16 @@ namespace plan9 {
         return impl->call(method, param, nullptr);
     }
 
-//    void lua_bind_call(std::string name, std::shared_ptr<rapidjson::Document> param,
-//                       std::function<void(std::string)> callback) {
-//        if (!isLoad) {
-//            std::cout << "加载lua失败" << std::endl;
-//            return;
-//        }
-//
-//        struct timeval t_val;
-//        gettimeofday(&t_val, NULL);
-//        std::stringstream ss;
-//        ss << t_val.tv_sec << "." << t_val.tv_usec;
-//        std::string time = (std::string) ss.str();
-//
-//        unsigned long pos = name.find(".");
-//        if (pos == std::string::npos) {
-//            //不包含 . 运算
-//            int type = lua_getglobal(L, name.c_str());//返回6表示函数,5表示table
-//
-//            if (type == LUA_TFUNCTION) {
-//                wrap(param, time);
-//                json2table(param);
-//
-//            } else if (type == LUA_TNIL) {
-//                std::cout << "没有在lua找到函数:" << name << std::endl;
-//                return;
-//            }
-//        } else {
-//            std::shared_ptr<std::vector<std::string>> calls = getCallLevel(name);
-//            typedef std::vector<std::string>::iterator VStringIterator;
-//            VStringIterator end = calls->end();
-//            for (VStringIterator i = calls->begin(); i != end; ++i) {
-//                std::string call = (*i);
-//                int type = 0;
-//                if (i == calls->begin()) {
-//                    type = lua_getglobal(L, call.c_str());
-//                } else {
-//                    type = lua_getfield(L, -1, call.c_str());
-//                }
-//
-//                if (type == LUA_TFUNCTION) {
-//                    wrap(param, time);
-//                    json2table(param);
-//                    break;
-//                } else if (type == LUA_TNIL) {
-//                    std::cout << "没有在lua找到函数:" << name << std::endl;
-//                    return;
-//                }
-//            }
-//        }
-//
-//        callbacks[time] = callback;
-//
-//        if (lua_pcall(L, 1, 0, 0) == 0) {
-//            std::cout << "run ok" << std::endl;
-//        }
-//
-//        lua_pop(L, 1);
-//    }
-//
+    bool lua_bind::call(std::string method, Json::Value param, std::function<void(Json::Value result)> callback) {
+        return impl->call(method, param, callback);
+    }
+
     lua_bind::lua_bind() : impl(new lua_bind_impl) {
     }
 
     void lua_bind::lua_callback(lua_State *L) {
         Json::Value json = impl->lua_callback(L);
-        std::cout << "callback: " << json_wrap::toString(json) << std::endl;
+//        std::cout << "callback: " << json_wrap::toString(json) << std::endl;
     }
 
 }

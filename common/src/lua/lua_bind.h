@@ -15,11 +15,29 @@ namespace plan9
     class lua_bind {
     public:
         static lua_bind instance();
+        /**
+         * 初始化lua文件,指定文件路径
+         */
         bool lua_bind_init(std::string lua_file);
+        /**
+         * 调用lua函数,支持调用table中的函数,规则为a.b
+         * @param method 函数名,支持a.b调用
+         * @param param lua参数的支持,为Json对象
+         * @return 如果函数存在,则返回true,否则返回false
+         */
         bool call(std::string method, Json::Value param);
-        void lua_bind_call(std::string name, std::shared_ptr<Json::Value> param, std::function<void(std::string result)> callback);
-        void json2table(std::shared_ptr<Json::Value> doc);
+        /**
+         * 调用lua函数,支持调用table中的函数,规则为a.b
+         * @param method 函数名,支持a.b调用
+         * @param param lua参数的支持,为Json对象
+         * @param callback 调用Lua后的回调
+         * @return 如果函数存在,则返回true,否则返回false
+         */
+        bool call(std::string method, Json::Value param, std::function<void(Json::Value result)> callback);
 
+        /**
+         * 这个函数用来处理lua的回调,供在lua中注册的函数调用.
+         */
         void lua_callback(lua_State* L);
 
     private:

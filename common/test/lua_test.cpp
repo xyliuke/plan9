@@ -20,8 +20,8 @@ TEST(lua_test, call) {
     c.append(2);
     c.append(5);
     j["c"] = c;
-    plan9::lua_bind::instance().call("app", j);
-    plan9::lua_bind::instance().call("app", j);
+//    EXPECT_EQ(plan9::lua_bind::instance().call("a.b.c.d", j), true);
+//    EXPECT_EQ(plan9::lua_bind::instance().call("a.c", j), false);
 }
 
 #endif
