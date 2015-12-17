@@ -91,40 +91,70 @@ namespace plan9 {
             lua_newtable(L);
             Json::Value::iterator it = json.begin();
             while (it != json.end()) {
-                std::cout << "key:" << it.key() << std::endl;
-                std::cout << "name:" << *it << std::endl;
                 std::string key = it.key().asString();
                 Json::Value value = *it;
                 if (value.isObject()) {
-
+                    lua_pushstring(L, key.c_str());
+                    json2table(value);
+                    lua_settable(L, -3);
                 } else if (value.isInt()) {
-                    lua_pushinteger(L, value.asInt());
-                    lua_setfield(L, -2, key.c_str());
-//    //            std::cout << "value:" << it->value.GetInt() << std::endl;
+                    lua_pushstring(L, key.c_str());
+                    lua_pushnumber(L, value.asInt());
+                    lua_settable(L, -3);
                 } else if (value.isInt64()) {
-                    lua_pushinteger(L, value.asInt64());
-                    lua_setfield(L, -2, key.c_str());
-//    //            std::cout << "value:" << it->value.GetInt64() << std::endl;
+                    lua_pushstring(L, key.c_str());
+                    lua_pushnumber(L, value.asInt64());
+                    lua_settable(L, -3);
                 } else if (value.isDouble()) {
+                    lua_pushstring(L, key.c_str());
                     lua_pushnumber(L, value.asDouble());
-                    lua_setfield(L, -2, key.c_str());
-//    //            std::cout << "value:" << it->value.GetDouble() << std::endl;
+                    lua_settable(L, -3);
                 } else if (value.isString()) {
+                    lua_pushstring(L, key.c_str());
                     lua_pushstring(L, value.asString().c_str());
-                    lua_setfield(L, -2, key.c_str());
-//    //            std::cout << "value:" << it->value.GetString() << std::endl;
+                    lua_settable(L, -3);
                 } else if (value.isBool()) {
+                    lua_pushstring(L, key.c_str());
                     if (value.asBool()) {
                         lua_pushboolean(L, 1);
                     } else {
                         lua_pushboolean(L, 0);
                     }
-                    lua_setfield(L, -2, key.c_str());
-//    //            std::cout << "value:" << it->value.GetBool() << std::endl;
+                    lua_settable(L, -3);
                 } else if (value.isArray()) {
-
+                    lua_pushstring(L, key.c_str());
+                    lua_newtable(L);
+                    Json::ValueIterator it_arr = value.begin();
+                    int index = 1;
+                    while (it_arr != value.end()) {
+                        Json::Value v = *it_arr;
+                        lua_pushnumber(L, index);
+                        if (v.isInt()) {
+                            lua_pushnumber(L, v.asInt());
+                            lua_settable(L, -3);
+                        } else if (v.isInt64()) {
+                            lua_pushnumber(L, v.asInt64());
+                            lua_settable(L, -3);
+                        } else if (v.isDouble()) {
+                            lua_pushnumber(L, v.asDouble());
+                            lua_settable(L, -3);
+                        } else if (v.isString()) {
+                            lua_pushstring(L, v.asString().c_str());
+                            lua_settable(L, -3);
+                        } else if (v.isBool()) {
+                            if (v.asBool()) {
+                                lua_pushboolean(L, 1);
+                            } else {
+                                lua_pushboolean(L, 0);
+                            }
+                            lua_settable(L, -3);
+                        }
+                        index ++;
+                        it_arr ++;
+                    }
+                    lua_settable(L,-3);
                 }
-                it++;
+                it ++;
             }
         }
 
