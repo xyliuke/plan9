@@ -40,6 +40,13 @@ namespace plan9
          */
         void lua_callback(lua_State* L);
 
+        /**
+         * 这个函数供lua调用,调用C++中函数
+         */
+        void native_call(lua_State* L);
+
+
+
     private:
         lua_bind();
         class lua_bind_impl;

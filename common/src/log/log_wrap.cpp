@@ -10,8 +10,7 @@
 
 namespace plan9
 {
-    std::string log_wrap::path = ".";
-
+    std::string log_wrap::path = "./";
 
     class log_wrap::log_wrap_impl {
     public:
@@ -128,6 +127,11 @@ namespace plan9
         return wrap;
     }
 
+    log_wrap log_wrap::lua() {
+        static log_wrap wrap(log_wrap::path, "lua");
+        return wrap;
+    }
+
     log_wrap log_wrap::other() {
         static log_wrap wrap(log_wrap::path, "other");
         return wrap;
@@ -143,15 +147,15 @@ namespace plan9
 
     }
 
-    void log_wrap::i(std::string msg) {
+    void log_wrap::i_(std::string msg) {
         impl->write(INFO, msg);
     }
 
-    void log_wrap::w(std::string msg) {
+    void log_wrap::w_(std::string msg) {
         impl->write(WARN, msg);
     }
 
-    void log_wrap::e(std::string msg) {
+    void log_wrap::e_(std::string msg) {
         impl->write(ERROR, msg);
     }
 

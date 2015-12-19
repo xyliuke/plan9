@@ -2,10 +2,11 @@
 // Created by liuke on 15/12/9.
 //
 
+#include <init/common.h>
 #include "test/test_def.h"
 
 
-#ifdef TEST_ENABLE
+#ifdef COMMANDER_TEST
 
 
 #include "commander/cmd_factory.h"
@@ -37,6 +38,7 @@ TEST(cmd_factory_test, run) {
 
     plan9::cmd_factory::instance().execute("hello", value);
 }
+
 
 
 #endif

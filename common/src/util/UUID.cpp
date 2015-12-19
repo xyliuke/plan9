@@ -22,14 +22,22 @@ namespace plan9
 
     std::string UUID::id() {
         static char i = 0;
+        static char j = 0;
         std::stringstream ss;
         ss << "ID";
         ss << time::microseconds();
         ss << ALP[i];
-        if (i > 24) {
-            i = 0;
+        ss << ALP[j];
+
+        if (j > 24) {
+            j = 0;
+            if (i > 24) {
+                i = 0;
+            } else {
+                i ++;
+            }
         } else {
-            i++;
+            j ++;
         }
         return ss.str();
     }

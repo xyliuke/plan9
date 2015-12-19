@@ -7,9 +7,8 @@
 #include <json/json_wrap.h>
 
 #include <iostream>
+#include <util/UUID.h>
 #include <map>
-#include <sstream>
-#include <vector>
 
 
 
@@ -18,8 +17,19 @@ namespace plan9 {
 
     static lua_State *L;
 
+    /**
+     * 由lua来调用的callback
+     */
     static int callback(lua_State *L) {
         lua_bind::instance().lua_callback(L);
+        return 0;
+    }
+
+    /**
+     * lua调用C++的函数
+     */
+    static int nativecall(lua_State *L) {
+        lua_bind::instance().native_call(L);
         return 0;
     }
 
@@ -45,10 +55,21 @@ namespace plan9 {
         }
 
         void register_callback() {
-            lua_register(L, "callback", callback);
+            lua_register(L, "__callback__", callback);
+            lua_register(L, "__native_call__", nativecall);//注意:这里的第三个参数使用native_call名字的函数则编译错误
         }
 
-        Json::Value lua_callback(lua_State* L) {
+        void lua_callback(lua_State* L) {
+            Json::Value result = table2json(L);
+            std::string id = result["aux"]["id"].asString();
+            auto callback = callback_map[id];
+            if (callback != nullptr) {
+                callback(result);
+                callback_map.erase(id);
+            }
+        }
+
+        Json::Value native_call(lua_State* L) {
             return table2json(L);
         }
 
@@ -221,11 +242,39 @@ namespace plan9 {
             return ret;
         }
 
+        Json::Value wrap(Json::Value param) {
+            Json::Value ret;
+            if (!param.isMember("aux")) {
+                ret["aux"] = Json::Value();
+            }
+            if (!param["aux"].isMember("id")) {
+                ret["aux"]["id"] = UUID::id();
+            }
+
+            if (param.isMember("args")) {
+                ret["args"] = param["args"];
+            } else {
+                ret["args"] = param;
+            }
+            return ret;
+        }
+
+        Json::Value register_callback(Json::Value param, std::function<void(Json::Value)> callback) {
+            Json::Value ret = wrap(param);
+            if (callback != nullptr) {
+                std::string id = ret["aux"]["id"].asString();
+                callback_map[id] = callback;
+            }
+            return ret;
+        }
+
         bool call(std::string method, Json::Value param, std::function<void(Json::Value)> callback) {
             if (!is_load_) {
                 return false;
             }
             bool ret = false;
+
+            param = register_callback(param, callback);
 
             unsigned long pos = method.find(".");
             if (pos == std::string::npos) {
@@ -269,6 +318,7 @@ namespace plan9 {
 
     private:
         bool is_load_;
+        std::map<std::string, std::function<void(Json::Value)>> callback_map;
     };
 
     lua_bind lua_bind::instance() {
@@ -292,8 +342,12 @@ namespace plan9 {
     }
 
     void lua_bind::lua_callback(lua_State *L) {
-        Json::Value json = impl->lua_callback(L);
-//        std::cout << "callback: " << json_wrap::toString(json) << std::endl;
+        impl->lua_callback(L);
+    }
+
+    void lua_bind::native_call(lua_State *L) {
+        Json::Value json = impl->native_call(L);
+        std::cout << "native call: " << json_wrap::toString(json) << std::endl;
     }
 
 }

@@ -4,7 +4,7 @@
 
 #include <test/test_def.h>
 
-#ifdef TEST_ENABLE
+#ifdef LUA_TEST
 
 #include <lua/lua_bind.h>
 
@@ -20,7 +20,11 @@ TEST(lua_test, call) {
     c.append(2);
     c.append(5);
     j["c"] = c;
-//    EXPECT_EQ(plan9::lua_bind::instance().call("a.b.c.d", j), true);
+
+    EXPECT_EQ(plan9::lua_bind::instance().call("a.b.c.d", j), true);
+    plan9::lua_bind::instance().call("a.b.c.d", j, [=](Json::Value result){
+        std::cout << "callback: " << result << std::endl;
+    });
 //    EXPECT_EQ(plan9::lua_bind::instance().call("a.c", j), false);
 }
 

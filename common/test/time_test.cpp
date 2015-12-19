@@ -6,7 +6,7 @@
 
 
 
-#ifdef TEST_ENABLE
+#ifdef TIME_TEST
 
 #include <util/time.h>
 

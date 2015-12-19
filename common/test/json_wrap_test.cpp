@@ -7,7 +7,7 @@
 
 
 
-#ifdef TEST_ENABLE
+#ifdef JSON_TEST
 
 #include "../src/json/json_wrap.h"
 

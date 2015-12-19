@@ -9,7 +9,7 @@ include_directories(../3rd/glog/include ../3rd/jsoncpp/dist ../3rd/boost_1_55_0 
 #添加搜索库路径
 link_directories(../3rd/glog/lib/ ../3rd/boost_1_55_0/lib ../3rd/googletest/googletest)
 
-set(SOURCE_FILES main.cpp)
+set(SOURCE_FILES main.cpp src/util/util.cpp src/util/util.h)
 
 include_directories(header)
 include_directories(src)
@@ -20,13 +20,15 @@ aux_source_directory(src/json JSONWRAP_SRC)
 aux_source_directory(src/util/ UTIL_SRC)
 aux_source_directory(src/log/ LOG_SRC)
 aux_source_directory(src/lua/ LUA_SRC)
+aux_source_directory(src/init/ INIT_SRC)
+aux_source_directory(src/datebase/ DATABASE_SRC)
 
 aux_source_directory(test/ TEST_SRC)
 
 
 
 #生成可执行文件
-add_executable(common ${SOURCE_FILES} ${COMMADNER_SRC} ${TEST_SRC} ${JSONCPP_SRC} ${JSONWRAP_SRC} ${UTIL_SRC} ${LOG_SRC} ${LUA_SRC})
+add_executable(common ${SOURCE_FILES} ${COMMADNER_SRC} ${TEST_SRC} ${JSONCPP_SRC} ${JSONWRAP_SRC} ${UTIL_SRC} ${LOG_SRC} ${LUA_SRC} ${INIT_SRC} ${DATABASE_SRC})
 
 #生成静态库
 #add_library(common ${SOURCE_FILES} ${SRC} ${JSONCPP_SRC} ${JSONWRAP_SRC})

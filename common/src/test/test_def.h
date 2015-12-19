@@ -23,4 +23,18 @@
 #endif
 
 
+#ifdef TEST_ENABLE
+
+#define COMMON_TEST
+//#define COMMANDER_TEST
+//#define JSON_TEST
+//#define LOG_TEST
+//#define TIME_TEST
+//#define UTIL_TEST
+//#define DATABASE_TEST
+//#define LUA_TEST
+
+#endif
+
+
 #endif //COMMON_TEST_DEF_H_H

@@ -9,6 +9,8 @@
 #include <iosfwd>
 #include <string>
 #include <log/log.h>
+#include <sstream>
+#include <util/util.h>
 
 namespace plan9
 {
@@ -23,6 +25,7 @@ namespace plan9
         static log_wrap io();
         static log_wrap net();
         static log_wrap ui();
+        static log_wrap lua();
         static log_wrap other();
         static void set_log_dir(std::string path);
 
@@ -39,15 +42,29 @@ namespace plan9
         /**
          * INFO级别日志
          */
-        void i(std::string msg);
+        void i_(std::string msg);
+
+        template <typename head, typename ... rail>
+        void i(head h, rail... r) {
+            i_(util::instance().cat(h, r...));
+        };
+
         /**
          * WARN级别日志
          */
-        void w(std::string msg);
+        void w_(std::string msg);
+        template <typename head, typename ... rail>
+        void w(head h, rail... r) {
+            w_(util::instance().cat(h, r...));
+        };
         /**
          * ERROR级别日志
          */
-        void e(std::string msg);
+        void e_(std::string msg);
+        template <typename head, typename ... rail>
+        void e(head h, rail... r) {
+            e_(util::instance().cat(h, r...));
+        };
 
     private:
         log_wrap(std::string, std::string);
@@ -55,6 +72,7 @@ namespace plan9
         class log_wrap_impl;
         std::shared_ptr<log_wrap_impl> impl;
     };
+
 }
 
 
