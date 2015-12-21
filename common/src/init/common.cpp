@@ -39,6 +39,13 @@ namespace plan9
     }
 
     void common::init_function() {
+        /*
+         * 注册日志函数
+         * 参数有三个,分别为
+         * level : info/warn/error  日志级别,使用三个值其一
+         * target : ui/net/io/lua/other 日志分类,使用其一
+         * msg : 日志内容
+         **/
         cmd_factory::instance().register_cmd("log", [=](Json::Value param){
             if (param.isMember("args")) {
                 std::string level = param["args"]["level"].asString();
@@ -117,7 +124,7 @@ namespace plan9
             return;
         }
         bfs::path p(lua_path);
-        p /= "engine.lua";
+        p /= "bridge.lua";
         lua_bind::instance().lua_bind_init(p.string());
     }
 }
