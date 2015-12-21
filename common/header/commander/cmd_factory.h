@@ -62,11 +62,23 @@ namespace plan9
          */
         void execute(std::string cmd, Json::Value param, std::function<void(Json::Value)> callback);
         /**
+         * 函数功能同void execute(std::string cmd, Json::Value param, std::function<void(Json::Value)> callback);
+         * 只是函数名保存在param["aux"]["to"]中
+         */
+        void execute(Json::Value param, std::function<void(Json::Value)> callback);
+
+        /**
          * 功能同execute(std::string cmd, Json::Value param, std::function<void(Json::Value)> callback);但没有回调
          * @param cmd 命令名
          * @param param json格式参数
          */
         void execute(std::string cmd, Json::Value param);
+        /**
+         * 函数功能同void execute(std::string cmd, Json::Value param);
+         * 只是函数名保存在param["aux"]["to"]中
+         */
+        void execute(Json::Value param);
+
         /**
          * 这个函数用于注册函数内部使用,如果需要callback,则调用
          * @param json 参数

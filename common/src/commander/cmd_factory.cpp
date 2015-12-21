@@ -32,26 +32,38 @@ namespace plan9
             }
             jsonWrap["aux"]["to"] = cmd;
             if (callback != nullptr) {
+                jsonWrap["aux"]["action"] = "callback";
                 jsonWrap["aux"]["from"].append(id);
                 tmp_cmd_map_[id] = callback;
+            } else {
+                jsonWrap["aux"]["action"] = "direct";
             }
             execute_function(cmd, jsonWrap);
+        }
+
+        void call(Json::Value param, std::function<void(Json::Value)> callback) {
+            if (param.isMember("aux") && param["aux"].isMember("to")) {
+                std::string method = param["aux"]["to"].asString();
+                call(method, param, callback);
+            }
         }
 
         void callback(Json::Value& json) {
             using namespace std;
             if (json.isMember("aux")) {
                 string action = json["aux"]["action"].asString();
-                Json::Value& from = json["aux"]["from"];
-                if (from.isArray() && from.size() > 0) {
-                    Json::Value fv;
-                    from.removeIndex(from.size() - 1, &fv);
-                    string f = fv.asString();
+                if ("callback" == action) {
+                    Json::Value& from = json["aux"]["from"];
+                    if (from.isArray() && from.size() > 0) {
+                        Json::Value fv;
+                        from.removeIndex(from.size() - 1, &fv);
+                        string f = fv.asString();
 
-                    if (tmp_cmd_map_.find(f) != tmp_cmd_map_.end()) {
-                        tmp_cmd_map_[f](json);
+                        if (tmp_cmd_map_.find(f) != tmp_cmd_map_.end()) {
+                            tmp_cmd_map_[f](json);
+                        }
+                        tmp_cmd_map_.erase(f);
                     }
-                    tmp_cmd_map_.erase(f);
                 }
             }
         }
@@ -86,11 +98,19 @@ namespace plan9
         impl_->call(cmd, param, callback);
     }
 
+    void cmd_factory::execute(Json::Value param, std::function<void(Json::Value)> callback) {
+        impl_->call(param, callback);
+    }
+
     void cmd_factory::callback(Json::Value json) {
         impl_->callback(json);
     }
 
     void cmd_factory::execute(std::string cmd, Json::Value param) {
         impl_->call(cmd, param, nullptr);
+    }
+
+    void cmd_factory::execute(Json::Value param) {
+        impl_->call(param, nullptr);
     }
 }

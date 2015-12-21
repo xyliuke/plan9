@@ -25,6 +25,11 @@ namespace plan9
          * @param param lua参数的支持,为Json对象
          * @return 如果函数存在,则返回true,否则返回false
          */
+        bool call_lua(std::string method, Json::Value param);
+
+        /**
+         *
+         */
         bool call(std::string method, Json::Value param);
         /**
          * 调用lua函数,支持调用table中的函数,规则为a.b
@@ -33,7 +38,10 @@ namespace plan9
          * @param callback 调用Lua后的回调
          * @return 如果函数存在,则返回true,否则返回false
          */
+        bool call_lua(std::string method, Json::Value param, std::function<void(Json::Value result)> callback);
+
         bool call(std::string method, Json::Value param, std::function<void(Json::Value result)> callback);
+
 
         /**
          * 这个函数用来处理lua的回调,供在lua中注册的函数调用.
