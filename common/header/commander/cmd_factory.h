@@ -27,7 +27,10 @@
  *    }
  *    result:   (调用函数最终返回的数据结构,为调用者使用)
  *    {
- *
+ *        success : true/false      (函数调用成功或者失败)
+ *        error   :  error_code     这个错误码定义在lua的error_code文件中
+ *        reason  :  失败原因        错误原因的文字说明,主要是UI使用
+ *        data    : {}              (函数返回的结果数据封装在这个字段中)
  *    }
  *
  * }
@@ -80,10 +83,37 @@ namespace plan9
         void execute(Json::Value param);
 
         /**
-         * 这个函数用于注册函数内部使用,如果需要callback,则调用
-         * @param json 参数
+         * 将调用的结果封装到原始的json中,格式如上面注释所示
+         * result:   (调用函数最终返回的数据结构,为调用者使用)
+         *    {
+         *        success : true/false      (函数调用成功或者失败)
+         *        data : {}                 (函数返回的结果数据封装在这个字段中)
+         *    }
+         * @param json 调用参数时传入json
+         * @param result 函数调用成功或者失败
+         * @param data 调用函数的结果数据
+         * @return 返回封装好的数据
+         */
+        Json::Value wrap_callback_data(Json::Value json, bool result, Json::Value data);
+
+        /**
+         * 这个函数用于注册函数内部使用,如果需要callback,则调用.
+         * 但是需要按照指定结构来传递值,不清楚情况下不要直接使用,而是调用其他两个重载的函数
+         * @param json 参数,包括了指定返回值结构
          */
         void callback(Json::Value json);
+
+        /**
+         * 这个函数同void callback(Json::Value json);区别在于返回的数据封装在result字段由谁来封装,自己手动或者程序填充
+         * @param param 调用时传递的参数
+         * @param result 操作成功或失败
+         * @param data 需要返回的数据
+         */
+        void callback(Json::Value param, bool result, Json::Value data);
+        /**
+         * 同void callback(Json::Value param, bool result, Json::Value data);区别在于是否需要传递数据
+         */
+        void callback(Json::Value param, bool result);
 
     private:
         cmd_factory();

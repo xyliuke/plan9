@@ -10,6 +10,8 @@
 #include <util/UUID.h>
 #include <commander/cmd_factory.h>
 #include <util/UUID.h>
+#include <log/log_wrap.h>
+
 
 
 namespace plan9 {
@@ -37,43 +39,50 @@ namespace plan9 {
         return 1;
     }
 
-    static int callbackfromc(lua_State* L) {
-
-        return 0;
-    }
-
     class lua_bind::lua_bind_impl {
     public:
-//        bool call(std::string method, Json::Value param, std::function<void(Json::Value)> callback);
         lua_bind_impl() : is_load_(false) {
 
         }
 
-        bool lua_init(std::string lua_file) {
+        bool lua_init(std::string lua_path) {
+            if (is_load_)
+                return true;
             L = luaL_newstate();
-            luaopen_base(L);
-            luaopen_io(L);
-            luaopen_string(L);
-            luaopen_math(L);
-            luaopen_table(L);
-            luaopen_debug(L);
-            luaopen_os(L);
-            luaopen_utf8(L);
-            luaopen_package(L);
             luaL_openlibs(L);
-            if (luaL_loadfile(L, lua_file.c_str()) || lua_pcall(L, 0, 0, 0)) {
-                return false;
-            }
+
+            lua_getglobal(L, "package");
+            lua_getfield(L, -1, "path"); // get field "path" from table at top of stack (-1)
+            std::string cur_path = lua_tostring( L, -1 ); // grab path string from top of stack
+            cur_path.append( ";" ); // do your path magic here
+            cur_path.append(lua_path);
+            cur_path.append("/?.lua");
+            lua_pop( L, 1 ); // get rid of the string on the stack we just pushed on line 5
+            lua_pushstring( L, cur_path.c_str()); // push the new one
+            lua_setfield( L, -2, "path" ); // set the field "path" in table at -2 with value at top of stack
+            lua_pop( L, 1 ); // get rid of package table from top of stack
+
             register_callback();
             is_load_ = true;
             return true;
+        }
+
+        bool lua_loadfile(std::string lua_file) {
+            if (!is_load_) {
+                log_wrap::lua().e("lua is not init");
+                return false;
+            }
+            if (luaL_loadfile(L, lua_file.c_str()) || lua_pcall(L, 0, 0, 0)) {
+                return false;
+            }
+            return false;
+
         }
 
         void register_callback() {
             lua_register(L, "__callback__", callback);
             lua_register(L, "__native_call__", nativecall);//注意:这里的第三个参数使用native_call名字的函数则编译错误
             lua_register(L, "__native_get_id__", getid);
-//            lua_register(L, "__native_callback_from_c__", callbackfromc);
         }
 
         void lua_callback(lua_State* L) {
@@ -391,8 +400,12 @@ namespace plan9 {
         return lb;
     }
 
-    bool lua_bind::lua_bind_init(std::string lua_file) {
-        return impl->lua_init(lua_file);
+    bool lua_bind::lua_bind_init(std::string lua_path) {
+        return impl->lua_init(lua_path);
+    }
+
+    bool lua_bind::lua_bind_loadfile(std::string lua_file) {
+        return impl->lua_loadfile(lua_file);
     }
 
     bool lua_bind::call_lua(std::string method, Json::Value param) {
@@ -411,6 +424,14 @@ namespace plan9 {
     bool lua_bind::call(std::string method, Json::Value param, std::function<void(Json::Value result)> callback) {
         param["aux"]["to"] = method;
         return call_lua("lua_c_bridge.call_lua", param, callback);
+    }
+
+    bool lua_bind::call(std::string method, std::function<void(Json::Value result)> callback) {
+        return call(method, Json::Value(), callback);
+    }
+
+    bool lua_bind::call(std::string method) {
+        return call(method, Json::Value());
     }
 
     lua_bind::lua_bind() : impl(new lua_bind_impl) {

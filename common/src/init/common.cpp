@@ -10,6 +10,8 @@
 
 namespace plan9
 {
+#define LUA_FUNCTION_NOT_EXSIT "LUA_FUNCTION_NOT_EXSIT" //lua函数不存在
+
     std::string common::path = ".";
     std::string common::lua_path = ".";
 
@@ -20,9 +22,65 @@ namespace plan9
             boost::filesystem::create_directories(path);
         }
         init_log();
+        log_wrap::io().i("init lua");
         init_lua();
+        log_wrap::io().i("register function");
         init_function();
     }
+
+    void common::call(std::string method, Json::Value param, std::function<void(Json::Value result)> callback) {
+        lua_bind::instance().call(method, param, [=](Json::Value result){
+            bool succ;
+            std::string error = success(result, &succ);
+            if (succ) {
+                if (callback != nullptr) {
+                    callback(result);
+                }
+            } else {
+                //调用失败,则查询失败原因
+                if (error == LUA_FUNCTION_NOT_EXSIT) {
+                    if (callback != nullptr) {
+                        cmd_factory::instance().execute(method, param, callback);
+                    } else {
+                        cmd_factory::instance().execute(method, param);
+                    }
+                } else {
+                    callback(result);
+                }
+            }
+        });
+    }
+
+    void common::call(std::string method, Json::Value param) {
+        call(method, param, nullptr);
+    }
+
+    void common::call(std::string method, std::function<void(Json::Value result)> callback) {
+        call(method, Json::Value(), callback);
+    }
+
+    void common::call(std::string method) {
+        call(method, Json::Value());
+    }
+
+    std::string common::success(Json::Value result, bool* success) {
+        if (result.isMember("result") && result["result"].isMember("success") && result["result"]["success"].isBool()) {
+            *success = result["result"]["success"].asBool();
+            if (*success) {
+                return "";
+            } else {
+                if (result["result"].isMember("error")) {
+                    return result["result"]["error"].asString();
+                } else {
+                    return "";
+                }
+            }
+        }
+        *success = false;
+        return "";
+    }
+
+
 
     void common::init_log() {
         boost::filesystem::path p(path);
@@ -31,6 +89,7 @@ namespace plan9
             boost::filesystem::create_directories(p);
         }
         log_wrap::set_log_dir(p.string());
+        log_wrap::io().i("init log");
         log_wrap::io().set_duration(7);
         log_wrap::ui().set_duration(7);
         log_wrap::net().set_duration(7);
@@ -111,9 +170,8 @@ namespace plan9
                         log_wrap::other().i(param["args"]["msg"].asString());
                     }
                 }
-
             }
-            cmd_factory::instance().callback(param);
+            cmd_factory::instance().callback(param, true);
         });
     }
 
@@ -123,8 +181,14 @@ namespace plan9
             log_wrap::io().e("init lua error, lua path : ", lua_path, " is not exist");
             return;
         }
+        lua_bind::instance().lua_bind_init(lua_path);
+
         bfs::path p(lua_path);
-        p /= "bridge.lua";
-        lua_bind::instance().lua_bind_init(p.string());
+
+        bfs::path bridge = p / "bridge.lua";
+        lua_bind::instance().lua_bind_loadfile(bridge.string());
+
+//        bfs::path error = p / "error_code.lua";
+//        lua_bind::instance().lua_bind_loadfile(error.string());
     }
 }

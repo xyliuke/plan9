@@ -22,9 +22,22 @@ TEST(common_test, init) {
     Json::Value param;
     param["level"] = "info";
     param["msg"] = "dddddddddddddddsssssssssxxxxxxxxxxx";
-    plan9::cmd_factory::instance().execute("log", param);
-    lua_bind::instance().call("biz.test", param, [=](Json::Value result){
+    param["target"] = "other";
+
+    plan9::common::call("native.get_error_code", param, [=](Json::Value result){
         std::cout << "callback common init :" << result << std::endl;
     });
+
+//    plan9::cmd_factory::instance().execute("log", param);
+
+
+
+//    lua_bind::instance().call("native.get_error_code", [=](Json::Value result){
+//        std::cout << "callback common init :" << result << std::endl;
+//    });
+//
+//    lua_bind::instance().call("biz.test", param, [=](Json::Value result){
+//        std::cout << "callback common init :" << result << std::endl;
+//    });
 }
 #endif

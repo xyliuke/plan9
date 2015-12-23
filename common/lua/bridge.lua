@@ -1,6 +1,9 @@
 ----------------
 -- lua和c的桥接层,用来完成c和lua的交互
 -- @module lua_c_bridge
+
+require("error_code")
+
 lua_c_bridge = {callback_map = {}, lua_function_map = {}}
 
 --- 调用c++函数,获取唯一的id
@@ -59,12 +62,62 @@ function lua_c_bridge.callback_from_c(param)
 end
 
 --- 这个函数供lua调用,lua回调给c++
-function lua_c_bridge:callback(result)
+-- @param result 将回调的值整合成一个table后传递给C++
+function lua_c_bridge:callback_direct(result)
     if result and result.aux and result.aux.action == "callback" then
         lua_c_bridge:log_i("callback from lua : " .. lua_c_bridge:tostring(result))
         __callback__(result);
     end
 end
+--- 这个函数供lua调用,用来将值回调给c++
+-- @param param 由c++传递来的参数
+-- @param result 回调的成功或失败,值必须为boolean值或者nil值,如果为nil则为false
+-- @param data 回调给C++的数据圣贤,必须为table值或nil值
+function lua_c_bridge:callback(param, result, data)
+    if param then
+        if param.result == nil then
+            param.result = {}
+        end
+        if result == nil then
+            param.result.success = false
+        else
+            if type(result) == "boolean" then
+                param.result.success = result
+            else
+                lua_c_bridge:log_e("callback from lua param error, result must be boolean")
+                return
+            end
+        end
+        if data then
+            if type(data) == "table" then
+                param.result.data = data;
+            else
+                lua_c_bridge:log_e("callback from lua param error, data must be table")
+                return
+            end
+        else
+            param.result.data = data;
+        end
+        lua_c_bridge:callback_direct(param)
+    else
+        lua_c_bridge:log_e("callback from lua param error, the param must not be nil")
+    end
+end
+function lua_c_bridge:callback_error(param, error, reason)
+    if param and error then
+        if param.result == nil then
+            param.result = {}
+        end
+        param.result.success = false
+        param.result.error = error
+        param.result.reason = reason
+        param.result.data = {}
+        lua_c_bridge:callback_direct(param)
+    else
+        lua_c_bridge:log_e("callback from lua param error, the param must not be nil, error must not be nil")
+    end
+end
+
 --- 将字符串使用某一字符分隔,如a.b 使用.号分隔结果就是a  b
 -- @param s 字符串
 -- @param p 分隔符
@@ -138,23 +191,31 @@ function lua_c_bridge.call_lua(param)
     local methods = lua_c_bridge:split_function(m)
     local count = #methods
     local func = lua_c_bridge.lua_function_map[methods[1]];
+    if func == nil then
+        lua_c_bridge:log_e("can not find lua function, param: \n" .. lua_c_bridge:tostring(param))
+        lua_c_bridge:callback_error(param, error_code.LUA_FUNCTION_NOT_EXSIT, nil)
+        return
+    end
     for i = 2, count - 1 do
         local f = func[methods[i]]
         if (type(f) == "table") then
             func = f
         else
             lua_c_bridge:log_e("can not find lua function, param: \n" .. lua_c_bridge:tostring(param))
-            return;
+            lua_c_bridge:callback_error(param, error_code.LUA_FUNCTION_NOT_EXSIT, nil)
+            return
         end
     end
     local last = func
     func = func[methods[#methods]]
     if func ~= nil and type(func) == "function" then
-        func(last, param, function(result)
-            lua_c_bridge:callback(result);
+        func(last, param, function(param, result, data)
+            lua_c_bridge:callback(param, result, data);
         end)
     else
         lua_c_bridge:log_e("can not find lua function, param:\n " .. lua_c_bridge:tostring(param))
+        lua_c_bridge:callback_error(param, error_code.LUA_FUNCTION_NOT_EXSIT, nil)
+        return
     end
 end
 
@@ -165,9 +226,8 @@ function lua_c_bridge:register_lua_function(name, func)
     self.lua_function_map[name] = func
 end
 
-local biz = {}
-function biz:test(param, callback)
-    param.ret = {result = true, msg = "biz test callback"}
-    callback(param)
+local native = {}
+function native:get_error_code(param, callback)
+    callback(param, true, error_code)
 end
-lua_c_bridge:register_lua_function("biz", biz)
+lua_c_bridge:register_lua_function("native", native)

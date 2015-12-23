@@ -4,6 +4,9 @@
 
 #include <commander/cmd_factory.h>
 #include <util/UUID.h>
+#include <zconf.h>
+#include "log/log_wrap.h"
+#include "json/json_wrap.h"
 
 namespace plan9
 {
@@ -35,6 +38,14 @@ namespace plan9
                 jsonWrap["aux"]["action"] = "callback";
                 jsonWrap["aux"]["from"].append(id);
                 tmp_cmd_map_[id] = callback;
+                if (cmd_map_.find(cmd) == cmd_map_.end()) {
+                    //没有找到注册函数
+                    jsonWrap["result"]["success"] = false;
+                    jsonWrap["result"]["error"] = "CPP_FUNCTION_NOT_EXIST";
+                    jsonWrap["result"]["reason"] = "the function : " + cmd + " is not exist";
+                    callback(jsonWrap);
+                    return;
+                }
             } else {
                 jsonWrap["aux"]["action"] = "direct";
             }
@@ -72,7 +83,15 @@ namespace plan9
             if (cmd_map_.find(cmd) != cmd_map_.end()) {
                 auto func = cmd_map_[cmd];
                 func(json);
+            } else {
+                log_wrap::io().e("the c++ function : ", cmd , " is not exist");
             }
+        }
+
+        Json::Value wrap_callback(Json::Value json, bool result, Json::Value data) {
+            json["result"]["success"] = result;
+            json["result"]["data"] = data;
+            return json;
         }
 
     private:
@@ -91,26 +110,45 @@ namespace plan9
     }
 
     void cmd_factory::register_cmd(std::string cmd, std::function<void(Json::Value)> function) {
+        log_wrap::io().i("register function , method : ", cmd);
         impl_->register_cmd(cmd, function);
     }
 
     void cmd_factory::execute(std::string cmd, Json::Value param, std::function<void(Json::Value)> callback) {
+        log_wrap::io().i("execute function , method : ", cmd, ", param : ", json_wrap::toString(param), ", callback : yes");
         impl_->call(cmd, param, callback);
     }
 
     void cmd_factory::execute(Json::Value param, std::function<void(Json::Value)> callback) {
+        log_wrap::io().i("execute function , param : ", json_wrap::toString(param), ", callback : yes");
         impl_->call(param, callback);
     }
 
     void cmd_factory::callback(Json::Value json) {
+        log_wrap::io().i("callback function , result : ", json_wrap::toString(json));
         impl_->callback(json);
     }
 
+    void cmd_factory::callback(Json::Value param, bool result, Json::Value data) {
+        Json::Value ret = impl_->wrap_callback(param, result, data);
+        callback(ret);
+    }
+
+    void cmd_factory::callback(Json::Value param, bool result) {
+        callback(param, result, Json::Value());
+    }
+
     void cmd_factory::execute(std::string cmd, Json::Value param) {
+        log_wrap::io().i("execute function , method : ", cmd, ", param : ", json_wrap::toString(param), ", callback : no");
         impl_->call(cmd, param, nullptr);
     }
 
     void cmd_factory::execute(Json::Value param) {
+        log_wrap::io().i("execute function , param : ", json_wrap::toString(param), ", callback : no");
         impl_->call(param, nullptr);
+    }
+
+    Json::Value cmd_factory::wrap_callback_data(Json::Value json, bool result, Json::Value data) {
+        return impl_->wrap_callback(json, result, data);
     }
 }
