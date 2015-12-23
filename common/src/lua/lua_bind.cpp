@@ -383,8 +383,23 @@ namespace plan9 {
                 }
             }
             if (ret) {
-                ret = lua_pcall(L, 1, 0, 0) == 0;
-                lua_pop(L, 1);
+                int lua_ret = lua_pcall(L, 1, 0, 0);
+                if (lua_ret == LUA_OK) {
+                    ret = true;
+                    lua_pop(L, 1);
+                } else if (lua_ret == LUA_ERRRUN) {
+                    //运行时出错
+                    std::string err = lua_tostring(L, -1);
+                    lua_pop(L, 2);
+                    log_wrap::lua().e("lua runtime error,", err);
+                    ret = false;
+                } else if (lua_ret == LUA_ERRERR){
+                    log_wrap::lua().e("lua errerr type");
+                    ret = false;
+                    lua_pop(L, 1);
+                } else {
+                    log_wrap::lua().e("lua other error type");
+                }
             }
             return ret;
         }

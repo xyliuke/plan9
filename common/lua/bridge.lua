@@ -3,8 +3,14 @@
 -- @module lua_c_bridge
 
 require("error_code")
+require("table_check")
+require("data_check_style")
 
-lua_c_bridge = {callback_map = {}, lua_function_map = {}}
+lua_c_bridge = {
+    callback_map = {},--调用C++函数后回调给lua时使用
+    lua_function_map = {}, -- lua和所有可用函数集合
+    check_json = true, -- 是否检测json的合法性
+}
 
 --- 调用c++函数,获取唯一的id
 -- @return 返回一个唯一的id值
@@ -73,7 +79,8 @@ end
 -- @param param 由c++传递来的参数
 -- @param result 回调的成功或失败,值必须为boolean值或者nil值,如果为nil则为false
 -- @param data 回调给C++的数据圣贤,必须为table值或nil值
-function lua_c_bridge:callback(param, result, data)
+-- @param data_style 检测data是否符合data_style定义的格式,可以为nil
+function lua_c_bridge:callback(param, result, data, data_style)
     if param then
         if param.result == nil then
             param.result = {}
@@ -98,6 +105,16 @@ function lua_c_bridge:callback(param, result, data)
         else
             param.result.data = data;
         end
+
+        if self.check_json and result and data_style then
+            local s,r = json_check(param.result.data, data_style)
+            if not s then
+                param.result.reason = r
+                param.result.success = false
+                param.result.error = error_code.JSON_FORMAT_ERROR
+            end
+        end
+
         lua_c_bridge:callback_direct(param)
     else
         lua_c_bridge:log_e("callback from lua param error, the param must not be nil")
@@ -209,8 +226,8 @@ function lua_c_bridge.call_lua(param)
     local last = func
     func = func[methods[#methods]]
     if func ~= nil and type(func) == "function" then
-        func(last, param, function(param, result, data)
-            lua_c_bridge:callback(param, result, data);
+        func(last, param, function(param, result, data, data_style)
+            lua_c_bridge:callback(param, result, data, data_style);
         end)
     else
         lua_c_bridge:log_e("can not find lua function, param:\n " .. lua_c_bridge:tostring(param))
@@ -218,6 +235,7 @@ function lua_c_bridge.call_lua(param)
         return
     end
 end
+
 
 --- 注册lua中可供c++调用的函数
 -- @param 函数的命名空间,即函数的包装table名
@@ -228,6 +246,6 @@ end
 
 local native = {}
 function native:get_error_code(param, callback)
-    callback(param, true, error_code)
+    callback(param, true, error_code, nil)
 end
 lua_c_bridge:register_lua_function("native", native)

@@ -187,8 +187,5 @@ namespace plan9
 
         bfs::path bridge = p / "bridge.lua";
         lua_bind::instance().lua_bind_loadfile(bridge.string());
-
-//        bfs::path error = p / "error_code.lua";
-//        lua_bind::instance().lua_bind_loadfile(error.string());
     }
 }
