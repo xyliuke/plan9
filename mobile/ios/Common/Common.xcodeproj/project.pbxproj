@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1F3E93B91C2D3925000EF4FA /* boost.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1F3E93B81C2D3925000EF4FA /* boost.framework */; };
 		1FB1973C1C2CDE4300CFC44F /* bizlayer.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1FB1973B1C2CDE4300CFC44F /* bizlayer.h */; };
 		1FB1973E1C2CDE4300CFC44F /* bizlayer.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1FB1973D1C2CDE4300CFC44F /* bizlayer.mm */; };
 		1FB197581C2CE4FE00CFC44F /* JsonHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 1FB197551C2CE4FE00CFC44F /* JsonHelper.m */; };
@@ -72,6 +73,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		1F3E93B81C2D3925000EF4FA /* boost.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = boost.framework; path = ../lib/boost.framework; sourceTree = "<group>"; };
 		1FB197381C2CDE4300CFC44F /* libCommon.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libCommon.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		1FB1973B1C2CDE4300CFC44F /* bizlayer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = bizlayer.h; sourceTree = "<group>"; };
 		1FB1973D1C2CDE4300CFC44F /* bizlayer.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = bizlayer.mm; sourceTree = "<group>"; };
@@ -166,6 +168,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1F3E93B91C2D3925000EF4FA /* boost.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -175,6 +178,7 @@
 		1FB1972F1C2CDE4300CFC44F = {
 			isa = PBXGroup;
 			children = (
+				1F3E93B81C2D3925000EF4FA /* boost.framework */,
 				1FB197A61C2CF83800CFC44F /* other */,
 				1FB1973A1C2CDE4300CFC44F /* Common */,
 				1FB197391C2CDE4300CFC44F /* Products */,
@@ -493,7 +497,7 @@
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
-				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/lib";
+				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/../lib";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -542,7 +546,7 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/lib";
+				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/../lib";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -600,6 +604,7 @@
 				1FB197431C2CDE4300CFC44F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
