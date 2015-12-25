@@ -14,4 +14,6 @@
 
 + (void) on:(NSString*)event notify:(void(^)(NSDictionary* data))notify;
 
++ (void) call:(NSString*)method param:(NSDictionary*)param callback:(void (^)(NSDictionary *data))callback;
+
 @end

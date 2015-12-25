@@ -26,10 +26,6 @@ static NSMutableDictionary* notifyMap;
     [bizlayer initCommon:lua notify:^(NSDictionary *data) {
         [BizProxy notify:data];
     }];
-    
-    [BizProxy call:@"native.get_error_code" param:nil callback:^(NSDictionary *data) {
-        NSLog(@"callback: %@", data);
-    }];
 }
 
 + (void) on:(NSString *)event notify:(void (^)(NSDictionary *))notify

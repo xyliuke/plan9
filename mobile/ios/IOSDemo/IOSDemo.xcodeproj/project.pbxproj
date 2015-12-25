@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1F67607C1C2D28BA00441D5F /* TestBizlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 1F67607B1C2D28BA00441D5F /* TestBizlayer.m */; };
 		1FB197681C2CF4BB00CFC44F /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 1FB197671C2CF4BB00CFC44F /* main.m */; };
 		1FB1976B1C2CF4BB00CFC44F /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 1FB1976A1C2CF4BB00CFC44F /* AppDelegate.m */; };
 		1FB1976E1C2CF4BB00CFC44F /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1FB1976D1C2CF4BB00CFC44F /* ViewController.m */; };
@@ -42,6 +43,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		1F67607B1C2D28BA00441D5F /* TestBizlayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TestBizlayer.m; sourceTree = "<group>"; };
 		1FB197631C2CF4BB00CFC44F /* IOSDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = IOSDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1FB197671C2CF4BB00CFC44F /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		1FB197691C2CF4BB00CFC44F /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -155,6 +157,7 @@
 			children = (
 				1FB197801C2CF4BB00CFC44F /* IOSDemoTests.m */,
 				1FB197821C2CF4BB00CFC44F /* Info.plist */,
+				1F67607B1C2D28BA00441D5F /* TestBizlayer.m */,
 			);
 			path = IOSDemoTests;
 			sourceTree = "<group>";
@@ -321,6 +324,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				1FB197811C2CF4BB00CFC44F /* IOSDemoTests.m in Sources */,
+				1F67607C1C2D28BA00441D5F /* TestBizlayer.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -544,6 +548,7 @@
 				1FB197921C2CF4BB00CFC44F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		1FB197931C2CF4BB00CFC44F /* Build configuration list for PBXNativeTarget "IOSDemoTests" */ = {
 			isa = XCConfigurationList;
@@ -552,6 +557,7 @@
 				1FB197951C2CF4BB00CFC44F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		1FB197961C2CF4BB00CFC44F /* Build configuration list for PBXNativeTarget "IOSDemoUITests" */ = {
 			isa = XCConfigurationList;
@@ -560,6 +566,7 @@
 				1FB197981C2CF4BB00CFC44F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
