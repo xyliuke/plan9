@@ -7,6 +7,7 @@
 #include <log/log_wrap.h>
 #include <commander/cmd_factory.h>
 #include <lua/lua_bind.h>
+#include <json/json_wrap.h>
 
 namespace plan9
 {
@@ -28,7 +29,7 @@ namespace plan9
         init_function();
     }
 
-    void common::call(std::string method, Json::Value param, std::function<void(Json::Value result)> callback) {
+    void common::call_(std::string method, Json::Value param, std::function<void(Json::Value result)> callback) {
         lua_bind::instance().call(method, param, [=](Json::Value result){
             bool succ;
             std::string error = success(result, &succ);
@@ -51,12 +52,42 @@ namespace plan9
         });
     }
 
-    void common::call(std::string method, Json::Value param) {
-        call(method, param, nullptr);
+    void common::call_(std::string method, std::string param, std::function<void(Json::Value result)> callback) {
+        bool error = false;
+        Json::Value p = json_wrap::parse(param, &error);
+        if (error) {
+            log_wrap::io().e("the method : ", method, " param : ", param, " is not json format");
+        } else {
+            call_(method, p, callback);
+        }
     }
 
-    void common::call(std::string method, std::function<void(Json::Value result)> callback) {
-        call(method, Json::Value(), callback);
+    void common::call(std::string method, std::string param, std::function<void(std::string result)> callback) {
+        if (callback != nullptr) {
+            if ("" == param) {
+                call_(method, [=](Json::Value result){
+                    callback(json_wrap::toString(result));
+                });
+            } else {
+                call_(method, param, [=](Json::Value result){
+                    callback(json_wrap::toString(result));
+                });
+            }
+        } else {
+            call(method, param);
+        }
+    }
+
+    void common::call(std::string method, Json::Value param) {
+        call_(method, param, nullptr);
+    }
+
+    void common::call(std::string method, std::string param) {
+        call_(method, param, nullptr);
+    }
+
+    void common::call_(std::string method, std::function<void(Json::Value result)> callback) {
+        call_(method, Json::Value(), callback);
     }
 
     void common::call(std::string method) {
@@ -81,6 +112,9 @@ namespace plan9
     }
 
 
+    void common::stop() {
+
+    }
 
     void common::init_log() {
         boost::filesystem::path p(path);

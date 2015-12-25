@@ -33,6 +33,7 @@
 //#define UTIL_TEST
 //#define DATABASE_TEST
 //#define LUA_TEST
+#define DATABASE_TEST
 
 #endif
 
