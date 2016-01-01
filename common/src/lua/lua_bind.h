@@ -5,9 +5,10 @@
 #ifndef LUA_BIND_LUA_BIND_H
 #define LUA_BIND_LUA_BIND_H
 
-#include <iosfwd>
 #include <string>
 #include <json/json.h>
+#include <functional>
+#include <memory>
 #include "lua.hpp"
 
 namespace plan9
@@ -79,6 +80,7 @@ namespace plan9
         lua_bind();
         class lua_bind_impl;
         std::shared_ptr<lua_bind_impl> impl;
+        Json::Value wrap(std::string method, Json::Value json);
     };
 }
 

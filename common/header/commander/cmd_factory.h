@@ -38,9 +38,11 @@
  */
 
 
-#include <iosfwd>
 #include <string>
 #include <json/json.h>
+#include <functional>
+#include <memory>
+
 
 namespace plan9
 {

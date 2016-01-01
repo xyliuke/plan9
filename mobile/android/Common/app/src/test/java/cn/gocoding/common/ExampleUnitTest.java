@@ -11,5 +11,8 @@ public class ExampleUnitTest {
     @Test
     public void addition_isCorrect() throws Exception {
         assertEquals(4, 2 + 2);
+//        for (int i = 0; i < 1000; i ++) {
+//            System.out.println(Bizlayer.createID());
+//        }
     }
 }

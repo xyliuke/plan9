@@ -5,9 +5,10 @@
 #ifndef COMMON_COMMON_H
 #define COMMON_COMMON_H
 
-#include <iosfwd>
 #include <string>
 #include <json/json.h>
+#include <functional>
+#include <memory>
 
 namespace plan9
 {

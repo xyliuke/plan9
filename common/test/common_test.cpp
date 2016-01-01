@@ -25,7 +25,14 @@ TEST(common_test, init) {
     param["target"] = "other";
 
     plan9::common::call_("native.get_error_code", param, [=](Json::Value result){
-        std::cout << "callback common init :" << result << std::endl;
+        std::cout << "callback common init 1 :" << result << std::endl;
+    });
+
+    Json::Value p1;
+    p1["aux"]["id"] = "dddxxx";
+    p1["args"] = param;
+    plan9::common::call_("native.get_error_code", p1, [=](Json::Value result){
+        std::cout << "callback common init 2 :" << result << std::endl;
     });
 
     plan9::cmd_factory::instance().execute("log", param);

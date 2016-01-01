@@ -222,7 +222,8 @@ static void buffreplace (LexState *ls, char from, char to) {
 
 
 #if !defined(l_getlocaledecpoint)
-#define l_getlocaledecpoint()	(localeconv()->decimal_point[0])
+//#define l_getlocaledecpoint()	(localeconv()->decimal_point[0])
+#define l_getlocaledecpoint()	('.')
 #endif
 
 

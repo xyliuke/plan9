@@ -24,7 +24,7 @@ namespace plan9
 
         void call(std::string cmd, Json::Value& json, std::function<void(Json::Value)> callback) {
             Json::Value jsonWrap;
-            if (!json.isMember("args")) {
+            if (!json.isMember("args") || !json.isMember("aux")) {
                 jsonWrap["args"] = json;
             } else {
                 jsonWrap = json;

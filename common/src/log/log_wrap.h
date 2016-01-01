@@ -6,7 +6,6 @@
 #define COMMON_LOG_WRAP_H
 
 
-#include <iosfwd>
 #include <string>
 #include <log/log.h>
 #include <sstream>
@@ -46,7 +45,7 @@ namespace plan9
 
         template <typename head, typename ... rail>
         void i(head h, rail... r) {
-            i_(util::instance().cat(h, r...));
+            i_(plan9::util::instance().cat(h, r...));
         };
 
         /**
@@ -55,7 +54,7 @@ namespace plan9
         void w_(std::string msg);
         template <typename head, typename ... rail>
         void w(head h, rail... r) {
-            w_(util::instance().cat(h, r...));
+            w_(plan9::util::instance().cat(h, r...));
         };
         /**
          * ERROR级别日志
@@ -63,7 +62,7 @@ namespace plan9
         void e_(std::string msg);
         template <typename head, typename ... rail>
         void e(head h, rail... r) {
-            e_(util::instance().cat(h, r...));
+            e_(plan9::util::instance().cat(h, r...));
         };
 
     private:

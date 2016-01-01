@@ -5,6 +5,7 @@
 #include <string>
 #include "time.h"
 #include <boost/date_time.hpp>
+#include <chrono>
 
 namespace plan9
 {
@@ -43,8 +44,8 @@ namespace plan9
     long long int time::microseconds() {
         using namespace std::chrono;
         system_clock::time_point today = system_clock::now();
-        std::chrono::microseconds m = today.time_since_epoch();
-        long long int count = m.count();
+//        std::chrono::microseconds m = today.time_since_epoch().count();
+        long long int count = today.time_since_epoch().count();
         return count;
     }
 
