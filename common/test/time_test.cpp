@@ -14,6 +14,10 @@
 using namespace plan9;
 
 TEST(time_test, current_time) {
+    std::string t = time::current_data_time();
+    std::cout << "current data time :" << t << std::endl;
+    EXPECT_EQ(t.length(), 26);
+
     std::cout << "current data time1 :" << time::current_data_time() << std::endl;
     std::cout << "current data time2 :" << time::current_data_time() << std::endl;
     std::cout << "current data time3 :" << time::current_data_time() << std::endl;

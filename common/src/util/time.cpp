@@ -35,7 +35,7 @@ namespace plan9
                 (std::chrono::system_clock::now());
         struct tm* ptm = std::localtime(&tt);
         char date[60] = {0};
-        sprintf(date, "%d-%02d-%02d %02d:%02d:%02d.%d",
+        sprintf(date, "%d-%02d-%02d %02d:%02d:%02d.%06d",
                 ptm->tm_year + 1900, ptm->tm_mon + 1, ptm->tm_mday,
                 ptm->tm_hour, ptm->tm_min, ptm->tm_sec, microsecond_in_second());
         return std::string(date);
@@ -44,7 +44,6 @@ namespace plan9
     long long int time::microseconds() {
         using namespace std::chrono;
         system_clock::time_point today = system_clock::now();
-//        std::chrono::microseconds m = today.time_since_epoch().count();
         long long int count = today.time_since_epoch().count();
         return count;
     }
