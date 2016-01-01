@@ -58,6 +58,23 @@ namespace plan9
 
         static void stop();
 
+        /**
+         * 设置平台为ios
+         */
+        static void set_ios_platform();
+        /**
+         * 设置平台为android
+         */
+        static void set_android_platform();
+        /**
+         * 设置平台为windows
+         */
+        static void set_win_platform();
+        /**
+         * 设置平台为macosx
+         */
+        static void set_macosx_platform();
+
     private:
         static void init_function();
         static void init_log();

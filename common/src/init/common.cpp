@@ -116,6 +116,30 @@ namespace plan9
 
     }
 
+    void common::set_ios_platform() {
+        Json::Value p;
+        p["platform"] = "ios";
+        call("native.set_platform", p);
+    }
+
+    void common::set_android_platform() {
+        Json::Value p;
+        p["platform"] = "android";
+        call("native.set_platform", p);
+    }
+
+    void common::set_win_platform() {
+        Json::Value p;
+        p["platform"] = "win";
+        call("native.set_platform", p);
+    }
+
+    void common::set_macosx_platform() {
+        Json::Value p;
+        p["platform"] = "macosx";
+        call("native.set_platform", p);
+    }
+
     void common::init_log() {
         boost::filesystem::path p(path);
         p /= "log";

@@ -10,6 +10,7 @@ lua_c_bridge = {
     callback_map = {},--调用C++函数后回调给lua时使用
     lua_function_map = {}, -- lua和所有可用函数集合
     check_json = true, -- 是否检测json的合法性
+    platform = "none", -- 平台,字符串分别为: ios/android/win/macosx/none
 }
 
 --- 调用c++函数,获取唯一的id
@@ -236,10 +237,36 @@ function lua_c_bridge.call_lua(param)
     end
 end
 
+--- 判断当前宿主是否ios
+-- @return 是则返回true,否则返回false
+function lua_c_bridge:is_ios()
+    return self.platform == "ios"
+end
+
+--- 判断当前宿主是否android
+-- @return 是则返回true,否则返回false
+function lua_c_bridge:is_android()
+    return self.platform == "android"
+end
+
+--- 判断当前宿主是否windows
+-- @return 是则返回true,否则返回false
+function lua_c_bridge:is_windows()
+    return self.platform == "win"
+end
+
+--- 判断当前宿主是否macosx
+-- @return 是则返回true,否则返回false
+function lua_c_bridge:is_macosx()
+    return self.platform == "macosx"
+end
+
+
+
 
 --- 注册lua中可供c++调用的函数
--- @param 函数的命名空间,即函数的包装table名
--- @param 函数实体
+-- @param name 函数的命名空间,即函数的包装table名
+-- @param func 函数实体
 function lua_c_bridge:register_lua_function(name, func)
     self.lua_function_map[name] = func
 end
@@ -248,4 +275,10 @@ local native = {}
 function native:get_error_code(param, callback)
     callback(param, true, error_code, nil)
 end
+
+function native:set_platform(param)
+    lua_c_bridge.platform = param.args.platform
+    lua_c_bridge:log_i("platform set " .. lua_c_bridge.platform)
+end
+
 lua_c_bridge:register_lua_function("native", native)

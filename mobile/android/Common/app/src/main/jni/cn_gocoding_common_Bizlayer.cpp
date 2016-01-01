@@ -24,6 +24,7 @@ void JNICALL Java_cn_gocoding_common_Bizlayer_init(JNIEnv *env, jclass cls, jstr
     std::string root_str = util_string::to_string(env, root_path);
     std::string lua_str = util_string::to_string(env, lua_path);
     plan9::common::init(root_str, lua_str);
+    plan9::common::set_android_platform();
 }
 
 void JNICALL Java_cn_gocoding_common_Bizlayer_stop(JNIEnv *, jclass)

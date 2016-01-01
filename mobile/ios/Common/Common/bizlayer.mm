@@ -82,6 +82,7 @@ static void(^callabck_to)(NSDictionary*);
     NSString* data = [bizlayer getDataDir];
     NSString* lua = [bizlayer getLuaDir];
     plan9::common::init([data UTF8String], [lua UTF8String]);
+    plan9::common::set_ios_platform();
     callabck_to = notify;
 }
 

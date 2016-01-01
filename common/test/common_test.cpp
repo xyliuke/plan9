@@ -36,5 +36,12 @@ TEST(common_test, init) {
     });
 
     plan9::cmd_factory::instance().execute("log", param);
+
+    plan9::common::set_ios_platform();
+    plan9::common::set_android_platform();
+    plan9::common::set_win_platform();
+    plan9::common::set_macosx_platform();
 }
+
+
 #endif
