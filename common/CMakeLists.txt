@@ -7,7 +7,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 #添加搜索头文件路径
 include_directories(../3rd/jsoncpp/dist ../3rd/boost_1_55_0 ../3rd/googletest/googletest/include)
 #添加搜索库路径
-link_directories(../3rd/glog/lib/ ../3rd/boost_1_55_0/lib ../3rd/googletest/googletest)
+link_directories(../3rd/boost_1_55_0/lib ../3rd/googletest/googletest)
 
 set(SOURCE_FILES main.cpp src/util/util.cpp src/util/util.h)
 

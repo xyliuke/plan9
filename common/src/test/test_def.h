@@ -25,7 +25,7 @@
 
 #ifdef TEST_ENABLE
 
-#define COMMON_TEST
+//#define COMMON_TEST
 //#define COMMANDER_TEST
 //#define JSON_TEST
 //#define LOG_TEST
