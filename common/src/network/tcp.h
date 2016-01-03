@@ -22,9 +22,9 @@
 
 namespace plan9 {
 
-    class tcp_wrap {
+    class tcp {
     public:
-        static tcp_wrap instance();
+        tcp();
         /**
          * 连接服务器
          * @param ip 服务器的地址
@@ -52,12 +52,11 @@ namespace plan9 {
 
         void set_read_handler(std::function<void(std::string msg)> function);
 
-        void set_write_handler(std::function<void()> function);
+        void set_write_handler(std::function<void(std::string msg)> function);
 
     private:
-        tcp_wrap();
-        class tcp_wrap_impl;
-        std::shared_ptr<tcp_wrap_impl> impl;
+        class tcp_impl;
+        std::shared_ptr<tcp_impl> impl;
     };
 
 
