@@ -371,7 +371,7 @@ namespace plan9
         impl->close();
     }
 
-    void tcp::enable_ping(bool enable) {
-        impl->enablePing(enable);
+    void tcp::enable_ping() {
+        impl->enablePing(true);
     }
 }

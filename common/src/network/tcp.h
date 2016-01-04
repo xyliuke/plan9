@@ -45,9 +45,8 @@ namespace plan9 {
 
         /**
          * 是否向服务器发送ping包,保证在线.默认不发送ping包
-         * @param enable 是否发送 true为发送
          */
-        void enable_ping(bool enable);
+        void enable_ping();
 
         /**
          * 关闭连接
