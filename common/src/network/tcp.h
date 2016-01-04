@@ -16,7 +16,8 @@
  *  网络包固定包含6个字节,其中一个起始字符,以字符'^'开始,再加一个字节的类型位（备用）,后面有4个字节的整型值,表示这个报文的长度
  *  目前类型有:
  *  0x0001  字符串
- *
+ *  0x0002  ping包标志位
+ *  0x0003  pong包标志位
  */
 
 
@@ -36,6 +37,17 @@ namespace plan9 {
          * @param url 服务器的域名和端口  格式为: www.gocoding.cn:8080
          */
         void connect(std::string url);
+
+        /**
+         * 重新连接服务器
+         */
+        void reconnect();
+
+        /**
+         * 是否向服务器发送ping包,保证在线.默认不发送ping包
+         * @param enable 是否发送 true为发送
+         */
+        void enable_ping(bool enable);
 
         /**
          * 关闭连接
