@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net"
 	"common/util"
+	"strconv"
 )
 
 type Connection struct {
@@ -56,6 +57,7 @@ func (connection *Connection) dealWith(data []byte)  {
 //处理粘包问题,返回true可以处理数据,false表示数据不全
 func (connection *Connection) opPacket(data []byte) bool {
 	copy(connection.buf[connection.len:], data)
+	connection.len += len(data)
 	return true
 }
 
@@ -91,6 +93,7 @@ func (connection *Connection) clearFirstComplateData()  {
 		data_len := getDataLength(connection.buf)
 		if data_len > 0 {
 			copy(connection.buf[0 : ], connection.buf[data_len + 6 : ])
+			connection.len -= (data_len + 6)
 		}
 	}
 }
