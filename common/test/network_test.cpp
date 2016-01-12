@@ -3,6 +3,7 @@
 //
 
 #include <test/test_def.h>
+#include <network/tcp.h>
 
 
 #ifdef NETWORK_TEST
@@ -14,7 +15,7 @@ TEST(network_test, tcp) {
 
     tcp.set_connect_handler([=](bool connect){
         std::cout << "connect : " << connect << std::endl;
-        tcp.enable_ping(true);
+        tcp.enable_ping();
 //        if (!connect) {
 //            tcp.reconnect();
 //        } else {
@@ -39,7 +40,8 @@ TEST(network_test, tcp) {
 //        }
     });
 
-    tcp.connect("127.0.0.1", 8888);
+    tcp.connect("127.0.0.1", 8081);
+    std::cout << "finish" << std::endl;
 //    plan9::tcp::instance().write("hello world 你好");
 }
 

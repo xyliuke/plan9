@@ -27,7 +27,8 @@ TEST(util_test, id) {
     EXPECT_NE(id1, id2);
     std::cout << "id:" << id1 << std::endl;
     std::cout << "id:" << id2 << std::endl;
-//    for (int i = 0; i < 1000; ++i) {
+//    for (int i = 0; i < 500000; ++i) {
+//        std::string id = plan9::UUID::id();
 //        std::cout << "id:" << plan9::UUID::id() << std::endl;
 //    }
 }
