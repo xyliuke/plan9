@@ -42,3 +42,19 @@ mobile/ios/IOSDemo/IOSDemo.xcodeproj/xcuserdata/liuke.xcuserdatad/xcdebugger/Bre
 mobile/ios/IOSDemo/IOSDemo.xcodeproj/project.xcworkspace/xcuserdata/liuke.xcuserdatad/UserInterfaceState.xcuserstate
 
 mobile/android/Common/.idea/misc.xml
+
+server/.idea/.name
+
+server/.idea/compiler.xml
+
+server/.idea/copyright/profiles_settings.xml
+
+server/.idea/encodings.xml
+
+server/.idea/modules.xml
+
+server/.idea/uiDesigner.xml
+
+server/.idea/workspace.xml
+
+server/server.iml
