@@ -64,8 +64,9 @@ func (connection *Connection) opPacket(data []byte) bool {
 //从buf中取数据进行处理,可处理数据可能有多条
 func (connection *Connection) opMsg()  {
 	for {
-		if connection.buf[0] == '^' {
-			//说明数据头部正确
+		data_len := getDataLength(connection.buf)
+		if connection.buf[0] == '^' && (data_len + 6) <= connection.len {
+			//说明数据头部正确,数据完整
 			e, tp := getTypeValue(connection.buf)
 			if e == nil {
 				if isPingType(tp) {
