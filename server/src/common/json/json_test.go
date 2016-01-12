@@ -5,20 +5,21 @@ import (
 	"testing"
 )
 
-body := []byte(`{
-	"test": {
-		"string_array": ["asdf", "ghjk", "zxcv"],
-		"array": [1, "2", 3],
-		"arraywithsubs": [{"subkeyone": 1},
-		{"subkeytwo": 2, "subkeythree": 3}],
-		"int": 10,
-		"float": 5.150,
-		"bignum": 9223372036854775807,
-		"string": "simplejson",
-		"bool": true
-	}
-}`)
+
 func Test_NewJSONObject(t *testing.T) {
+	body := []byte(`{
+		"test": {
+			"string_array": ["asdf", "ghjk", "zxcv"],
+			"array": [1, "2", 3],
+			"arraywithsubs": [{"subkeyone": 1},
+			{"subkeytwo": 2, "subkeythree": 3}],
+			"int": 10,
+			"float": 5.150,
+			"bignum": 9223372036854775807,
+			"string": "simplejson",
+			"bool": true
+		}
+	}`)
 	j, err := NewJSONObject(body)
 	if err != nil {
 		t.Error("new json object error")
