@@ -2,8 +2,8 @@
 // Created by liuke on 16/1/2.
 //
 
-#ifndef COMMON_TCP_WRAP_H
-#define COMMON_TCP_WRAP_H
+#ifndef COMMON_TCP_H
+#define COMMON_TCP_H
 
 
 #include <memory>
@@ -73,4 +73,4 @@ namespace plan9 {
 
 }
 
-#endif //COMMON_TCP_WRAP_H
+#endif //COMMON_TCP_H

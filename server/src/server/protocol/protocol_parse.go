@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"net"
 	"common/util"
-	"strconv"
 )
 
 type Connection struct {
@@ -70,19 +69,16 @@ func (connection *Connection) opMsg()  {
 			e, tp := getTypeValue(connection.buf)
 			if e == nil {
 				if isPingType(tp) {
-					log("recv type ping")
 					connection.opPing()
 				} else if isStringType(tp) {
-					log("recv type string")
-					tmp := connection.buf[6 : tp + 6]
-					connection.opOneMsg(tmp)
+					tmp := connection.buf[6 : data_len + 6]
+					connection.opStringData(tmp)
 				} else {
 					log("recv type null")
 				}
 			}
 			connection.clearFirstComplateData()
 		} else {
-			log("deal with op msg finish")
 			return
 		}
 	}
@@ -100,9 +96,10 @@ func (connection *Connection) clearFirstComplateData()  {
 }
 
 //处理一个字符串数据
-func (connection* Connection) opOneMsg(data []byte)  {
+func (connection* Connection) opStringData(data []byte)  {
 	msg := toString(data)
 	log("deal with data : " + msg)
+	connection.writeString(msg);
 }
 
 func (connection *Connection) opPing()  {

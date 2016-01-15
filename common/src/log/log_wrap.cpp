@@ -6,7 +6,7 @@
 #include <boost/date_time.hpp>
 #include <util/time.h>
 #include <boost/filesystem.hpp>
-
+#include <thread>
 
 namespace plan9
 {
@@ -45,12 +45,17 @@ namespace plan9
             std::stringstream ss;
 
             ss << time::current_data_time();
+
+            ss << " [thread:";
+            ss << std::this_thread::get_id();
+            ss << "]";
+
             if (level == INFO) {
                 ss << " [INFO] : ";
             } else if (level == WARN) {
                 ss << " [WARN] : ";
             } else if (level == ERROR) {
-                ss << " [ERROR] : ";
+                ss << " [ERROR]: ";
             }
 
             ss << msg;
@@ -63,9 +68,9 @@ namespace plan9
             std::stringstream ss;
             ss << path;
             ss << "/";
-            ss << prefix_file;
-            ss << "-";
             ss << time::current_data();
+            ss << "-";
+            ss << prefix_file;
             ss << ".log";
             return ss.str();
         }

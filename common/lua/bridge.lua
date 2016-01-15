@@ -281,4 +281,12 @@ function native:set_platform(param)
     lua_c_bridge:log_i("platform set " .. lua_c_bridge.platform)
 end
 
+function native:connect(param)
+    lua_c_bridge:call_native("connect", {ip = "127.0.0.1", port = 8081})
+end
+
+function native:send(param, callback)
+    lua_c_bridge:call_native("send", {msg = param.msg})
+end
+
 lua_c_bridge:register_lua_function("native", native)

@@ -8,6 +8,8 @@
 #include <commander/cmd_factory.h>
 #include <lua/lua_bind.h>
 #include <json/json_wrap.h>
+#include <network/tcp_wrap_default.h>
+#include <thread/thread_wrap.h>
 
 namespace plan9
 {
@@ -15,6 +17,10 @@ namespace plan9
 
     std::string common::path = ".";
     std::string common::lua_path = ".";
+    std::function<void(std::string)> common::notify_function = nullptr;
+    std::function<void(std::string)> common::read_function = nullptr;
+    std::function<void(bool)> common::connect_function = nullptr;
+    std::function<void(std::string)> common::write_function = nullptr;
 
     void common::init(std::string path, std::string lua_path) {
         common::path = path;
@@ -27,32 +33,44 @@ namespace plan9
         init_lua();
         log_wrap::io().i("register function");
         init_function();
+        init_network();
+    }
+
+    void common::set_notify_function(std::function<void(std::string)> notify) {
+        common::notify_function = notify;
     }
 
     void common::call_(std::string method, Json::Value param, std::function<void(Json::Value result)> callback) {
-        lua_bind::instance().call(method, param, [=](Json::Value result){
-            bool succ;
-            std::string error = success(result, &succ);
-            if (succ) {
-                if (callback != nullptr) {
-                    callback(result);
-                }
-            } else {
-                //调用失败,则查询失败原因
-                if (error == LUA_FUNCTION_NOT_EXSIT) {
+//        thread_wrap::post_background([=](){
+            lua_bind::instance().call(method, param, [=](Json::Value result){
+                bool succ;
+                std::string error = success(result, &succ);
+                if (succ) {
                     if (callback != nullptr) {
-                        cmd_factory::instance().execute(method, param, callback);
-                    } else {
-                        cmd_factory::instance().execute(method, param);
+                        callback(result);
                     }
                 } else {
-                    callback(result);
+                    //调用失败,则查询失败原因
+                    if (error == LUA_FUNCTION_NOT_EXSIT) {
+                        if (callback != nullptr) {
+                            cmd_factory::instance().execute(method, param, callback);
+                        } else {
+                            cmd_factory::instance().execute(method, param);
+                        }
+                    } else {
+                        callback(result);
+                    }
                 }
-            }
-        });
+            });
+//        });
     }
 
     void common::call_(std::string method, std::string param, std::function<void(Json::Value result)> callback) {
+        if (param == "") {
+            call_(method, callback);
+            return;
+        }
+
         bool error = false;
         Json::Value p = json_wrap::parse(param, &error);
         if (error) {
@@ -83,7 +101,11 @@ namespace plan9
     }
 
     void common::call(std::string method, std::string param) {
-        call_(method, param, nullptr);
+        if (param == "") {
+            call(method);
+        } else {
+            call_(method, param, nullptr);
+        }
     }
 
     void common::call_(std::string method, std::function<void(Json::Value result)> callback) {
@@ -153,6 +175,23 @@ namespace plan9
         log_wrap::net().set_duration(7);
         log_wrap::lua().set_duration(7);
         log_wrap::other().set_duration(7);
+    }
+
+    void common::init_network() {
+        common::connect_function = [=] (bool connect) {
+            Json::Value tmp;
+            tmp["aux"]["to"] = "network";
+            tmp["result"]["success"] = connect;
+            std::string msg = json_wrap::toString(tmp);
+            send_notify_msg(msg);
+        };
+
+        common::read_function = [=] (std::string msg) {
+            send_notify_msg(msg);
+        };
+
+        tcp_wrap_default::instance().set_connect_handler(common::connect_function);
+        tcp_wrap_default::instance().set_read_handler(common::read_function);
     }
 
     void common::init_function() {
@@ -231,6 +270,47 @@ namespace plan9
             }
             cmd_factory::instance().callback(param, true);
         });
+
+
+        /**
+         * 连接服务器
+         * 传入参数为:
+         * ip   : 服务器的ip
+         * port : 服务器的端口
+         *
+         * 返回结果为:
+         * 成功返回true,失败返回false和原因
+         */
+        cmd_factory::instance().register_cmd("connect", [=](Json::Value param){
+            if (param.isMember("args")) {
+                Json::Value args = param["args"];
+                if (args.isMember("ip") && args.isMember("port")) {
+                    std::string ip = args["ip"].asString();
+                    int port = args["port"].asInt();
+                    tcp_wrap_default::instance().connect(ip, port);
+                }
+            }
+        });
+
+        /**
+         * 向服务器发送数据,用于测试
+         * 传入参数:
+         * msg  : 发送的字符串
+         *
+         * 返回结果为:
+         * data {
+         *      msg : 返回的字符串
+         * }
+         */
+        cmd_factory::instance().register_cmd("send", [=](Json::Value param){
+            if (param.isMember("args")) {
+                Json::Value args = param["args"];
+                if (args.isMember("msg")) {
+                    std::string msg = json_wrap::toString(args["msg"]);
+                    tcp_wrap_default::instance().send(msg);
+                }
+            }
+        });
     }
 
     void common::init_lua() {
@@ -245,5 +325,14 @@ namespace plan9
 
         bfs::path bridge = p / "bridge.lua";
         lua_bind::instance().lua_bind_loadfile(bridge.string());
+    }
+
+    void common::send_notify_msg(std::string msg) {
+//        thread_wrap::post_background([=](){
+            if (common::notify_function != nullptr) {
+                log_wrap::io().i("post message : ", msg);
+                common::notify_function(msg);
+            }
+//        });
     }
 }

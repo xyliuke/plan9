@@ -5,10 +5,12 @@
 #include "tcp.h"
 #include <log/log_wrap.h>
 #include <boost/asio.hpp>
+//#include <boost/thread/thread.hpp>
+#include <thread>
 
 namespace plan9
 {
-    static char netwrok_begin = '^';
+    static const char netwrok_begin = '^';
     static const int BUF_SIZE = 10240;
 
     class tcp::tcp_impl {
@@ -35,15 +37,11 @@ namespace plan9
                 //服务器断开
                 log_wrap::net().e("recv fail, reason : ", error_code.message(), "; error_code : ", error_code.value());
                 this->isconnect = false;
-                if (connect_handle != nullptr) {
-                    connect_handle(false);
-                }
+                sendConnectState(false);
             } else {
                 log_wrap::net().e("recv fail, reason : ", error_code.message(), "; error_code : ", error_code.value());
                 this->isconnect = false;
-                if (connect_handle != nullptr) {
-                    connect_handle(false);
-                }
+                sendConnectState(false);
             }
         }
 
@@ -57,22 +55,18 @@ namespace plan9
                     std::copy(write_buf + 6, write_buf + len + 6, rr);
                     rr[len] = '\0';
                     std::string w(rr);
-                    log_wrap::net().i("write data : ", w);
+                    log_wrap::net().i("send data : ", w);
                     write_handle(w);
                 }
             } else if (error_code.value() == boost::asio::error::eof){
                 //服务器断开
-                log_wrap::net().e("write fail, reason : ", error_code.message(), "; error_code : ", error_code.value());
+                log_wrap::net().e("send fail, reason : ", error_code.message(), "; error_code : ", error_code.value());
                 this->isconnect = false;
-                if (connect_handle != nullptr) {
-                    connect_handle(false);
-                }
+                sendConnectState(false);
             } else {
-                log_wrap::net().e("write fail, reason : ", error_code.message(), "; error_code : ", error_code.value());
+                log_wrap::net().e("send fail, reason : ", error_code.message(), "; error_code : ", error_code.value());
                 this->isconnect = false;
-                if (connect_handle != nullptr) {
-                    connect_handle(false);
-                }
+                sendConnectState(false);
             }
         }
 
@@ -81,15 +75,11 @@ namespace plan9
                 log_wrap::net().i("connected ip : ", ip, " port : ", port);
                 this->isconnect = true;
                 socket_->async_read_some(boost::asio::buffer(read_tmp_buf), std::bind(&tcp_impl::on_read, this, std::placeholders::_1, std::placeholders::_2));
-                if (connect_handle != nullptr) {
-                    connect_handle(true);
-                }
+                sendConnectState(true);
             } else {
                 log_wrap::net().e("disconnected ip : ", ip, " port : ", port, " reason : ", error_code.message(), "; error_code : ", error_code.value());
                 this->isconnect = false;
-                if (connect_handle != nullptr) {
-                    connect_handle(false);
-                }
+                sendConnectState(false);
             }
 
         }
@@ -127,6 +117,11 @@ namespace plan9
             ip::tcp::endpoint ep(ip::address::from_string(ip_str), port);
             socket_.reset(new ip::tcp::socket(*io_service));
             socket_->async_connect(ep, std::bind(&tcp_impl::on_connect, this, std::placeholders::_1));
+            thread_.reset(new std::thread(std::bind(&tcp_impl::run, this)));
+//            io_service->run();
+        }
+
+        void run() {
             io_service->run();
         }
 
@@ -202,59 +197,6 @@ namespace plan9
             return len + 6;
         }
 
-        std::string unwrap_data(size_t size, bool* success, bool* pong) {
-            if (read_size == 0) {
-                memcpy(read_buf, read_tmp_buf, size);
-                read_size = size;
-            } else {
-                memcpy(read_buf + read_size, read_tmp_buf, size);
-                read_size += size;
-            }
-            if (read_buf[0] != '^') {
-                *success = false;
-                char rr[BUF_SIZE];
-                std::copy(read_buf, read_buf + size, rr);
-                rr[size] = '\0';
-                std::string ret(rr);
-                return "the data is illegal protocol : " + ret;
-            }
-            int p_len = get_len_from_header(read_buf);
-            if (read_size - 6 < p_len) {
-                //还有数据没有读完
-                *success = false;
-            } else {
-                *success = true;
-
-                char type = get_type_from_header(read_buf);
-                *pong = false;
-                if (type == 0x01) {
-                    char rr[BUF_SIZE];
-                    std::copy(read_buf + 6, read_buf + 6 + p_len, rr);
-                    rr[p_len] = '\0';
-                    std::string ret(rr);
-                    read_size = 0;
-                    return ret;
-                } else if (type == 0x03){
-                    //pong包
-                    *pong = true;
-                    char rr[BUF_SIZE];
-                    std::copy(read_buf + 6, read_buf + 6 + p_len, rr);
-                    rr[p_len] = '\0';
-                    std::string ret(rr);
-                    read_size = 0;
-                    return ret;
-                } else {
-                    char rr[BUF_SIZE];
-                    std::copy(read_buf + 6, read_buf + 6 + p_len, rr);
-                    rr[p_len] = '\0';
-                    std::string ret(rr);
-                    read_size = 0;
-                    return ret;
-                }
-            }
-            return "";
-        }
-
         char get_type_from_header(char* buf) {
             return buf[1];
         }
@@ -266,7 +208,19 @@ namespace plan9
             return (a1 << 24) + (a2 << 16) + (a3 << 8) + a4;
         }
 
-//        bool is
+        bool isStringType(char type) {
+            return type == 0x01;
+        }
+
+        bool isPingType(char type) {
+            return type == 0x02;
+        }
+
+        bool isPongType(char type) {
+            return type == 0x03;
+        }
+
+
 
         void do_ping() {
             if (enable_ping) {
@@ -311,31 +265,14 @@ namespace plan9
 
         //处理接收到的数据
         void deal_with_data (size_t len) {
-            //0.复制数据
+            log_wrap::net().i("recv data size : ", len);
             opPacket(len);
-            //1.判断数据是否满足完整一条
+            if (read_buf[0] == '^') {
+                opMsg();
+            } else {
+                log_wrap::net().e("the data is illegal protocol");
+            }
 
-            //2.判断第一条数据类型
-
-            //3.处理各种类型
-
-            //4.清空第一条数据
-
-//                bool succ;
-//                bool pong;
-//                std::string msg = unwrap_data(len, &succ, &pong);
-//                if (succ) {
-//                    log_wrap::net().i("recv data : ", msg);
-//                    if (pong) {
-//                        log_wrap::net().i("recv data pong");
-//                    } else {
-//                        if (read_handle != nullptr) {
-//                            read_handle(msg);
-//                        }
-//                    }
-//                } else {
-//                    std::cout << msg << std::endl;
-//                }
         }
 
         //将数据复制到缓冲区
@@ -344,6 +281,61 @@ namespace plan9
             read_size += len;
         }
 
+        void opMsg() {
+            while (true) {
+                int len = get_len_from_header(read_buf);
+                if (read_buf[0] == '^' && (len + 6) <= read_size ) {
+                    char type = get_type_from_header(read_buf);
+                    if (isStringType(type)) {
+                        std::string msg = getStringData();
+                        log_wrap::net().i("recv data : ", msg);
+                        sendReadState(msg);
+                    } else if (isPongType(type)) {
+                        log_wrap::net().i("recv data : pong");
+                    } else if(isPingType(type)) {
+                        log_wrap::net().i("recv data : ping");
+                    } else {
+                        log_wrap::net().i("recv other protocol data type : ", type);
+                    }
+                    clearFirstCompleteMsg();
+                } else {
+                    break;
+                }
+            }
+        }
+
+        void clearFirstCompleteMsg() {
+            int len = get_len_from_header(read_buf);
+            std::copy(read_buf + 6 + len, read_buf + read_size, read_buf);
+            read_size -= (len + 6);
+        }
+
+        std::string getStringData() {
+            int len = get_len_from_header(read_buf);
+            char buf[BUF_SIZE];
+            std::copy(read_buf + 6, read_buf + 6 + len, buf);
+            buf[len] = '\0';
+            std::string ret(buf);
+            return ret;
+        }
+
+        void sendConnectState(bool connect) {
+            if (connect_handle != nullptr) {
+                connect_handle(connect);
+            }
+        }
+
+        void sendWriteState(std::string msg) {
+            if (write_handle != nullptr) {
+                write_handle(msg);
+            }
+        }
+
+        void sendReadState(std::string msg) {
+            if (read_handle != nullptr) {
+                read_handle(msg);
+            }
+        }
 
 
     private:
@@ -351,6 +343,7 @@ namespace plan9
         std::function<void(std::string)> read_handle;
         std::function<void(std::string)> write_handle;
         std::shared_ptr<boost::asio::io_service> io_service;
+        std::shared_ptr<std::thread> thread_;
 
         std::string ip;
         int port;
@@ -365,7 +358,7 @@ namespace plan9
 
         char read_buf[BUF_SIZE];//读缓存
         size_t read_size = 0;//上次放在读缓存区的字节数
-        char read_tmp_buf[BUF_SIZE];//读的临时缓冲区
+        char read_tmp_buf[2048];//读的临时缓冲区
         char write_buf[BUF_SIZE];//写缓存
     };
 

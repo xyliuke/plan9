@@ -23,13 +23,14 @@ aux_source_directory(src/lua/ LUA_SRC)
 aux_source_directory(src/init/ INIT_SRC)
 aux_source_directory(src/datebase/ DATABASE_SRC)
 aux_source_directory(src/network/ NETWORK_SRC)
+aux_source_directory(src/thread/ THREAD_SRC)
 
 aux_source_directory(test/ TEST_SRC)
 
 
 
 #生成可执行文件
-add_executable(common ${SOURCE_FILES} ${COMMADNER_SRC} ${TEST_SRC} ${JSONCPP_SRC} ${JSONWRAP_SRC} ${UTIL_SRC} ${LOG_SRC} ${LUA_SRC} ${INIT_SRC} ${DATABASE_SRC} ${NETWORK_SRC})
+add_executable(common ${SOURCE_FILES} ${COMMADNER_SRC} ${TEST_SRC} ${JSONCPP_SRC} ${JSONWRAP_SRC} ${UTIL_SRC} ${LOG_SRC} ${LUA_SRC} ${INIT_SRC} ${DATABASE_SRC} ${NETWORK_SRC} ${THREAD_SRC})
 
 #生成静态库
 #add_library(common ${SOURCE_FILES} ${COMMADNER_SRC} ${JSONCPP_SRC} ${JSONWRAP_SRC} ${UTIL_SRC} ${LOG_SRC} ${LUA_SRC} ${INIT_SRC} ${DATABASE_SRC})
@@ -37,4 +38,4 @@ add_executable(common ${SOURCE_FILES} ${COMMADNER_SRC} ${TEST_SRC} ${JSONCPP_SRC
 #add_library(common SHARED ${SOURCE_FILES} ${COMMADNER_SRC} ${JSONCPP_SRC} ${JSONWRAP_SRC} ${UTIL_SRC} ${LOG_SRC} ${LUA_SRC} ${INIT_SRC} ${DATABASE_SRC})
 
 
-target_link_libraries(common boost_system boost_filesystem boost_date_time gtest)
+target_link_libraries(common boost_system boost_thread boost_filesystem boost_date_time gtest)

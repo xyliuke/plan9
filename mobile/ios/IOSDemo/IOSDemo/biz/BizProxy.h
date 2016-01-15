@@ -16,4 +16,10 @@
 
 + (void) call:(NSString*)method param:(NSDictionary*)param callback:(void (^)(NSDictionary *data))callback;
 
++ (void) logI:(NSString*)msg;
+
++ (void) logW:(NSString*)msg;
+
++ (void) logE:(NSString*)msg;
+
 @end

@@ -9,40 +9,21 @@
 #ifdef NETWORK_TEST
 
 #include "network/tcp.h"
+#include <network/tcp_wrap_default.h>
 plan9::tcp tcp;
 
 TEST(network_test, tcp) {
 
-    tcp.set_connect_handler([=](bool connect){
+    plan9::tcp_wrap_default::instance().set_connect_handler([=](bool connect){
         std::cout << "connect : " << connect << std::endl;
-        tcp.enable_ping();
-//        if (!connect) {
-//            tcp.reconnect();
-//        } else {
-//            tcp.write("hello world");
-//        }
+        plan9::tcp_wrap_default::instance().send("hello wrold from clion");
     });
 
-    tcp.set_write_handler([](std::string data){
-        std::cout << "write : " << data << std::endl;
+    plan9::tcp_wrap_default::instance().set_read_handler([=](std::string msg){
+        std::cout << "recv : " << msg << std::endl;
     });
-
-//    int a = 0;
-    tcp.set_read_handler([=](std::string data) mutable{
-        std::cout << "recv : " << data << std::endl;
-//        std::stringstream ss;
-//        ss << "data : ";
-//        ss << a;
-//        a ++;
-//        tcp.write(ss.str());
-//        if (a > 10) {
-//            tcp.close();
-//        }
-    });
-
-    tcp.connect("127.0.0.1", 8081);
-    std::cout << "finish" << std::endl;
-//    plan9::tcp::instance().write("hello world 你好");
+    plan9::tcp_wrap_default::instance().connect("127.0.0.1", 8081);
+    std::cout << "finish";
 }
 
 #endif

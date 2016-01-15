@@ -46,7 +46,21 @@ namespace plan9
          */
         static void call(std::string method);
 
-
+        /**
+         * 设置通知的接口,底层将通过这个传入的函数向上传递数据
+         * 通知数据为json格式,协议如下:
+         * aux : {
+         *     to : "" //表示事件类型
+         *     type : "" //表示事件通知的方式
+         * }
+         * result : {//数据内容
+         *
+         * }
+         *
+         *
+         * @param notify 向上传递数据的lambda
+         */
+        static void set_notify_function(std::function<void(std::string)> notify);
 
         /**
          * 判断result值是否为成功
@@ -79,10 +93,16 @@ namespace plan9
         static void init_function();
         static void init_log();
         static void init_lua();
+        static void init_network();
+        static void send_notify_msg(std::string msg);
 
     private:
         static std::string path;
         static std::string lua_path;
+        static std::function<void(std::string)> notify_function;
+        static std::function<void(bool)> connect_function;
+        static std::function<void(std::string)> read_function;
+        static std::function<void(std::string)> write_function;
     };
 
 }

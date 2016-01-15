@@ -43,4 +43,19 @@ static NSMutableDictionary* notifyMap;
     [bizlayer call:method param:param callback:callback];
 }
 
++ (void) logI:(NSString *)msg
+{
+    [bizlayer logi:msg];
+}
+
++ (void) logW:(NSString *)msg
+{
+    [bizlayer logw:msg];
+}
+
++ (void) logE:(NSString *)msg
+{
+    [bizlayer loge:msg];
+}
+
 @end

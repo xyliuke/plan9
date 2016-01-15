@@ -84,6 +84,9 @@ static void(^callabck_to)(NSDictionary*);
     plan9::common::init([data UTF8String], [lua UTF8String]);
     plan9::common::set_ios_platform();
     callabck_to = notify;
+    plan9::common::set_notify_function([=](std::string result){
+        callabck_to([JsonHelper string2json:[[NSString alloc] initWithUTF8String:result.c_str()]]);
+    });
 }
 
 + (void) call:(NSString *)method param:(NSDictionary *)param callback:(void (^)(NSDictionary *))callback
@@ -103,12 +106,8 @@ static void(^callabck_to)(NSDictionary*);
                 callback([JsonHelper string2json:[[NSString alloc] initWithUTF8String:result.c_str()]]);
             });
         } else {
-            if (p_str) {
-                plan9::common::call([method UTF8String], [p_str UTF8String], nullptr);
-            } else {
-                plan9::common::call([method UTF8String]);
-            }
-            
+            plan9::common::call([method UTF8String], [p_str UTF8String], nullptr);
+
         }
     } else {
         [bizlayer loge:[NSString stringWithFormat:@"call method : %@ is not string", method]];
