@@ -9,7 +9,7 @@ include_directories(../3rd/jsoncpp/dist ../3rd/boost_1_55_0 ../3rd/googletest/go
 #添加搜索库路径
 link_directories(../3rd/boost_1_55_0/lib ../3rd/googletest/googletest)
 
-set(SOURCE_FILES main.cpp src/util/util.cpp src/util/util.h)
+set(SOURCE_FILES main.cpp)
 
 include_directories(header)
 include_directories(src)
@@ -24,6 +24,7 @@ aux_source_directory(src/init/ INIT_SRC)
 aux_source_directory(src/datebase/ DATABASE_SRC)
 aux_source_directory(src/network/ NETWORK_SRC)
 aux_source_directory(src/thread/ THREAD_SRC)
+
 
 aux_source_directory(test/ TEST_SRC)
 

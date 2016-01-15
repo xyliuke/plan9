@@ -115,17 +115,14 @@ namespace plan9
     }
 
     void cmd_factory::execute(std::string cmd, Json::Value param, std::function<void(Json::Value)> callback) {
-        log_wrap::io().i("execute function , method : ", cmd, ", param : ", json_wrap::toString(param), ", callback : yes");
         impl_->call(cmd, param, callback);
     }
 
     void cmd_factory::execute(Json::Value param, std::function<void(Json::Value)> callback) {
-        log_wrap::io().i("execute function , param : ", json_wrap::toString(param), ", callback : yes");
         impl_->call(param, callback);
     }
 
     void cmd_factory::callback(Json::Value json) {
-        log_wrap::io().i("callback function , result : ", json_wrap::toString(json));
         impl_->callback(json);
     }
 
@@ -139,12 +136,10 @@ namespace plan9
     }
 
     void cmd_factory::execute(std::string cmd, Json::Value param) {
-        log_wrap::io().i("execute function , method : ", cmd, ", param : ", json_wrap::toString(param), ", callback : no");
         impl_->call(cmd, param, nullptr);
     }
 
     void cmd_factory::execute(Json::Value param) {
-        log_wrap::io().i("execute function , param : ", json_wrap::toString(param), ", callback : no");
         impl_->call(param, nullptr);
     }
 

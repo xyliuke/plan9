@@ -24,6 +24,7 @@ static NSMutableDictionary* notifyMap;
     NSString* bundle = [[NSBundle mainBundle] bundlePath];
     NSString* lua = [bundle stringByAppendingPathComponent:@"lua"];
     [bizlayer initCommon:lua notify:^(NSDictionary *data) {
+        NSLog(@"%@", data);
         [BizProxy notify:data];
     }];
 }

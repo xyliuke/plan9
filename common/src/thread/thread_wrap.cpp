@@ -8,13 +8,25 @@
 namespace plan9{
 
 
+    static bool background = false;
+
     void thread_wrap::post_background(std::function<void(void)> func) {
-        static bool created = false;
-        if (!created) {
+        if (!background) {
             thread_dispatch::create(1);
         }
 
         thread_dispatch::post(1, func);
+    }
+
+    int thread_wrap::post_background(std::function<void(void)> function, long milliseconds) {
+        if (!background) {
+            thread_dispatch::create(1);
+        }
+        return thread_dispatch::post(1, function, milliseconds);
+    }
+
+    void thread_wrap::cancel_background_function(int id) {
+        thread_dispatch::cancel(1, id);
     }
 
     void thread_wrap::post_network(std::function<void(void)> func) {

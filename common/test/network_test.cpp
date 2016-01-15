@@ -10,13 +10,15 @@
 
 #include "network/tcp.h"
 #include <network/tcp_wrap_default.h>
-plan9::tcp tcp;
 
 TEST(network_test, tcp) {
 
+
     plan9::tcp_wrap_default::instance().set_connect_handler([=](bool connect){
         std::cout << "connect : " << connect << std::endl;
-        plan9::tcp_wrap_default::instance().send("hello wrold from clion");
+        if (connect) {
+            plan9::tcp_wrap_default::instance().send("hello wrold from clion");
+        }
     });
 
     plan9::tcp_wrap_default::instance().set_read_handler([=](std::string msg){
@@ -24,6 +26,19 @@ TEST(network_test, tcp) {
     });
     plan9::tcp_wrap_default::instance().connect("127.0.0.1", 8081);
     std::cout << "finish";
+
+
+//    std::map<int, int> map;
+//    map[1] = 1;
+//    map[2] = 2;
+//    map[3] = 3;
+//    std::cout << map.size() << std::endl;
+//
+//    std::map<int, int>::iterator it = map.begin();
+//    while (it != map.end()) {
+//        map.erase(it ++);
+//        std::cout << map.size() << std::endl;
+//    }
 }
 
 #endif

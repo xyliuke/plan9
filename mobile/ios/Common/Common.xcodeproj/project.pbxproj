@@ -10,6 +10,7 @@
 		1F3E93B91C2D3925000EF4FA /* boost.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1F3E93B81C2D3925000EF4FA /* boost.framework */; };
 		1F40C3501C473D27006EFE0A /* thread_dispatch.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1F40C34C1C473D27006EFE0A /* thread_dispatch.cpp */; };
 		1F40C3511C473D27006EFE0A /* thread_wrap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1F40C34E1C473D27006EFE0A /* thread_wrap.cpp */; };
+		1F657CCD1C48C54500F45F11 /* timer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1F657CCB1C48C54500F45F11 /* timer.cpp */; };
 		1FB1973C1C2CDE4300CFC44F /* bizlayer.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1FB1973B1C2CDE4300CFC44F /* bizlayer.h */; };
 		1FB1973E1C2CDE4300CFC44F /* bizlayer.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1FB1973D1C2CDE4300CFC44F /* bizlayer.mm */; };
 		1FB197581C2CE4FE00CFC44F /* JsonHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 1FB197551C2CE4FE00CFC44F /* JsonHelper.m */; };
@@ -82,6 +83,8 @@
 		1F40C34D1C473D27006EFE0A /* thread_dispatch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = thread_dispatch.h; sourceTree = "<group>"; };
 		1F40C34E1C473D27006EFE0A /* thread_wrap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = thread_wrap.cpp; sourceTree = "<group>"; };
 		1F40C34F1C473D27006EFE0A /* thread_wrap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = thread_wrap.h; sourceTree = "<group>"; };
+		1F657CCB1C48C54500F45F11 /* timer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = timer.cpp; sourceTree = "<group>"; };
+		1F657CCC1C48C54500F45F11 /* timer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = timer.h; sourceTree = "<group>"; };
 		1FB197381C2CDE4300CFC44F /* libCommon.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libCommon.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		1FB1973B1C2CDE4300CFC44F /* bizlayer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = bizlayer.h; sourceTree = "<group>"; };
 		1FB1973D1C2CDE4300CFC44F /* bizlayer.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = bizlayer.mm; sourceTree = "<group>"; };
@@ -190,6 +193,8 @@
 		1F40C34B1C473D27006EFE0A /* thread */ = {
 			isa = PBXGroup;
 			children = (
+				1F657CCB1C48C54500F45F11 /* timer.cpp */,
+				1F657CCC1C48C54500F45F11 /* timer.h */,
 				1F40C34C1C473D27006EFE0A /* thread_dispatch.cpp */,
 				1F40C34D1C473D27006EFE0A /* thread_dispatch.h */,
 				1F40C34E1C473D27006EFE0A /* thread_wrap.cpp */,
@@ -491,6 +496,7 @@
 				1FB1982C1C2CF86500CFC44F /* UUID.cpp in Sources */,
 				1FB198181C2CF86500CFC44F /* loadlib.c in Sources */,
 				1FB198081C2CF86500CFC44F /* lbaselib.c in Sources */,
+				1F657CCD1C48C54500F45F11 /* timer.cpp in Sources */,
 				1FB198151C2CF86500CFC44F /* llex.c in Sources */,
 				1FB198271C2CF86500CFC44F /* lutf8lib.c in Sources */,
 				1FB198231C2CF86500CFC44F /* lua.c in Sources */,

@@ -91,7 +91,6 @@ namespace plan9
             }
 
             if (!isconnect) {
-                log_wrap::net().e("can not write data to server, becasue have not connect the server");
                 return;
             }
             int len = wrap_ping_data();
@@ -103,9 +102,12 @@ namespace plan9
                 //timer被取消
             } else {
                 //长时间没有与服务器通信
-                log_wrap::net().e("disconnected to server");
-                if (connect_handle != nullptr) {
-                    connect_handle(true);
+                if (isconnect) {
+                    isconnect = false;
+                    log_wrap::net().e("disconnected to server");
+                    if (connect_handle != nullptr) {
+                        connect_handle(false);
+                    }
                 }
             }
         }
@@ -114,9 +116,11 @@ namespace plan9
             using namespace boost::asio;
             this->ip = ip_str;
             this->port = port;
+
             ip::tcp::endpoint ep(ip::address::from_string(ip_str), port);
             socket_.reset(new ip::tcp::socket(*io_service));
             socket_->async_connect(ep, std::bind(&tcp_impl::on_connect, this, std::placeholders::_1));
+            work.reset(new io_service::work(*io_service));
             thread_.reset(new std::thread(std::bind(&tcp_impl::run, this)));
 //            io_service->run();
         }
@@ -128,9 +132,10 @@ namespace plan9
         void reconnect() {
             if (isconnect) return;
             if (this->port < 0) {
-                log_wrap::net().e("can not reconnect server, becasue have not legal ip and port");
+                log_wrap::net().e("can not reconnect server, because have not legal ip and port");
                 return;
             }
+            log_wrap::net().e("reconnect to server");
             using namespace boost::asio;
             ip::tcp::endpoint ep(ip::address::from_string(this->ip), this->port);
             socket_.reset(new ip::tcp::socket(*io_service));
@@ -139,7 +144,7 @@ namespace plan9
 
         void write(std::string msg) {
             if (!isconnect) {
-                log_wrap::net().e("can not write data to server, becasue have not connect the server");
+                log_wrap::net().e("can not write data to server, because have not connect the server");
                 return;
             }
             int len = wrap_data(msg);
@@ -344,6 +349,7 @@ namespace plan9
         std::function<void(std::string)> write_handle;
         std::shared_ptr<boost::asio::io_service> io_service;
         std::shared_ptr<std::thread> thread_;
+        std::shared_ptr<boost::asio::io_service::work> work;
 
         std::string ip;
         int port;

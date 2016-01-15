@@ -18,6 +18,10 @@ namespace plan9 {
          */
         static void post_background(std::function<void(void)> func);
 
+        static int post_background(std::function<void(void)> function, long milliseconds);
+
+        static void cancel_background_function(int id);
+
         /**
          * 向网络线程post一个方法
          */

@@ -9,6 +9,7 @@
 #include <lua/lua_bind.h>
 #include <json/json_wrap.h>
 #include <network/tcp_wrap_default.h>
+#include <thread/timer.h>
 #include <thread/thread_wrap.h>
 
 namespace plan9
@@ -41,7 +42,11 @@ namespace plan9
     }
 
     void common::call_(std::string method, Json::Value param, std::function<void(Json::Value result)> callback) {
-//        thread_wrap::post_background([=](){
+        thread_wrap::post_background([=](){
+            if ("log" == method) {
+                cmd_factory::instance().execute(method, param);
+                return;
+            }
             lua_bind::instance().call(method, param, [=](Json::Value result){
                 bool succ;
                 std::string error = success(result, &succ);
@@ -53,8 +58,10 @@ namespace plan9
                     //调用失败,则查询失败原因
                     if (error == LUA_FUNCTION_NOT_EXSIT) {
                         if (callback != nullptr) {
+                            log_wrap::io().i("execute function , method : ", method, ", param : ", json_wrap::toString(param), ", callback : yes");
                             cmd_factory::instance().execute(method, param, callback);
                         } else {
+                            log_wrap::io().i("execute function , method : ", method, ", param : ", json_wrap::toString(param), ", callback : no");
                             cmd_factory::instance().execute(method, param);
                         }
                     } else {
@@ -62,7 +69,7 @@ namespace plan9
                     }
                 }
             });
-//        });
+        });
     }
 
     void common::call_(std::string method, std::string param, std::function<void(Json::Value result)> callback) {
@@ -328,11 +335,11 @@ namespace plan9
     }
 
     void common::send_notify_msg(std::string msg) {
-//        thread_wrap::post_background([=](){
+        thread_wrap::post_background([=](){
             if (common::notify_function != nullptr) {
                 log_wrap::io().i("post message : ", msg);
                 common::notify_function(msg);
             }
-//        });
+        });
     }
 }

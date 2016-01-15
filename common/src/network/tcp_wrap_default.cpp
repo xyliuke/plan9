@@ -4,19 +4,29 @@
 
 #include "tcp_wrap_default.h"
 #import <network/tcp.h>
-#import <thread/thread_wrap.h>
+#include <thread/timer.h>
 
 namespace plan9
 {
     class tcp_wrap_default::tcp_wrap_default_impl {
 
     public:
-        tcp_wrap_default_impl() : tcp_(new tcp), connected(false) {
+        tcp_wrap_default_impl() : tcp_(new tcp), connected(false), timer(new plan9::timer), next_connect_time(1000)  {
             tcp_->set_connect_handler([=](bool connect) {
                 if (connect) {
                     tcp_->enable_ping();
+                    next_connect_time = 1000;
+                    timer->cancel();
                 } else {
-                    tcp_->reconnect();
+                    timer->start([=]() {
+                        tcp_->reconnect();
+                    }, next_connect_time);
+
+                    if (next_connect_time > 60000) {
+                        next_connect_time = 1000;
+                    } else {
+                        next_connect_time *= 2;
+                    }
                 }
                 send_connect_handler(connect);
             });
@@ -31,15 +41,11 @@ namespace plan9
         }
 
         void connect(std::string ip, int port) {
-//            thread_wrap::post_network([=](){
-                tcp_->connect(ip, port);
-//            });
+            tcp_->connect(ip, port);
         }
 
         void send(std::string msg) {
-//            thread_wrap::post_network([=](){
-                tcp_->write(msg);
-//            });
+            tcp_->write(msg);
         }
 
         void set_connect_handler(std::function<void(bool)> function) {
@@ -52,22 +58,17 @@ namespace plan9
         }
 
         void send_connect_handler(bool connect) {
-//            thread_wrap::post_network([=](){
-                if (connect != connected) {
-                    connected = connect;
-                    if (connect_handler != nullptr) {
-                        connect_handler(connect);
-                    }
-                }
-//            });
+            if (connected == connect) return;
+            connected = connect;
+            if (connect_handler != nullptr) {
+                connect_handler(connect);
+            }
         }
 
         void send_read_handler(std::string msg) {
-//            thread_wrap::post_network([=](){
-                if (read_handler != nullptr) {
-                    read_handler(msg);
-                }
-//            });
+            if (read_handler != nullptr) {
+                read_handler(msg);
+            }
         }
 
     private:
@@ -75,6 +76,8 @@ namespace plan9
         std::function<void(bool)> connect_handler;
         std::function<void(std::string)> read_handler;
         bool connected;
+        std::shared_ptr<timer> timer;
+        long next_connect_time;
     };
 
 
