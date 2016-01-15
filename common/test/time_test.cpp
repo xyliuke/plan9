@@ -49,9 +49,15 @@ TEST(time_test, days) {
 }
 
 TEST(time_test, performance) {
-//    for (int i = 0; i < 1000000; ++i) {
-//        int a = time::day();
-//    }
+    uint16_t c = 0;
+    for (int i = 0; i < 1000000; ++i) {
+//        int a = time::milliseconds();
+//        int a = 4 + 5;
+        c ++;
+//        if (c == 0)
+//            std::cout << "== 0" << std::endl;
+    }
+
 }
 
 

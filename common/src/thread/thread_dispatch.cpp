@@ -22,6 +22,7 @@ namespace plan9 {
     std::map<int, std::shared_ptr<std::map<int, std::shared_ptr<thread_dispatch::thread_timer>>>> thread_dispatch::thread_timer_queue;
     std::mutex thread_dispatch::mutex;
     bool thread_dispatch::stop_ = false;
+    int thread_dispatch::timer_precision = 50;//默念timer精度
 
     class thread_dispatch::thread_mutex_raii {
     public:
@@ -41,14 +42,19 @@ namespace plan9 {
         if (thread_map.find(tid) != thread_map.end()) {
             return true;
         }
-
-        std::shared_ptr<std::thread> thread(new std::thread([=]() {
+        uint16_t count = 0;
+        std::shared_ptr<std::thread> thread(new std::thread([=]() mutable {
             while (true) {
                 if (stop_) {
                     break;
                 } else {
                     thread_mutex_raii();
-                    op_timer(tid);
+                    if (count == 20000) {
+                        op_timer(tid);
+                        count = 0;
+                    }
+                    ++ count;
+
                     if (thread_queue.find(tid) != thread_queue.end()) {
                         auto queue = thread_queue[tid];
                         if (queue->empty()) {
@@ -128,23 +134,21 @@ namespace plan9 {
         }
     }
 
-//    void thread_dispatch::run(int tid) {
-//        auto queue = thread_queue[tid];
-//        for (std::vector<std::function<void(void)>>::iterator i = queue->begin(); i != queue->end(); ++i) {
-//            (*i)();
-//        }
-//    }
+    void thread_dispatch::set_timer_precision(int milliseconds) {
+        if (milliseconds > 0 && milliseconds < 1000) {
+            timer_precision = milliseconds;
+        }
+    }
 
     void thread_dispatch::op_timer(int tid) {
         static long last_op_time = 0;
 
         long current_time = plan9::time::milliseconds();
-        if (current_time - last_op_time < 10) {
-            //少于10ms不执行
+        if (current_time - last_op_time < timer_precision) {
+            //少于最小精度值不执行
             return;
         }
         last_op_time = current_time;
-
         if(thread_timer_queue.find(tid) != thread_timer_queue.end()) {
             auto queue = thread_timer_queue[tid];
             std::map<int, std::shared_ptr<thread_dispatch::thread_timer>>::iterator it = queue->begin();

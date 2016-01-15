@@ -39,6 +39,12 @@ namespace plan9 {
          */
         static void cancel(int tid, int timer_id);
 
+        /**
+         * 设置timer的精度.为了减少运行的时间,可设置timer的精度,不需要循环检查各个任务的超时时间
+         * @param milliseconds 最小检查时间,超过这个时间再去检查,默认值为50ms.建议最大不用超过1s
+         */
+        static void set_timer_precision(int milliseconds);
+
     private:
         class thread_timer;
         class thread_mutex_raii;
@@ -47,7 +53,7 @@ namespace plan9 {
         static std::map<int, std::shared_ptr<std::map<int, std::shared_ptr<thread_timer>>>> thread_timer_queue;
         static std::mutex mutex;
         static bool stop_;
-
+        static int timer_precision;
     private:
         void static op_timer(int tid);
     };

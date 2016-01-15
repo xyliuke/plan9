@@ -13,7 +13,7 @@
 #include <list>
 
 TEST(network_test, tcp) {
-    
+
     plan9::tcp_wrap_default::instance().set_connect_handler([=](bool connect){
         std::cout << "connect : " << connect << std::endl;
         if (connect) {
