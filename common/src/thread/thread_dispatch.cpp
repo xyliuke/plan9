@@ -18,7 +18,7 @@ namespace plan9 {
 
 
     std::map<int, std::shared_ptr<std::thread>> thread_dispatch::thread_map;
-    std::map<int, std::shared_ptr<std::vector<std::function<void(void)>>>> thread_dispatch::thread_queue;
+    std::map<int, std::shared_ptr<std::list<std::function<void(void)>>>> thread_dispatch::thread_queue;
     std::map<int, std::shared_ptr<std::map<int, std::shared_ptr<thread_dispatch::thread_timer>>>> thread_dispatch::thread_timer_queue;
     std::mutex thread_dispatch::mutex;
     bool thread_dispatch::stop_ = false;
@@ -54,9 +54,8 @@ namespace plan9 {
                         if (queue->empty()) {
                             std::this_thread::yield();
                         } else {
-                            std::function<void(void)> func = queue->at(0);
-                            queue->erase(queue->begin());
-
+                            std::function<void(void)> func = queue->front();
+                            queue->pop_front();
                             func();
                         }
                     } else {
@@ -78,9 +77,9 @@ namespace plan9 {
                 auto queue = thread_queue[tid];
                 queue->push_back(func);
             } else {
-                std::shared_ptr<std::vector<std::function<void(void)>>> queue(new std::vector<std::function<void(void)>>);
+                std::shared_ptr<std::list<std::function<void(void)>>> queue(new std::list<std::function<void(void)>>);
                 queue->push_back(func);
-                thread_queue.insert(std::pair<int, std::shared_ptr<std::vector<std::function<void(void)>>>>(tid, queue));
+                thread_queue.insert(std::pair<int, std::shared_ptr<std::list<std::function<void(void)>>>>(tid, queue));
             }
         } else {
             log_wrap::io().e("没有创建相应线程");
@@ -129,12 +128,12 @@ namespace plan9 {
         }
     }
 
-    void thread_dispatch::run(int tid) {
-        auto queue = thread_queue[tid];
-        for (std::vector<std::function<void(void)>>::iterator i = queue->begin(); i != queue->end(); ++i) {
-            (*i)();
-        }
-    }
+//    void thread_dispatch::run(int tid) {
+//        auto queue = thread_queue[tid];
+//        for (std::vector<std::function<void(void)>>::iterator i = queue->begin(); i != queue->end(); ++i) {
+//            (*i)();
+//        }
+//    }
 
     void thread_dispatch::op_timer(int tid) {
         static long last_op_time = 0;

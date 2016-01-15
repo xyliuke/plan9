@@ -9,7 +9,7 @@
 #include <functional>
 #include <thread>
 #include <map>
-#include <vector>
+#include <list>
 
 namespace plan9 {
 
@@ -21,7 +21,7 @@ namespace plan9 {
         //向相应线程中post一个方法
         static void post(int tid, std::function<void(void)> func);
         //
-        static void run(int tid);
+//        static void run(int tid);
         //停止所有线程
         static void stop();
         /**
@@ -43,7 +43,7 @@ namespace plan9 {
         class thread_timer;
         class thread_mutex_raii;
         static std::map<int, std::shared_ptr<std::thread>> thread_map;
-        static std::map<int, std::shared_ptr<std::vector<std::function<void(void)>>>> thread_queue;
+        static std::map<int, std::shared_ptr<std::list<std::function<void(void)>>>> thread_queue;
         static std::map<int, std::shared_ptr<std::map<int, std::shared_ptr<thread_timer>>>> thread_timer_queue;
         static std::mutex mutex;
         static bool stop_;
