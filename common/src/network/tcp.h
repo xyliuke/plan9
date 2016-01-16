@@ -13,7 +13,7 @@
 
 /**
  *  网络包的格式:
- *  网络包固定包含6个字节,其中一个起始字符,以字符'^'开始,再加一个字节的类型位（备用）,后面有4个字节的整型值,表示这个报文的长度
+ *  网络包固定包含6个字节,其中一个起始字符,以字符'^'开始,再加一个字节的类型位,后面有4个字节的整型值,表示这个报文的长度
  *  目前类型有:
  *  0x01  字符串
  *  0x02  ping包标志位
@@ -22,6 +22,13 @@
 
 
 namespace plan9 {
+
+    enum class network_server_type {
+        SERVER_CONNECT = 0x00, //连接服务器
+        SERVER_ROUTE   = 0x10, //路由服务器
+        SERVER_SESSION = 0x20, //事务服务器
+        SERVER_DATABASE = 0x30, //数据库服务器
+    };
 
     class tcp {
     public:
@@ -54,6 +61,8 @@ namespace plan9 {
         void close();
 
         void write(std::string msg);
+
+        void write(network_server_type type, std::string msg);
 
         /**
          * 设置连接后的函数回调

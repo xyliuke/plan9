@@ -122,7 +122,7 @@ namespace plan9
             socket_->async_connect(ep, std::bind(&tcp_impl::on_connect, this, std::placeholders::_1));
             work.reset(new io_service::work(*io_service));
             thread_.reset(new std::thread(std::bind(&tcp_impl::run, this)));
-//            io_service->run();
+//            run();
         }
 
         void run() {
@@ -142,15 +142,15 @@ namespace plan9
             socket_->async_connect(ep, std::bind(&tcp_impl::on_connect, this, std::placeholders::_1));
         }
 
-        void write(std::string msg) {
+        void write(network_server_type type, std::string msg) {
             if (!isconnect) {
                 log_wrap::net().e("can not write data to server, because have not connect the server");
                 return;
             }
-            int len = wrap_data(msg);
+
+            int len = wrap_string_data(static_cast<char>(type), msg);
             socket_->async_write_some(boost::asio::buffer(write_buf, (size_t)len), std::bind(&tcp_impl::on_write, this, std::placeholders::_1, std::placeholders::_2));
         }
-
 
         void enablePing(bool enable) {
             if (enable != enable_ping) {
@@ -177,13 +177,14 @@ namespace plan9
         }
 
     private:
-        int wrap_data(std::string msg) {
+
+        int wrap_string_data(char type, std::string msg) {
             write_buf[0] = netwrok_begin;
-            write_buf[1] = 0x0001;
+            write_buf[1] = (char)(type | 0x01);
             int len = (int)msg.size();
-            write_buf[2] = (char)(len & 0xFF000000);
-            write_buf[3] = (char)(len & 0x00FF0000);
-            write_buf[4] = (char)(len & 0x0000FF00);
+            write_buf[2] = (char)((len & 0xFF000000) >> 24);
+            write_buf[3] = (char)((len & 0xFF000000) >> 16);
+            write_buf[4] = (char)((len & 0xFF000000) >> 8);
             write_buf[5] = (char)(len & 0x000000FF);
             std::copy(msg.begin(), msg.end(), write_buf + 6);
             return len + 6;
@@ -382,7 +383,11 @@ namespace plan9
     }
 
     void tcp::write(std::string msg) {
-        impl->write(msg);
+        impl->write(network_server_type::SERVER_CONNECT, msg);
+    }
+
+    void tcp::write(network_server_type type, std::string msg) {
+        impl->write(type, msg);
     }
 
     void tcp::set_read_handler(std::function<void(std::string msg)> function) {

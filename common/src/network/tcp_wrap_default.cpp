@@ -44,8 +44,8 @@ namespace plan9
             tcp_->connect(ip, port);
         }
 
-        void send(std::string msg) {
-            tcp_->write(msg);
+        void send(network_server_type type, std::string msg) {
+            tcp_->write(type, msg);
         }
 
         void set_connect_handler(std::function<void(bool)> function) {
@@ -94,8 +94,12 @@ namespace plan9
         impl->connect(ip, port);
     }
 
+    void tcp_wrap_default::send(network_server_type type, std::string msg) {
+        impl->send(type, msg);
+    }
+
     void tcp_wrap_default::send(std::string msg) {
-        impl->send(msg);
+        impl->send(network_server_type::SERVER_CONNECT, msg);
     }
 
     void tcp_wrap_default::set_connect_handler(std::function<void(bool)> function) {

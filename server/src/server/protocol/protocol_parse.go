@@ -7,6 +7,13 @@ import (
 	"common/util"
 )
 
+const (
+	SERVER_CONNECT = 0x00 //连接服务器
+	SERVER_ROUTE   = 0x10 //路由服务器
+	SERVER_SESSION = 0x20 //事务服务器
+	SERVER_DATABASE = 0x30 //数据库服务器
+)
+
 type Connection struct {
 	id string		//连接id
 	conn net.Conn   //tcp连接
@@ -72,7 +79,7 @@ func (connection *Connection) opMsg()  {
 					connection.opPing()
 				} else if isStringType(tp) {
 					tmp := connection.buf[6 : data_len + 6]
-					connection.opStringData(tmp)
+					connection.opStringData(tp, tmp)
 				} else {
 					log("recv type null")
 				}
@@ -96,10 +103,14 @@ func (connection *Connection) clearFirstComplateData()  {
 }
 
 //处理一个字符串数据
-func (connection* Connection) opStringData(data []byte)  {
+func (connection* Connection) opStringData(t byte, data []byte)  {
 	msg := toString(data)
 	log("deal with data : " + msg)
-	connection.writeString(msg);
+	if isServerConnect(t) {
+		connection.writeString(msg);
+	} else if isServerDatabase(t) {
+		connection.writeString("database connected");
+	}
 }
 
 func (connection *Connection) opPing()  {
@@ -137,11 +148,36 @@ func isPingType(tp byte) bool {
 
 
 func isStringType(t byte) bool  {
-	if t == 0x01 {
+	if (t & 0x0F) == 0x01 {
 		return true
 	}
 	return false
 }
+
+func isServerConnect(t byte) bool {
+	return isServerType(t, SERVER_CONNECT)
+}
+
+func isServerRoute(t byte) bool {
+	return isServerType(t, SERVER_ROUTE)
+}
+
+func isServerDatabase(t byte) bool  {
+	return isServerType(t, SERVER_DATABASE)
+}
+
+func isServerSession(t byte) bool {
+	return isServerType(t, SERVER_SESSION)
+}
+
+func isServerType(t byte, serverType byte) bool {
+	if (t & 0xF0) == serverType {
+		return true
+	}
+	return false
+}
+
+
 //
 func getDataLength(data []byte) int {
 	if data[0] == '^' && len(data) >= 6 {

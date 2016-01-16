@@ -2,10 +2,7 @@ package cn.gocoding.common;
 
 
 import android.content.Context;
-import android.util.JsonReader;
-
 import org.json.JSONObject;
-import org.json.JSONStringer;
 
 import java.util.HashMap;
 import java.util.Map;

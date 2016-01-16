@@ -8,6 +8,7 @@
 #include <memory>
 #include <functional>
 #include <string>
+#include "tcp.h"
 
 namespace plan9 {
 
@@ -20,6 +21,7 @@ namespace plan9 {
         static tcp_wrap_default instance();
 
         void connect(std::string ip, int port);
+        void send(network_server_type type, std::string msg);
         void send(std::string msg);
 
         void set_connect_handler(std::function<void(bool)> function);

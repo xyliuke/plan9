@@ -17,7 +17,7 @@ TEST(network_test, tcp) {
     plan9::tcp_wrap_default::instance().set_connect_handler([=](bool connect){
         std::cout << "connect : " << connect << std::endl;
         if (connect) {
-            plan9::tcp_wrap_default::instance().send("hello wrold from clion");
+            plan9::tcp_wrap_default::instance().send(plan9::network_server_type::SERVER_DATABASE ,"hello wrold from clion");
         }
     });
 
@@ -25,8 +25,7 @@ TEST(network_test, tcp) {
         std::cout << "recv : " << msg << std::endl;
     });
     plan9::tcp_wrap_default::instance().connect("127.0.0.1", 8081);
-    std::cout << "finish";
-
+//    std::cout << "finish";
 }
 
 #endif

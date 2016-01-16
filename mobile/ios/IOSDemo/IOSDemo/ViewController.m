@@ -27,10 +27,6 @@
 
     [BizProxy call:@"native.connect" param:nil callback:nil];
     
-//    self.timer = [NSTimer timerWithTimeInterval:5 target:self selector:@selector(action) userInfo:nil repeats:YES];
-//    [[NSRunLoop mainRunLoop] addTimer:self.timer forMode:NSDefaultRunLoopMode];
-//    [self.timer fire];
-    
     [BizProxy call:@"native.get_error_code" param:nil callback:^(NSDictionary *data) {
         NSLog(@"%@",data);
     }];

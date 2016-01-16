@@ -22,8 +22,8 @@ namespace plan9 {
     std::map<int, std::shared_ptr<std::map<int, std::shared_ptr<thread_dispatch::thread_timer>>>> thread_dispatch::thread_timer_queue;
     std::mutex thread_dispatch::mutex;
     bool thread_dispatch::stop_ = false;
-    int thread_dispatch::timer_precision = 50;//默念timer精度
-
+    int thread_dispatch::timer_precision = 50;//默认timer精度
+    static const uint16_t timer_loop_count = 5000;
     class thread_dispatch::thread_mutex_raii {
     public:
         thread_mutex_raii() {
@@ -36,8 +36,6 @@ namespace plan9 {
     };
 
 
-
-
     bool thread_dispatch::create(int tid) {
         if (thread_map.find(tid) != thread_map.end()) {
             return true;
@@ -47,24 +45,23 @@ namespace plan9 {
             while (true) {
                 if (stop_) {
                     break;
-                } else {
-                    thread_mutex_raii();
-                    if (count == 20000) {
-                        op_timer(tid);
-                        count = 0;
-                    }
-                    ++ count;
+                }
+                thread_mutex_raii();
 
-                    if (thread_queue.find(tid) != thread_queue.end()) {
-                        auto queue = thread_queue[tid];
-                        if (queue->empty()) {
-                            std::this_thread::yield();
-                        } else {
-                            std::function<void(void)> func = queue->front();
-                            queue->pop_front();
-                            func();
-                        }
+                if (timer_loop_count == count) {
+                    op_timer(tid);
+                    count = 0;
+                }
+                ++ count;
+
+                if (thread_queue.find(tid) != thread_queue.end()) {
+                    auto queue = thread_queue[tid];
+                    if (queue->empty()) {
+                        std::this_thread::yield();
                     } else {
+                        std::function<void(void)> func = queue->front();
+                        queue->pop_front();
+                        func();
                     }
                 }
             }
