@@ -15,10 +15,11 @@ namespace plan9
 {
     class log_wrap {
     public:
-        enum log_level {
-            INFO,
-            WARN,
-            ERROR
+        enum class log_level {
+            L_DEBUG,
+            L_INFO,
+            L_WARN,
+            L_ERROR
         };
 
         static log_wrap io();
@@ -27,6 +28,8 @@ namespace plan9
         static log_wrap lua();
         static log_wrap other();
         static void set_log_dir(std::string path);
+
+        static void set_all_level(log_level level);
 
         /**
          * 设置日志输出等级
@@ -37,6 +40,16 @@ namespace plan9
          * @param days 天数
          */
         void set_duration(int days);
+
+        /**
+         * INFO级别日志
+         */
+        void d_(std::string msg);
+
+        template <typename head, typename ... rail>
+        void d(head h, rail... r) {
+            d_(plan9::util::instance().cat(h, r...));
+        };
 
         /**
          * INFO级别日志

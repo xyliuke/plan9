@@ -23,8 +23,9 @@ namespace plan9 {
          * 启动一个timer,延迟delay_milliseconds毫秒后执行,只执行一次
          * @param function 执行函数体
          * @param delay_milliseconds 延迟时间,单位为毫秒
+         * @return 返回timer的id
          */
-        void start(std::function<void(void)> function, long delay_milliseconds);
+        int start(std::function<void(void)> function, long delay_milliseconds);
 
         /**
          * 启动一个timer,延迟delay_milliseconds毫秒后执行,循环执行
@@ -35,6 +36,8 @@ namespace plan9 {
         void start(std::function<void(void)> function, long delay_milliseconds, long repeat_interval);
 
         void cancel();
+
+        bool isOver();
 
     private:
         class timer_impl;

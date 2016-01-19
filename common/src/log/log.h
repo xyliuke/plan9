@@ -14,6 +14,7 @@ namespace plan9
 {
     class log {
     public:
+        log();
         virtual ~log();
         void setFile(std::string filepath);
         void write(std::string msg);
@@ -21,6 +22,12 @@ namespace plan9
 
     private:
         std::ofstream ofs;
+        std::string filepath;
+        bool isInit;
+
+    private:
+        bool exist();
+        void init();
     };
 
 }

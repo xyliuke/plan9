@@ -30,11 +30,10 @@ namespace plan9
             boost::filesystem::create_directories(path);
         }
         init_log();
-        log_wrap::io().i("init lua");
         init_lua();
-        log_wrap::io().i("register function");
         init_function();
         init_network();
+        init_config();
     }
 
     void common::set_notify_function(std::function<void(std::string)> notify) {
@@ -185,6 +184,7 @@ namespace plan9
     }
 
     void common::init_network() {
+        log_wrap::io().i("init network");
         common::connect_function = [=] (bool connect) {
             Json::Value tmp;
             tmp["aux"]["to"] = "network";
@@ -202,6 +202,7 @@ namespace plan9
     }
 
     void common::init_function() {
+        log_wrap::io().i("register function");
         /*
          * 注册日志函数
          * 参数有三个,分别为
@@ -303,24 +304,38 @@ namespace plan9
          * 向服务器发送数据,用于测试
          * 传入参数:
          * msg  : 发送的字符串
-         *
+         * server : 发送服务器类型
          * 返回结果为:
          * data {
          *      msg : 返回的字符串
          * }
          */
         cmd_factory::instance().register_cmd("send", [=](Json::Value param){
+            log_wrap::net().i("call send : ", json_wrap::toString(param));
             if (param.isMember("args")) {
                 Json::Value args = param["args"];
-                if (args.isMember("msg")) {
-                    std::string msg = json_wrap::toString(args["msg"]);
-                    tcp_wrap_default::instance().send(msg);
+                network_server_type type = network_server_type::SERVER_CONNECT;
+                if (args.isMember("server")) {
+                    int st = args["server"].asInt();
+                    type = static_cast<network_server_type>(st);
                 }
+                int timeout = 0;
+                if (args.isMember("timeout")) {
+                    timeout = args["timeout"].asInt();
+                }
+                param["aux"]["to"] = param["args"]["to"];
+                param["args"].removeMember("to");
+                tcp_wrap_default::instance().send(type, param, [=](Json::Value data){
+                    log_wrap::net().d("callback from send before : ", json_wrap::toString(data));
+                    cmd_factory::instance().callback(data, true);
+                    log_wrap::net().d("callback from send after : ", json_wrap::toString(param));
+                }, timeout);
             }
         });
     }
 
     void common::init_lua() {
+        log_wrap::io().i("init lua");
         namespace bfs = boost::filesystem;
         if (!bfs::exists(lua_path)) {
             log_wrap::io().e("init lua error, lua path : ", lua_path, " is not exist");
@@ -331,15 +346,45 @@ namespace plan9
         bfs::path p(lua_path);
 
         bfs::path bridge = p / "bridge.lua";
+        bfs::path common = p / "common.lua";
         lua_bind::instance().lua_bind_loadfile(bridge.string());
+        lua_bind::instance().lua_bind_loadfile(common.string());
     }
 
     void common::send_notify_msg(std::string msg) {
-        thread_wrap::post_background([=](){
-            if (common::notify_function != nullptr) {
-                log_wrap::io().i("post message : ", msg);
-                common::notify_function(msg);
+        if (common::notify_function != nullptr) {
+            log_wrap::io().i("post message : ", msg);
+            common::notify_function(msg);
+        }
+    }
+
+
+    void common::init_config() {
+        log_wrap::io().i("init config");
+        call_("config.get_config", Json::Value(), [=](Json::Value result){
+            bool succ;
+            success(result, &succ);
+            if (succ) {
+                Json::Value result_json = result["result"];
+                if (result_json.isMember("data")) {
+                    Json::Value data = result_json["data"];
+
+                    if (data.isMember("log_level")) {
+                        std::string lel = data["log_level"].asString();
+                        if ("debug" == lel) {
+                            log_wrap::set_all_level(log_wrap::log_level::L_DEBUG);
+                        } else if ("info" == lel) {
+                            log_wrap::set_all_level(log_wrap::log_level::L_INFO);
+                        } else if ("warn" == lel) {
+                            log_wrap::set_all_level(log_wrap::log_level::L_WARN);
+                        } else if ("error" == lel) {
+                            log_wrap::set_all_level(log_wrap::log_level::L_ERROR);
+                        }
+                    }
+
+                }
             }
+            log_wrap::io().d("read config : ", json_wrap::toString(result));
         });
     }
 }

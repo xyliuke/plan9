@@ -5,8 +5,8 @@
 #include "tcp.h"
 #include <log/log_wrap.h>
 #include <boost/asio.hpp>
-//#include <boost/thread/thread.hpp>
 #include <thread>
+#include <thread/thread_define.h>
 
 namespace plan9
 {
@@ -55,7 +55,6 @@ namespace plan9
                     std::copy(write_buf + 6, write_buf + len + 6, rr);
                     rr[len] = '\0';
                     std::string w(rr);
-                    log_wrap::net().i("send data : ", w);
                     write_handle(w);
                 }
             } else if (error_code.value() == boost::asio::error::eof){
@@ -121,8 +120,11 @@ namespace plan9
             socket_.reset(new ip::tcp::socket(*io_service));
             socket_->async_connect(ep, std::bind(&tcp_impl::on_connect, this, std::placeholders::_1));
             work.reset(new io_service::work(*io_service));
+#ifdef THREAD_ENABLE
             thread_.reset(new std::thread(std::bind(&tcp_impl::run, this)));
-//            run();
+#else
+            run();
+#endif
         }
 
         void run() {
@@ -207,10 +209,10 @@ namespace plan9
             return buf[1];
         }
         int get_len_from_header(char* buf) {
-            int a1 = buf[2];
-            int a2 = buf[3];
-            int a3 = buf[4];
-            int a4 = buf[5];
+            int a1 = (unsigned char)buf[2];
+            int a2 = (unsigned char)buf[3];
+            int a3 = (unsigned char)buf[4];
+            int a4 = (unsigned char)buf[5];
             return (a1 << 24) + (a2 << 16) + (a3 << 8) + a4;
         }
 

@@ -58,3 +58,5 @@ server/.idea/uiDesigner.xml
 server/.idea/workspace.xml
 
 server/server.iml
+
+common/.idea/libraries/GOPATH__common_*.xml

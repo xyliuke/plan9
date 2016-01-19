@@ -62,6 +62,7 @@ function lua_c_bridge.callback_from_c(param)
     local id = param.aux.callback_id;
     local callback = lua_c_bridge.callback_map[id]
     if callback then
+        param.aux.action = "callback"
         param.aux.callback_id = nil
         callback(param)
         lua_c_bridge.callback_map[id] = nil
@@ -270,6 +271,12 @@ end
 function lua_c_bridge:register_lua_function(name, func)
     self.lua_function_map[name] = func
 end
+--- 得到在lua_c_bridge注册的函数
+-- @param name 函数名
+-- @return 返回注册的table值
+function lua_c_bridge:get_module(name)
+    return self.lua_function_map[name]
+end
 
 local native = {}
 function native:get_error_code(param, callback)
@@ -279,14 +286,6 @@ end
 function native:set_platform(param)
     lua_c_bridge.platform = param.args.platform
     lua_c_bridge:log_i("platform set " .. lua_c_bridge.platform)
-end
-
-function native:connect(param)
-    lua_c_bridge:call_native("connect", {ip = "127.0.0.1", port = 8081})
-end
-
-function native:send(param, callback)
-    lua_c_bridge:call_native("send", {msg = param.args.msg})
 end
 
 lua_c_bridge:register_lua_function("native", native)

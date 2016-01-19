@@ -9,6 +9,7 @@
 
 
 #include <util/UUID.h>
+#include <util/util.h>
 
 TEST(util_test, uuid) {
     std::string uuid1 = plan9::UUID::uuid();
@@ -31,6 +32,11 @@ TEST(util_test, id) {
 //        std::string id = plan9::UUID::id();
 //        std::cout << "id:" << plan9::UUID::id() << std::endl;
 //    }
+
+    EXPECT_EQ(plan9::util::instance().isSuffix("abc\n", '\n'), true);
+    EXPECT_EQ(plan9::util::instance().isSuffix("abcd", 'd'), true);
+    EXPECT_EQ(plan9::util::instance().isSuffix("abc_", '_'), true);
+    EXPECT_EQ(plan9::util::instance().isSuffix("abc\r", '\r'), true);
 }
 
 #endif

@@ -18,14 +18,14 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
-    
+//    self.view.backgroundColor = [UIColor whiteColor];
     UIButton* btn = [[UIButton alloc] initWithFrame:CGRectMake(100, 100, 100, 100)];
     [btn setTitle:@"测试发送数据" forState:UIControlStateNormal];
     [btn addTarget:self action:@selector(action) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:btn];
     
 
-    [BizProxy call:@"native.connect" param:nil callback:nil];
+    [BizProxy call:@"server.connect" param:nil callback:nil];
     
     [BizProxy call:@"native.get_error_code" param:nil callback:^(NSDictionary *data) {
         NSLog(@"%@",data);
@@ -35,7 +35,10 @@
 - (void) action
 {
     NSLog(@"xxxxxxxxxxx\n");
-    [BizProxy call:@"native.send" param:@{@"msg" : @{@"test_data" : @"hello world from ios"}} callback:nil];
+    [@"ddd" hasSuffix:@""];
+    [BizProxy call:@"server.send" param:@{@"test_data" : @"hello world from ios"} callback:^(NSDictionary *data) {
+        NSLog(@"callback : %@", data);
+    }];
 }
 
 - (void)didReceiveMemoryWarning {

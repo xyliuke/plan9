@@ -105,12 +105,13 @@ func (connection *Connection) clearFirstComplateData()  {
 //处理一个字符串数据
 func (connection* Connection) opStringData(t byte, data []byte)  {
 	msg := toString(data)
-	log("deal with data : " + msg)
 	if isServerConnect(t) {
+		log("server type")
 		connection.writeString(msg);
 	} else if isServerDatabase(t) {
 		connection.writeString("database connected");
 	}
+	log("deal with data : " + msg)
 }
 
 func (connection *Connection) opPing()  {

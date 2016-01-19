@@ -8,6 +8,7 @@
 #include <memory>
 #include <functional>
 #include <string>
+#include <json/json.h>
 #include "tcp.h"
 
 namespace plan9 {
@@ -23,6 +24,7 @@ namespace plan9 {
         void connect(std::string ip, int port);
         void send(network_server_type type, std::string msg);
         void send(std::string msg);
+        void send(network_server_type type, Json::Value msg, std::function<void(Json::Value)> callback, int timeout);
 
         void set_connect_handler(std::function<void(bool)> function);
         void set_read_handler(std::function<void(std::string)> function);

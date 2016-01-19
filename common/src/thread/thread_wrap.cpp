@@ -4,18 +4,22 @@
 
 #include "thread_wrap.h"
 #include "thread_dispatch.h"
-
+#include <thread/thread_define.h>
 namespace plan9{
 
 
     static bool background = false;
 
     void thread_wrap::post_background(std::function<void(void)> func) {
+#ifdef THREAD_ENABLE
         if (!background) {
             thread_dispatch::create(1);
         }
 
         thread_dispatch::post(1, func);
+#else
+        func();
+#endif
     }
 
     int thread_wrap::post_background(std::function<void(void)> function, long milliseconds) {

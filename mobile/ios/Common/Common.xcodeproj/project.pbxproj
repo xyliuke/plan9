@@ -10,6 +10,7 @@
 		1F3E93B91C2D3925000EF4FA /* boost.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1F3E93B81C2D3925000EF4FA /* boost.framework */; };
 		1F40C3501C473D27006EFE0A /* thread_dispatch.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1F40C34C1C473D27006EFE0A /* thread_dispatch.cpp */; };
 		1F40C3511C473D27006EFE0A /* thread_wrap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1F40C34E1C473D27006EFE0A /* thread_wrap.cpp */; };
+		1F5823551C4B3EC7009B6802 /* timer_wrap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1F5823531C4B3EC7009B6802 /* timer_wrap.cpp */; };
 		1F657CCD1C48C54500F45F11 /* timer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1F657CCB1C48C54500F45F11 /* timer.cpp */; };
 		1FB1973C1C2CDE4300CFC44F /* bizlayer.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1FB1973B1C2CDE4300CFC44F /* bizlayer.h */; };
 		1FB1973E1C2CDE4300CFC44F /* bizlayer.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1FB1973D1C2CDE4300CFC44F /* bizlayer.mm */; };
@@ -83,8 +84,11 @@
 		1F40C34D1C473D27006EFE0A /* thread_dispatch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = thread_dispatch.h; sourceTree = "<group>"; };
 		1F40C34E1C473D27006EFE0A /* thread_wrap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = thread_wrap.cpp; sourceTree = "<group>"; };
 		1F40C34F1C473D27006EFE0A /* thread_wrap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = thread_wrap.h; sourceTree = "<group>"; };
+		1F5823531C4B3EC7009B6802 /* timer_wrap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = timer_wrap.cpp; sourceTree = "<group>"; };
+		1F5823541C4B3EC7009B6802 /* timer_wrap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = timer_wrap.h; sourceTree = "<group>"; };
 		1F657CCB1C48C54500F45F11 /* timer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = timer.cpp; sourceTree = "<group>"; };
 		1F657CCC1C48C54500F45F11 /* timer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = timer.h; sourceTree = "<group>"; };
+		1FADC3DA1C4E3B6E002B3E1E /* thread_define.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = thread_define.h; sourceTree = "<group>"; };
 		1FB197381C2CDE4300CFC44F /* libCommon.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libCommon.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		1FB1973B1C2CDE4300CFC44F /* bizlayer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = bizlayer.h; sourceTree = "<group>"; };
 		1FB1973D1C2CDE4300CFC44F /* bizlayer.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = bizlayer.mm; sourceTree = "<group>"; };
@@ -193,6 +197,9 @@
 		1F40C34B1C473D27006EFE0A /* thread */ = {
 			isa = PBXGroup;
 			children = (
+				1FADC3DA1C4E3B6E002B3E1E /* thread_define.h */,
+				1F5823531C4B3EC7009B6802 /* timer_wrap.cpp */,
+				1F5823541C4B3EC7009B6802 /* timer_wrap.h */,
 				1F657CCB1C48C54500F45F11 /* timer.cpp */,
 				1F657CCC1C48C54500F45F11 /* timer.h */,
 				1F40C34C1C473D27006EFE0A /* thread_dispatch.cpp */,
@@ -471,6 +478,7 @@
 				1FB198111C2CF86500CFC44F /* lfunc.c in Sources */,
 				1F40C3511C473D27006EFE0A /* thread_wrap.cpp in Sources */,
 				1FB198211C2CF86500CFC44F /* ltablib.c in Sources */,
+				1F5823551C4B3EC7009B6802 /* timer_wrap.cpp in Sources */,
 				1FB1982B1C2CF86500CFC44F /* util.cpp in Sources */,
 				1FB198161C2CF86500CFC44F /* lmathlib.c in Sources */,
 				1FB198101C2CF86500CFC44F /* ldump.c in Sources */,

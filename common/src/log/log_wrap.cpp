@@ -15,7 +15,7 @@ namespace plan9
     class log_wrap::log_wrap_impl {
     public:
 
-        log_wrap_impl(std::string path, std::string prefix_file) : count(1), day(1), level(INFO) {
+        log_wrap_impl(std::string path, std::string prefix_file) : count(1), day(1), level(log_level::L_DEBUG) {
             this->path = path;
             this->prefix_file = prefix_file;
             log.reset(new plan9::log);
@@ -50,16 +50,20 @@ namespace plan9
             ss << std::this_thread::get_id();
             ss << "]";
 
-            if (level == INFO) {
+            if (level == log_level::L_INFO) {
                 ss << " [INFO] : ";
-            } else if (level == WARN) {
+            } else if (level == log_level::L_WARN) {
                 ss << " [WARN] : ";
-            } else if (level == ERROR) {
+            } else if (level == log_level::L_ERROR) {
                 ss << " [ERROR]: ";
+            } else if (level == log_level::L_DEBUG) {
+                ss << " [DEBUG]: ";
             }
 
             ss << msg;
-            ss << "\n";
+            if (!util::instance().isSuffix(msg, '\n')) {
+                ss << "\n";
+            }
 
             write(ss.str());
         }
@@ -152,16 +156,21 @@ namespace plan9
 
     }
 
+
+    void log_wrap::d_(std::string msg) {
+        impl->write(log_level::L_DEBUG, msg);
+    }
+
     void log_wrap::i_(std::string msg) {
-        impl->write(INFO, msg);
+        impl->write(log_level::L_INFO, msg);
     }
 
     void log_wrap::w_(std::string msg) {
-        impl->write(WARN, msg);
+        impl->write(log_level::L_WARN, msg);
     }
 
     void log_wrap::e_(std::string msg) {
-        impl->write(ERROR, msg);
+        impl->write(log_level::L_ERROR, msg);
     }
 
     void log_wrap::set_level(log_level level) {
@@ -170,5 +179,14 @@ namespace plan9
 
     void log_wrap::set_duration(int days) {
         impl->set_duration(days);
+    }
+
+
+    void log_wrap::set_all_level(log_wrap::log_level level) {
+        log_wrap::io().set_level(level);
+        log_wrap::net().set_level(level);
+        log_wrap::ui().set_level(level);
+        log_wrap::other().set_level(level);
+        log_wrap::lua().set_level(level);
     }
 }

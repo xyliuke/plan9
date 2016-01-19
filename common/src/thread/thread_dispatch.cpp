@@ -152,7 +152,9 @@ namespace plan9 {
             while (it != queue->end()) {
                 auto func = it->second;
                 if (current_time > func->millisecond) {
-                    func->function();
+                    if (func->function != nullptr) {
+                        func->function();
+                    }
                     queue->erase(it ++);
                 } else {
                     ++ it;

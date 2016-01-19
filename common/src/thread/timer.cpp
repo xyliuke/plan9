@@ -15,11 +15,19 @@ namespace plan9
 
         }
 
-        void start(std::function<void(void)> function, long delay_milliseconds) {
+        int start(std::function<void(void)> function, long delay_milliseconds) {
             if (delay_milliseconds > 0) {
                 repeat = false;
-                id = thread_wrap::post_background(function, delay_milliseconds);
+                this->function = function;
+                id = thread_wrap::post_background([=](void){
+                    if (this->function != nullptr) {
+                        this->function();
+                    }
+                    id = -1;
+                    this->function = nullptr;
+                }, delay_milliseconds);
             }
+            return id;
         }
 
         void start(std::function<void(void)> function, long delay_milliseconds, long repeat_interval) {
@@ -47,6 +55,10 @@ namespace plan9
             }
         }
 
+        bool isOver() {
+            return id < 0;
+        }
+
     private:
         int id;
         bool repeat;
@@ -66,8 +78,8 @@ namespace plan9
 
     }
 
-    void timer::start(std::function<void(void)> function, long delay_milliseconds) {
-        impl->start(function, delay_milliseconds);
+    int timer::start(std::function<void(void)> function, long delay_milliseconds) {
+        return impl->start(function, delay_milliseconds);
     }
 
     void timer::start(std::function<void(void)> function, long delay_milliseconds, long repeat_interval) {
@@ -76,5 +88,10 @@ namespace plan9
 
     void timer::cancel() {
         impl->cancel();
+    }
+
+
+    bool timer::isOver() {
+        return impl->isOver();
     }
 }

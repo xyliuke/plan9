@@ -30,6 +30,15 @@ namespace plan9 {
             return ss.str();
         };
 
+
+        /**
+         * 判断字符串是否以指定字符结尾
+         * @param str 字符串
+         * @param end 结尾字符
+         * @return 如果str是以end结尾,返回true;否则返回false
+         */
+        bool isSuffix(std::string str, char end);
+
     private:
         util();
         class util_impl;

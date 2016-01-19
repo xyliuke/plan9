@@ -95,6 +95,7 @@ namespace plan9
         static void init_lua();
         static void init_network();
         static void send_notify_msg(std::string msg);
+        static void init_config();
 
     private:
         static std::string path;
