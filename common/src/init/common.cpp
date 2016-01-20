@@ -214,65 +214,66 @@ namespace plan9
             if (param.isMember("args")) {
                 std::string level = param["args"]["level"].asString();
                 std::string target = param["args"]["target"].asString();
+                std::string msg = json_wrap::toString(param["args"]["msg"]);
                 if ("ui" == target) {
                     if (level == "info") {
-                        log_wrap::ui().i(param["args"]["msg"].asString());
+                        log_wrap::ui().i(msg);
                     } else if (level == "warn") {
-                        log_wrap::ui().w(param["args"]["msg"].asString());
+                        log_wrap::ui().w(msg);
                     } else if (level == "error") {
-                        log_wrap::ui().e(param["args"]["msg"].asString());
+                        log_wrap::ui().e(msg);
                     } else {
-                        log_wrap::ui().i(param["args"]["msg"].asString());
+                        log_wrap::ui().i(msg);
                     }
                 } else if ("io" == target) {
                     if (level == "info") {
-                        log_wrap::io().i(param["args"]["msg"].asString());
+                        log_wrap::io().i(msg);
                     } else if (level == "warn") {
-                        log_wrap::io().w(param["args"]["msg"].asString());
+                        log_wrap::io().w(msg);
                     } else if (level == "error") {
-                        log_wrap::io().e(param["args"]["msg"].asString());
+                        log_wrap::io().e(msg);
                     } else {
-                        log_wrap::io().i(param["args"]["msg"].asString());
+                        log_wrap::io().i(msg);
                     }
                 } else if ("net" == target) {
                     if (level == "info") {
-                        log_wrap::net().i(param["args"]["msg"].asString());
+                        log_wrap::net().i(msg);
                     } else if (level == "warn") {
-                        log_wrap::net().w(param["args"]["msg"].asString());
+                        log_wrap::net().w(msg);
                     } else if (level == "error") {
-                        log_wrap::net().e(param["args"]["msg"].asString());
+                        log_wrap::net().e(msg);
                     } else {
-                        log_wrap::net().i(param["args"]["msg"].asString());
+                        log_wrap::net().i(msg);
                     }
                 } else if ("lua" == target) {
                     if (level == "info") {
-                        log_wrap::lua().i(param["args"]["msg"].asString());
+                        log_wrap::lua().i(msg);
                     } else if (level == "warn") {
-                        log_wrap::lua().w(param["args"]["msg"].asString());
+                        log_wrap::lua().w(msg);
                     } else if (level == "error") {
-                        log_wrap::lua().e(param["args"]["msg"].asString());
+                        log_wrap::lua().e(msg);
                     } else {
-                        log_wrap::lua().i(param["args"]["msg"].asString());
+                        log_wrap::lua().i(msg);
                     }
                 } else if ("other" == target) {
                     if (level == "info") {
-                        log_wrap::other().i(param["args"]["msg"].asString());
+                        log_wrap::other().i(msg);
                     } else if (level == "warn") {
-                        log_wrap::other().w(param["args"]["msg"].asString());
+                        log_wrap::other().w(msg);
                     } else if (level == "error") {
-                        log_wrap::other().e(param["args"]["msg"].asString());
+                        log_wrap::other().e(msg);
                     } else {
-                        log_wrap::other().i(param["args"]["msg"].asString());
+                        log_wrap::other().i(msg);
                     }
                 } else {
                     if (level == "info") {
-                        log_wrap::other().i(param["args"]["msg"].asString());
+                        log_wrap::other().i(msg);
                     } else if (level == "warn") {
-                        log_wrap::other().w(param["args"]["msg"].asString());
+                        log_wrap::other().w(msg);
                     } else if (level == "error") {
-                        log_wrap::other().e(param["args"]["msg"].asString());
+                        log_wrap::other().e(msg);
                     } else {
-                        log_wrap::other().i(param["args"]["msg"].asString());
+                        log_wrap::other().i(msg);
                     }
                 }
             }

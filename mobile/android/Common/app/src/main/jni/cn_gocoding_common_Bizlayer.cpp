@@ -5,6 +5,7 @@
 #include "cn_gocoding_common_Bizlayer.h"
 #include "util_string.h"
 #include <init/common.h>
+#include <json/json_wrap.h>
 
 static jmethodID callback_method = NULL;
 static JavaVM* global_vm;
@@ -94,27 +95,27 @@ static void call(std::string method, std::string param, bool isCallback) {
 }
 
 static void logi(std::string msg) {
-    std::stringstream ss;
-    ss << "{\"level\":\"info\", \"target\":\"ui\", \"msg\":\"";
-    ss << msg;
-    ss << "\"}";
-    call("log", ss.str(), false);
+    Json::Value tmp;
+    tmp["level"] = "info";
+    tmp["target"] = "ui";
+    tmp["msg"] = msg;
+    call("log", plan9::json_wrap::toString(tmp), false);
 }
 
 static void logw(std::string msg) {
-    std::stringstream ss;
-    ss << "{\"level\":\"warn\", \"target\":\"ui\", \"msg\":\"";
-    ss << msg;
-    ss << "\"}";
-    call("log", ss.str(), false);
+    Json::Value tmp;
+    tmp["level"] = "info";
+    tmp["target"] = "warn";
+    tmp["msg"] = msg;
+    call("log", plan9::json_wrap::toString(tmp), false);
 }
 
 static void loge(std::string msg) {
-    std::stringstream ss;
-    ss << "{\"level\":\"error\", \"target\":\"ui\", \"msg\":\"";
-    ss << msg;
-    ss << "\"}";
-    call("log", ss.str(), false);
+    Json::Value tmp;
+    tmp["level"] = "info";
+    tmp["target"] = "error";
+    tmp["msg"] = msg;
+    call("log", plan9::json_wrap::toString(tmp), false);
 }
 
 void JNICALL Java_cn_gocoding_common_Bizlayer_call(JNIEnv *env, jclass cls, jstring method, jstring param, jboolean isCallback)

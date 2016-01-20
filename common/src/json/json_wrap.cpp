@@ -4,6 +4,7 @@
 
 #include "json_wrap.h"
 #include <fstream>
+#include <util/util.h>
 
 namespace plan9
 {
@@ -27,7 +28,11 @@ namespace plan9
 
     std::string json_wrap::toString(Json::Value value) {
         Json::FastWriter writer;
-        return writer.write(value);
+        std::string ret = writer.write(value);
+        if (util::instance().isSuffix(ret, '\n')) {
+            ret = ret.erase(ret.length() - 1, 1);
+        }
+        return ret;
     }
 
 }

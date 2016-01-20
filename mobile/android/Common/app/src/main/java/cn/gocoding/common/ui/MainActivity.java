@@ -40,8 +40,7 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-        for (int i = 0; i < 1000; i ++) {
-            Bizlayer.logi("log to android : ");
+        for (int i = 0; i < 1; i ++) {
             Bizlayer.call("native.get_error_code", null, new BizlayerCallback() {
                 @Override
                 public void callback(String data) {
