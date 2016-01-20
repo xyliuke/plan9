@@ -15,7 +15,7 @@ local function is_style_property(key)
 end
 
 --- 判断val的类型，返回类型
--- @prarm val 数据
+-- @param val 数据
 -- @return 返回值为string/boolean/number/object/array中其一
 local function json_type(val)
 	if val == nil then
@@ -38,7 +38,8 @@ local function json_type(val)
 end
 
 --- 判断所给的table中，属性是否合法。合法的属性定义在data_check_style文件的dt中
--- @prarm style table格式数据
+-- @param style table格式数据
+-- @param key 检测数据的key值
 -- @return 属性合法返回true,"success";不合法返回false,"reason"
 function is_legal_property(style, key)
 	if json_type(style) == "object" then

@@ -7,14 +7,43 @@
 #include <init/common.h>
 
 static jmethodID callback_method = NULL;
+static JavaVM* global_vm;
+static  jclass bizlayer;
 
-void callback(JNIEnv* env, jclass cls, std::string data) {
+JNIEnv* getEnv() {
+    JNIEnv *env;
+    int status = global_vm->GetEnv((void**)&env, JNI_VERSION_1_6);
+    if(status < 0) {
+        status = global_vm->AttachCurrentThread(&env, NULL);
+        if(status < 0) {
+            return nullptr;
+        }
+    }
+    return env;
+}
+
+jint JNICALL JNI_OnLoad(JavaVM* vm, void* reserved) {
+    global_vm = vm;
+    JNIEnv* env = getEnv();
+    jclass tmp = env->FindClass("cn/gocoding/common/Bizlayer");
+    bizlayer = (jclass)env->NewGlobalRef(tmp);
+    return JNI_VERSION_1_6;
+}
+
+
+
+void callback(std::string data) {
+    JNIEnv* env = getEnv();
+    if (env == nullptr) return;
+
+    Java_cn_gocoding_common_Bizlayer_logi(env, bizlayer, util_string::to_jstring(env, "callback to anroid : " + data));
+
     if (callback_method == NULL) {
-        callback_method = env->GetStaticMethodID(cls, "callback", "(Ljava/lang/String;)V");
+        callback_method = env->GetStaticMethodID(bizlayer, "callback", "(Ljava/lang/String;)V");
     }
     if (callback_method != NULL) {
         jstring data_js = util_string::to_jstring(env, data);
-        env->CallStaticVoidMethod(cls, callback_method, data_js);
+        env->CallStaticVoidMethod(bizlayer, callback_method, data_js);
         env->DeleteLocalRef(data_js);
     }
 }
@@ -25,7 +54,7 @@ void JNICALL Java_cn_gocoding_common_Bizlayer_init(JNIEnv *env, jclass cls, jstr
     std::string lua_str = util_string::to_string(env, lua_path);
     plan9::common::init(root_str, lua_str);
     plan9::common::set_notify_function([=](std::string msg){
-    	callback(env, cls, msg);
+    	callback(msg);
     });
     plan9::common::set_android_platform();
 }
@@ -38,7 +67,7 @@ void JNICALL Java_cn_gocoding_common_Bizlayer_stop(JNIEnv *, jclass)
 void JNICALL Java_cn_gocoding_common_Bizlayer_call(JNIEnv *env, jclass cls, jstring method, jstring param, jboolean isCallback)
 {
     std::string method_str = util_string::to_string(env, method);
-    if (method != NULL) {
+    if (param != NULL) {
         std::string param_str = util_string::to_string(env, param);
         if ("log" != method_str) {
             std::stringstream ss;
@@ -51,10 +80,10 @@ void JNICALL Java_cn_gocoding_common_Bizlayer_call(JNIEnv *env, jclass cls, jstr
         }
         if (isCallback) {
             plan9::common::call(method_str, param_str, [=](std::string data){
-                callback(env, cls, data);
+                callback(data);
             });
         } else {
-            plan9::common::call(method_str, param_str);
+            plan9::common::call(method_str, param_str, nullptr);
         }
     } else {
         if ("log" != method_str) {
@@ -67,10 +96,10 @@ void JNICALL Java_cn_gocoding_common_Bizlayer_call(JNIEnv *env, jclass cls, jstr
         }
         if (isCallback) {
             plan9::common::call(method_str, "", [=](std::string data){
-                callback(env, cls, data);
+                callback(data);
             });
         } else {
-            plan9::common::call(method_str);
+            plan9::common::call(method_str, "", nullptr);
         }
     }
 

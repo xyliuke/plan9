@@ -31,17 +31,23 @@ public class MainActivity extends AppCompatActivity {
         });
         Bizlayer.initBiz(this, "lua", Environment.getExternalStorageDirectory().getAbsolutePath().concat("/common"));
 
+        Bizlayer.call("server.connect", null, new BizlayerCallback() {
+            @Override
+            public void callback(String data) {
+                System.out.println(data);
+            }
+        });
 
 
 
 //        for (int i = 0; i < 500; i ++) {
-            Bizlayer.logi("log to android : ");
-            Bizlayer.call("native.get_error_code", null, new BizlayerCallback() {
-                @Override
-                public void callback(String data) {
-                    System.out.println(data);
-                }
-            });
+//            Bizlayer.logi("log to android : ");
+//            Bizlayer.call("native.get_error_code", null, new BizlayerCallback() {
+//                @Override
+//                public void callback(String data) {
+//                    System.out.println(data);
+//                }
+//            });
 //        }
 //        for (int i = 0; i < 500; i ++) {
 //            Bizlayer.logw("log to android : " + i);
