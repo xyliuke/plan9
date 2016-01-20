@@ -13,8 +13,6 @@ local config = lua_c_bridge:get_module("config")
 
 function server:wrap(method, param, server_type, timeout)
     local msg = param
---    local id = lua_c_bridge:get_id()
---    local msg = {aux = {to = method, id = id, action = "callback"}, args = param }
     msg.timeout = timeout
     msg.server = server_type
     msg.to = method
@@ -26,9 +24,18 @@ function server:connect()
 end
 
 function server:send(param, callback)
-    local p = server:wrap("function", param.args, self.server_type.SERVER_CONNECT, 10000)
-    lua_c_bridge:call_native("send", p, function(result)
-        print("callback from send" .. lua_c_bridge:tostring(result))
+--    local p = server:wrap("function", param.args, self.server_type.SERVER_CONNECT, 10000)
+--    lua_c_bridge:call_native("send", p, function(result)
+--        callback(param, true, result.result, nil)
+--    end)
+    self:send_server_connect("function", param, function(result)
         callback(param, true, result.result, nil)
+    end)
+end
+
+function server:send_server_connect(method, param, callback)
+    local p = server:wrap(method, param.args, self.server_type.SERVER_CONNECT, config.server.timeout)
+    lua_c_bridge:call_native("send", p, function(result)
+        callback(result)
     end)
 end
