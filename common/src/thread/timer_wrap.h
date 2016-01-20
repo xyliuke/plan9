@@ -6,7 +6,7 @@
 #define COMMON_TIMER_WRAP_H
 
 #include <memory>
-#import <thread/timer.h>
+#include <thread/timer.h>
 
 namespace plan9
 {

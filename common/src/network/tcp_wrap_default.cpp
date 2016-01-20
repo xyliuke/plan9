@@ -3,7 +3,7 @@
 //
 
 #include "tcp_wrap_default.h"
-#import <network/tcp.h>
+#include <network/tcp.h>
 #include <thread/timer.h>
 #include <log/log_wrap.h>
 #include <json/json_wrap.h>
@@ -16,15 +16,15 @@ namespace plan9
     class tcp_wrap_default::tcp_wrap_default_impl {
 
     public:
-        tcp_wrap_default_impl() : tcp_(new tcp), connected(false), timer(new plan9::timer), next_connect_time(1000)  {
+        tcp_wrap_default_impl() : tcp_(new tcp), connected(false), timer_(new plan9::timer), next_connect_time(1000)  {
             tcp_->set_connect_handler([=](bool connect) {
                 thread_wrap::post_background([=](){
                     if (connect) {
                         tcp_->enable_ping();
                         next_connect_time = 1000;
-                        timer->cancel();
+                        timer_->cancel();
                     } else {
-                        timer->start([=]() {
+                        timer_->start([=]() {
                             tcp_->reconnect();
                         }, next_connect_time);
 
@@ -127,7 +127,7 @@ namespace plan9
         std::function<void(bool)> connect_handler;
         std::function<void(std::string)> read_handler;
         bool connected;
-        std::shared_ptr<timer> timer;
+        std::shared_ptr<timer> timer_;
         long next_connect_time;
         std::map<std::string, std::function<void(Json::Value)>> send_map;
     };

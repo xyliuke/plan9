@@ -10,6 +10,7 @@
 #include <thread>
 #include <map>
 #include <list>
+#include <mutex>
 
 namespace plan9 {
 
