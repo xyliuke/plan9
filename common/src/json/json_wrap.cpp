@@ -8,7 +8,7 @@
 namespace plan9
 {
     Json::Value json_wrap::parse(std::string json_str, bool* error) {
-        static Json::Reader reader;
+        Json::Reader reader;
         Json::Value ret;
         *error = !reader.parse(json_str, ret);
         return ret;
@@ -26,7 +26,7 @@ namespace plan9
     }
 
     std::string json_wrap::toString(Json::Value value) {
-        static Json::FastWriter writer;
+        Json::FastWriter writer;
         return writer.write(value);
     }
 
