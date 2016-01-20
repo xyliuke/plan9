@@ -37,7 +37,8 @@ func Test_NewJSONObjectByString(t *testing.T) {
 	if err != nil {
 		t.Error("error")
 	}
-	log.Println(j.data)
+//	log.Println(j.data)
+	log.Println(j.Get("from").String())
 }
 
 // func Test_ToJSON(t *testing.T) {

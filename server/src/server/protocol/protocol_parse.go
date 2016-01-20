@@ -25,6 +25,7 @@ func log(msg string)  {
 	fmt.Println(msg)
 }
 
+//创建一个连接处理对象
 func CreateConnection(conn net.Conn) (*Connection)  {
 	connection := new(Connection)
 	connection.id = util.CreateID()
@@ -42,11 +43,12 @@ func CreateConnectionWithData(conn net.Conn, data []byte) (*Connection)  {
 	return connection
 }
 
+//处理每次的从客户端发来的数据
 func (connection *Connection) DealWith(data []byte)  {
 	connection.dealWith(data)
 }
 
-
+//关闭连接
 func (connection *Connection) Close()  {
 	log("close connection to client ip " + connection.conn.RemoteAddr().String())
 	connection.conn.Close()
@@ -79,7 +81,7 @@ func (connection *Connection) opMsg()  {
 					connection.opPing()
 				} else if isStringType(tp) {
 					tmp := connection.buf[6 : data_len + 6]
-					connection.opStringData(tp, tmp)
+					connection.opJsonStringData(tp, tmp)
 				} else {
 					log("recv type null")
 				}
@@ -103,7 +105,7 @@ func (connection *Connection) clearFirstComplateData()  {
 }
 
 //处理一个字符串数据
-func (connection* Connection) opStringData(t byte, data []byte)  {
+func (connection* Connection) opJsonStringData(t byte, data []byte)  {
 	msg := toString(data)
 	if isServerConnect(t) {
 		log("server type")
@@ -121,7 +123,7 @@ func (connection *Connection) opPing()  {
 
 func (connection *Connection) writeString(data string)  {
 	len := len(data)
-	header := []byte{'^', 0x01, byte(len & 0xFF000000), byte(len & 0x00FF0000), byte(len & 0x0000FF00), byte(len & 0x000000FF)}
+	header := []byte{'^', 0x01, byte((len & 0xFF000000) >> 24), byte((len & 0x00FF0000) >> 16), byte((len & 0x0000FF00) >> 8), byte(len & 0x000000FF)}
 	tmp := make([]byte, len + 6)
 	copy(tmp, header)
 	copy(tmp[6:], []byte(data))

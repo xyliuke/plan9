@@ -14,8 +14,7 @@ type JSONObject struct {
 	data interface{}
 }
 
-// NewJSONObject returns a pointer to a new `JSONObject` object
-// after unmarshaling `body` bytes
+//通过byte数组生成一个json对象
 func NewJSONObject(body []byte) (*JSONObject, error) {
 	j := new(JSONObject)
 	err := j.UnmarshalJSONObject(body)
@@ -24,7 +23,9 @@ func NewJSONObject(body []byte) (*JSONObject, error) {
 	}
 	return j, nil
 }
-
+//字符串生成json对象
+//body 需要解析的字符串
+//返回json对象和是否出错
 func NewJSONObjectByString(body string) (*JSONObject, error) {
 	b := []byte(body)
 	return NewJSONObject(b)
