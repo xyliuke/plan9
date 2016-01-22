@@ -39,4 +39,19 @@ TEST(util_test, id) {
     EXPECT_EQ(plan9::util::instance().isSuffix("abc\r", '\r'), true);
 }
 
+TEST(util_test, trim) {
+    std::string s = "hello world";
+    EXPECT_EQ(s, plan9::util::instance().trim(s));
+    std::string s1 = "hello world\n";
+    EXPECT_EQ(s, plan9::util::instance().trim(s1));
+    std::string s2 = "hello world\t";
+    EXPECT_EQ(s, plan9::util::instance().trim(s2));
+    std::string s3 = " hello world ";
+    EXPECT_EQ(s, plan9::util::instance().trim(s3));
+    std::string s4 = "\nhello world";
+    EXPECT_EQ(s, plan9::util::instance().trim(s4));
+    std::string s5 = "\thello world\r";
+    EXPECT_EQ(s, plan9::util::instance().trim(s5));
+}
+
 #endif

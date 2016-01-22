@@ -39,6 +39,11 @@ namespace plan9 {
          */
         bool isSuffix(std::string str, char end);
 
+        /**
+         * 去掉字符串前后的空格,回车,\r字符
+         */
+        std::string trim(std::string str);
+
     private:
         util();
         class util_impl;

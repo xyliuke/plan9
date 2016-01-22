@@ -12,35 +12,24 @@
 #include <json/json.h>
 #include <commander/cmd_factory.h>
 #include <lua/lua_bind.h>
+#include <json/json_wrap.h>
 
 using namespace plan9;
 
 TEST(common_test, init) {
     using namespace plan9;
 
-//    char n = msg[msg.length() - 1]
+    plan9::common::init("./data", "../../lua");
+    Json::Value param;
+    param["level"] = "info";
+    Json::Value msg;
+    msg["aaa"] = 5;
+    param["msg"] = "xxx : {\"a\":1}";
+    param["target"] = "other";
 
-//    unsigned char c = 0xa2;
-//    char cc = (char)c;
-//    int ci = (int)cc;
-//    int ci1 = (int)c;
-
-//    unsigned char buf[4] = {0x0, 0x0, 0x0, 0xa2};
-//    int a1 = buf[0];
-//    int a2 = buf[1];
-//    int a3 = buf[2];
-//    int a4 = buf[3];
-//    int ret = (a1 << 24) + (a2 << 16) + (a3 << 8) + a4;
-
-//    plan9::common::init("./data", "../../lua");
-//    Json::Value param;
-//    param["level"] = "info";
-//    param["msg"] = "dddddddddddddddsssssssssxxxxxxxxxxx";
-//    param["target"] = "other";
-//
-//    plan9::common::call_("native.get_error_code", param, [=](Json::Value result){
-//        std::cout << "callback common init 1 :" << result << std::endl;
-//    });
+    plan9::common::call("log", json_wrap::toString(param), [=](std::string result){
+        std::cout << "callback common init 1 :" << result << std::endl;
+    });
 
 //    Json::Value p1;
 //    p1["aux"]["id"] = "dddxxx";
@@ -57,9 +46,6 @@ TEST(common_test, init) {
 //        });
 //    });
 
-
-
-//    plan9::cmd_factory::instance().execute("log", param);
 
 //    plan9::common::call("server.connect");
 
