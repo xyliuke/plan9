@@ -20,6 +20,16 @@ namespace plan9
          * 生成一个不重复id,以当前时间为基准,性能比较好.运行10000次,共耗时9ms（本机测试）
          */
         static std::string id();
+
+        /**
+         * 生成一个0-9999的随机数
+         */
+        static int random();
+        /**
+         * 生成一个0到指定max值的随机数
+         * @param max 指定随机数的范围
+         */
+        static int random(int max);
     };
 
 }

@@ -28,10 +28,6 @@ TEST(util_test, id) {
     EXPECT_NE(id1, id2);
     std::cout << "id:" << id1 << std::endl;
     std::cout << "id:" << id2 << std::endl;
-//    for (int i = 0; i < 500000; ++i) {
-//        std::string id = plan9::UUID::id();
-//        std::cout << "id:" << plan9::UUID::id() << std::endl;
-//    }
 
     EXPECT_EQ(plan9::util::instance().isSuffix("abc\n", '\n'), true);
     EXPECT_EQ(plan9::util::instance().isSuffix("abcd", 'd'), true);
@@ -52,6 +48,12 @@ TEST(util_test, trim) {
     EXPECT_EQ(s, plan9::util::instance().trim(s4));
     std::string s5 = "\thello world\r";
     EXPECT_EQ(s, plan9::util::instance().trim(s5));
+}
+
+TEST(util_test, random) {
+    for (int i = 0; i < 10; ++i) {
+        std::cout << plan9::UUID::random() << std::endl;
+    }
 }
 
 #endif

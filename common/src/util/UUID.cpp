@@ -9,6 +9,7 @@
 #include <boost/uuid/uuid_io.hpp>
 #include <sstream>
 #include <util/time.h>
+#include <random>
 
 namespace plan9
 {
@@ -24,10 +25,18 @@ namespace plan9
         static char i = 0;
         static char j = 0;
         std::stringstream ss;
-        ss << "ID";
+        ss << "ID-";
         ss << time::microseconds();
+        ss << "-";
+
+        char r[4];
+        sprintf(r, "%04d", UUID::random());
+        ss << r;
+        ss << "-";
+
         ss << ALP[i];
         ss << ALP[j];
+
 
         if (j > 24) {
             j = 0;
@@ -40,5 +49,16 @@ namespace plan9
             j ++;
         }
         return ss.str();
+    }
+
+    int UUID::random() {
+        return random(9999);
+    }
+
+    int UUID::random(int max) {
+        std::random_device device;
+        std :: default_random_engine e(device()) ;
+        std::uniform_int_distribution<> u(0, max);
+        return u(e);
     }
 }
