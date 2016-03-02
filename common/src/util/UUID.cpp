@@ -26,6 +26,21 @@ namespace plan9
         static char j = 0;
         std::stringstream ss;
         ss << "ID-";
+
+#ifdef IOS
+        ss << "IOS-";
+#elif ANDROID
+        ss << "ANDROID-";
+#elif WIN32
+        ss << "WIN-";
+#elif MACOSX
+        ss << "MACOSX-";
+#elif LINUX
+        ss << "LINUX-";
+#else
+        ss << "OTHER-";
+#endif
+
         ss << time::microseconds();
         ss << "-";
 
