@@ -1,9 +1,8 @@
-package cn.gocoding.server;
+package cn.gocoding.server.protocol;
 
 import cn.gocoding.common.tuple.Tuple;
 import cn.gocoding.common.tuple.Tuple2;
 import cn.gocoding.common.error.ErrorCode;
-import cn.gocoding.common.tuple.Tuple5;
 import cn.gocoding.common.tuple.Tuple6;
 
 /**
@@ -135,7 +134,53 @@ public class Protocol {
         }
         return len;
     }
-    
+
+    /**
+     * 创建一条ping的数据协议
+     * @param id 客户端id
+     * @param version 客户端版本号
+     * @param serverType 接收端服务器类型
+     * @return 返回ping协议数据
+     */
+    public static byte[] createPingProtocol(int id, byte version, byte serverType) {
+        return createProtocol(id, version, serverType, PING_DATA_TYPE, 4, "ping".getBytes())._2().get();
+    }
+
+    /**
+     * 创建一条pong的数据协议
+     * @param id 服务器id
+     * @param version 服务器版本号
+     * @return 返回pong协议数据
+     */
+    public static byte[] createPongProtocol(int id, byte version) {
+        return createProtocol(id, version, (byte)0, PONG_DATA_TYPE, 4, "pong".getBytes())._2().get();
+    }
+
+
+    public static Tuple2<ErrorCode, byte[]> createProtocol(int id, byte version, byte serverType, byte dataType, int len, byte[] data) {
+
+        if (data.length < len) {
+            return Tuple.of(ErrorCode.PARAMTER_ERROR, null);
+        }
+
+        byte[] ret = new byte[PROTOCOL_HEADER_LEN + len];
+        ret[0] = PROTOCOL_FIRST_LETTER;
+        ret[PROTOCOL_ID_INDEX] = (byte)((id & 0xFF000000) >> 24);
+        ret[PROTOCOL_ID_INDEX + 1] = (byte)((id & 0x00FF0000) >> 16);
+        ret[PROTOCOL_ID_INDEX + 2] = (byte)((id & 0x0000FF00) >> 8);
+        ret[PROTOCOL_ID_INDEX + 3] = (byte)(id & 0x000000FF);
+
+        ret[PROTOCOL_VERSION_INDEX] = version;
+
+        ret[PROTOCOL_TYPE_INDEX] = (byte)(serverType | dataType);
+
+        ret[PROTOCOL_DATA_LEN_INDEX] = (byte) ((len & 0x0000FF00) >> 8);
+        ret[PROTOCOL_DATA_LEN_INDEX + 1] = (byte) ((len & 0x000000FF));
+
+        System.arraycopy(data, 0, ret, PROTOCOL_DATA_INDEX, len);
+
+        return Tuple.of(ErrorCode.NOT_ERROR, ret);
+    }
 
 
     /**
@@ -145,7 +190,7 @@ public class Protocol {
      */
     private static int getDataLen(byte[] data) {
         if (data.length > PROTOCOL_HEADER_LEN) {
-            return (int) data[PROTOCOL_DATA_LEN_INDEX] << 8 + (int) data[PROTOCOL_DATA_LEN_INDEX + 1];
+            return (int) (Byte.toUnsignedInt(data[PROTOCOL_DATA_LEN_INDEX]) << 8) + (int) (Byte.toUnsignedInt(data[PROTOCOL_DATA_LEN_INDEX + 1]));
         }
         return -1;
     }
@@ -162,7 +207,7 @@ public class Protocol {
             int c = Byte.toUnsignedInt(data[PROTOCOL_ID_INDEX + 2]);
             int d = Byte.toUnsignedInt(data[PROTOCOL_ID_INDEX + 3]);
 
-            return a << 24 + b << 16 + c << 8 + d;
+            return (a << 24) + (b << 16) + (c << 8) + d;
         }
         return -1;
     }

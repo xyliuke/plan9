@@ -4,114 +4,138 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.net.InetSocketAddress;
-import java.net.ServerSocket;
-import java.net.Socket;
 import java.nio.ByteBuffer;
-import java.nio.channels.SelectionKey;
-import java.nio.channels.Selector;
-import java.nio.channels.ServerSocketChannel;
-import java.nio.channels.SocketChannel;
-import java.util.Iterator;
-import java.util.Set;
+import java.nio.channels.AsynchronousChannelGroup;
+import java.nio.channels.AsynchronousServerSocketChannel;
+import java.nio.channels.AsynchronousSocketChannel;
+import java.nio.channels.CompletionHandler;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 /**
- * tcp服务器端的基类
- * Created by liuke on 16/3/3.
+ * 使用异步IO方式实现基本的TCP服务器
+ * Created by liuke on 16/3/8.
  */
 public class BaseServer {
+    private static final Logger logger = LogManager.getLogger(BaseServer.class);
 
-    public static final int TCP_BUF_SIZE = 1024 * 2;
 
-    public BaseServer(int port, ServerOperationManager manager) throws IOException{
-        this.port = port;
-        this.manager = manager;
-        serverSocketChannel.bind(new InetSocketAddress(port));
-        serverSocketChannel.configureBlocking(false);
-        logger.debug("init server socket with port {}", port);
-
-        selector = Selector.open();
-        serverSocketChannel.register(selector, SelectionKey.OP_ACCEPT);
+    public BaseServer(int port, ServerManager manager, int threadNum) {
+        try {
+            this.manager = manager;
+            group = AsynchronousChannelGroup.withThreadPool(Executors.newFixedThreadPool(threadNum));
+            serverSocketChannel = AsynchronousServerSocketChannel.open(group).bind(new InetSocketAddress(port));
+        } catch (IOException e) {
+            logger.error("create tcp server error, the reason : {}", e.getStackTrace());
+        }
     }
 
     public void listen() {
-        new Thread(() -> {
-            try {
-                while (true) {
-                    if (selector.select() == 0) continue;
+        serverSocketChannel.accept(null, new CompletionHandler<AsynchronousSocketChannel, Object>() {
+            @Override
+            public void completed(AsynchronousSocketChannel result, Object attachment) {
+                serverSocketChannel.accept(null, this);
+                try {
+                    logger.info("one client connect to server, client address {}", result.getRemoteAddress());
+                    if (manager != null) {
+                        manager.newConnection(result);
+                    }
 
-                    Set<SelectionKey> selectionKeys = selector.selectedKeys();
-                    Iterator<SelectionKey> iterator = selectionKeys.iterator();
-                    while (iterator.hasNext()) {
-                        SelectionKey selectionKey = iterator.next();
-                        handleKey(selectionKey);
-                        iterator.remove();
+                    ByteBuffer byteBuffer = ByteBuffer.allocate(BUF_SIZE);
+                    ReadCompletionHandler readCompletionHandler = new ReadCompletionHandler(result, manager);
+                    result.read(byteBuffer, byteBuffer, readCompletionHandler);
+
+                } catch (IOException e) {
+                    try {
+                        logger.error("tcp server accept client address {} error", result.getRemoteAddress());
+                    } catch (IOException e1) {
+
                     }
                 }
-            } catch (IOException e) {
-
             }
 
-        }).start();
-
-    }
-
-    public void close() throws IOException{
-        serverSocketChannel.close();
-    }
-
-
-    private void handleKey(SelectionKey key) throws IOException {
-        if (key.isAcceptable()) {
-            SocketChannel socketChannel = serverSocketChannel.accept();//(SocketChannel)key.channel();
-            socketChannel.configureBlocking(false);
-            logger.debug("accept client address : {}, {}", socketChannel.socket().getInetAddress(), socketChannel.socket().getPort());
-
-            if (manager != null) {
-                manager.createConnection(socketChannel);
+            @Override
+            public void failed(Throwable exc, Object attachment) {
+                logger.error("tcp server accept client connection error, the reason : {}", exc.getStackTrace());
             }
+        });
 
-            socketChannel.register(selector, SelectionKey.OP_READ);
-        } else if (key.isReadable()) {
-            ByteBuffer byteBuffer = ByteBuffer.allocate(TCP_BUF_SIZE);
-            SocketChannel socketChannel = (SocketChannel) key.channel();
-
-            int readSize = 0;
-            byte[] bytes;
-            while ((readSize = socketChannel.read(byteBuffer)) > 0) {
-                byteBuffer.flip();
-                bytes = new byte[readSize];
-                byteBuffer.get(bytes);
-                byteBuffer.clear();
-                logger.debug("read from client address : {}, {}, data : {}", socketChannel.socket().getInetAddress(),
-                        socketChannel.socket().getPort(), bytes);
-                if (manager != null) {
-                    manager.dealWithData(socketChannel, bytes);
-                }
-                socketChannel.register(selector, SelectionKey.OP_READ);
-            }
-            if (readSize < 0) {
-                if (manager != null) {
-                    manager.close(socketChannel);
-                } else {
-                    socketChannel.close();
-                }
-                logger.debug("close client address : {}, {} connection", socketChannel.socket().getInetAddress(),
-                        socketChannel.socket().getPort());
-            }
+        try {
+            group.awaitTermination(Long.MAX_VALUE, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            logger.error("tcp server listen error, the reason : {}", e.getMessage());
         }
+
     }
 
-    protected void write(SocketChannel socketChannel, byte[] data) {
+
+
+
+
+
+    private AsynchronousServerSocketChannel serverSocketChannel;
+    private AsynchronousChannelGroup group;
+    private ServerManager manager;
+    private static final int BUF_SIZE = 1024 * 2;
+}
+
+
+class ReadCompletionHandler implements CompletionHandler<Integer, ByteBuffer> {
+    private static final Logger logger = LogManager.getLogger(BaseServer.class);
+
+    public ReadCompletionHandler(AsynchronousSocketChannel socketChannel, ServerManager manager) {
+        socketChannelWeakReference = new WeakReference<>(socketChannel);
         if (manager != null) {
-            manager.write(socketChannel, data);
+            managerWeakReference = new WeakReference<>(manager);
         }
     }
 
+    @Override
+    public void completed(Integer result, ByteBuffer attachment) {if (socketChannelWeakReference != null && socketChannelWeakReference.get() != null && result != null) {
+            try {
+                if (result.intValue() < 0) {
+                    logger.info("the client close connection, client address : {}", socketChannelWeakReference.get().getRemoteAddress());
+                    if (managerWeakReference != null && managerWeakReference.get() != null) {
+                        managerWeakReference.get().close(socketChannelWeakReference.get());
+                    }
+                } else if (result.intValue() > 0){
+                    byte[] data = new byte[result];
+                    attachment.flip();
+                    attachment.get(data);
+                    logger.info("read data from client : {} , data : {}", socketChannelWeakReference.get().getRemoteAddress(), data);
+                    if (managerWeakReference != null && managerWeakReference.get() != null) {
+                        managerWeakReference.get().handle(socketChannelWeakReference.get(), data);
+                    }
+                    attachment.flip();
+                }
+            } catch (IOException e) {
+                logger.info("read data from client error, the reason : ", e.getStackTrace());
+            } finally {
+                if (result.intValue() > 0) {
+                    socketChannelWeakReference.get().read(attachment, attachment, this);
+                }
+            }
+        } else {
+            logger.info("read data from client, data : {}, but the client is null", attachment);
+        }
+    }
 
-    private ServerSocketChannel serverSocketChannel = ServerSocketChannel.open();
-    private Selector selector;
-    private int port;
-    private static Logger logger = LogManager.getLogger(BaseServer.class);
-    private ServerOperationManager manager;
+    @Override
+    public void failed(Throwable exc, ByteBuffer attachment) {
+        try {
+            logger.info("read error from client : {} , the reason : {}", socketChannelWeakReference.get().getRemoteAddress(), exc.getStackTrace());
+            if (managerWeakReference != null && managerWeakReference.get() != null) {
+                if (managerWeakReference != null && managerWeakReference.get() != null) {
+                    managerWeakReference.get().close(socketChannelWeakReference.get());
+                }
+            }
+        } catch (Exception e) {
+        }
+
+    }
+
+    private WeakReference<AsynchronousSocketChannel> socketChannelWeakReference;
+    private WeakReference<ServerManager> managerWeakReference;
 }

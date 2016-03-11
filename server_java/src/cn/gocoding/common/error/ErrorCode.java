@@ -7,8 +7,17 @@ package cn.gocoding.common.error;
 public enum ErrorCode {
 
     NOT_ERROR(0, "this is no error"),
-    PROTOLOC_FORMAT_ILLEGAL_ERROR(1, "the protocol is not legal format"),
-    UNKNOW_ERROR(2, "unknow error");
+
+    //网络协议相关错误  1-255
+    PROTOLOC_FORMAT_ILLEGAL_ERROR(0x1, "the protocol is not legal format"),
+    PROTOLOC_ERROR_MAX(0xFF, "protocol max error num"),
+
+    //普通错误  256-511
+    PARAMTER_ERROR(0x100, "parameter error"),
+    PARAMTER_ERROR_MAX(0x1FF, "parameter error"),
+
+    UNKNOW_ERROR(0xFFFFFFFF, "unknow error");
+
 
 
 
@@ -35,6 +44,13 @@ public enum ErrorCode {
         return e.getErrorCode() != NOT_ERROR.getErrorCode();
     }
 
+
+
     private int errorCode;
     private String errorMsg;
+
+    @Override
+    public String toString() {
+        return "error code : " + getErrorCode() + ", error msg : " + getErrorMsg();
+    }
 }
