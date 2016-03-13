@@ -19,10 +19,6 @@ import java.nio.channels.CompletionHandler;
  */
 public class BaseServerOperation {
 
-    public BaseServerOperation(ServerUnit unit) {
-        this.unit = unit;
-    }
-
     public BaseServerOperation(AsynchronousSocketChannel socketChannel, ServerUnit unit) {
         this.unit = unit;
         if (socketChannel != null) {

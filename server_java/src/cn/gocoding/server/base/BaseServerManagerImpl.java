@@ -109,5 +109,5 @@ public class BaseServerManagerImpl implements ServerManager, MessageNotifyRecevi
     private Map<AsynchronousSocketChannel, BaseServerOperation> operationMap = new HashMap<>();
     private Map<Integer, AsynchronousSocketChannel> socketChannelMap = new HashMap<>();
     private static final Logger logger = LogManager.getLogger(BaseServerManagerImpl.class);
-    private ServerUnit serverUnit;
+    protected ServerUnit serverUnit;
 }

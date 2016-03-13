@@ -77,7 +77,7 @@ public class BaseServer {
 
     private AsynchronousServerSocketChannel serverSocketChannel;
     private AsynchronousChannelGroup group;
-    private ServerManager manager;
+    protected ServerManager manager;
     private static final int BUF_SIZE = 1024 * 2;
 }
 

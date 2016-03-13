@@ -23,7 +23,7 @@ interface BaseClientManagerImplDelegate {
  * 基本协议的tcp客户端管理类
  * Created by liuke on 16/3/10.
  */
-public class BaseClientManagerImpl implements ClientManager {
+public class BaseClientManagerImpl implements ClientManager, MessageNotifyRecevier {
 
     public BaseClientManagerImpl(ClientUnit unit) {
         this.unit = unit;
@@ -84,6 +84,16 @@ public class BaseClientManagerImpl implements ClientManager {
     public void close() {
         stopPing();
         reconnect();
+    }
+
+    @Override
+    public void sendMessage(byte[] data) {
+        write(data);
+    }
+
+    @Override
+    public void sendMessage(int clientID, byte[] data) {
+        //在客户端不需要实现
     }
 
     private void sendPing() {
