@@ -28,7 +28,7 @@ public class BaseServer {
             group = AsynchronousChannelGroup.withThreadPool(Executors.newFixedThreadPool(threadNum));
             serverSocketChannel = AsynchronousServerSocketChannel.open(group).bind(new InetSocketAddress(port));
         } catch (IOException e) {
-            logger.error("create tcp server error, the reason : {}", e.getStackTrace());
+            logger.error("create tcp server error, the reason : {}", e.getMessage());
         }
     }
 
@@ -58,16 +58,15 @@ public class BaseServer {
 
             @Override
             public void failed(Throwable exc, Object attachment) {
-                logger.error("tcp server accept client connection error, the reason : {}", exc.getStackTrace());
+                logger.error("tcp server accept client connection error, the reason : {}", exc.getMessage());
             }
         });
 
         try {
-            group.awaitTermination(Long.MAX_VALUE, TimeUnit.SECONDS);
+            group.awaitTermination(Long.MAX_VALUE, TimeUnit.HOURS);
         } catch (InterruptedException e) {
             logger.error("tcp server listen error, the reason : {}", e.getMessage());
         }
-
     }
 
 
@@ -111,7 +110,7 @@ class ReadCompletionHandler implements CompletionHandler<Integer, ByteBuffer> {
                     attachment.flip();
                 }
             } catch (IOException e) {
-                logger.info("read data from client error, the reason : ", e.getStackTrace());
+                logger.info("read data from client error, the reason : ", e.getMessage());
             } finally {
                 if (result.intValue() > 0) {
                     socketChannelWeakReference.get().read(attachment, attachment, this);

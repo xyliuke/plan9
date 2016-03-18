@@ -31,9 +31,10 @@ public class Protocol {
     public static final byte VERIFY_SERVER_TYPE = (byte) 0x10;
     public static final byte SESSION_SERVER_TYPE = (byte) 0x20;
     public static final byte DATABASE_SERVER_TYPE = (byte) 0x30;
+    public static final byte CONNECTION_SERVER_TYPE = (byte) 0x40;
 
-    public static final byte MAIN_CONFIG_TYPE = (byte) 0xE0;
-    public static final byte OTHER_CONFIG_TYPE = (byte) 0xF0;
+    public static final byte MAJOR_CONFIG_TYPE = (byte) 0xE0;
+    public static final byte MINOR_CONFIG_TYPE = (byte) 0xF0;
 
 
     //后4bit的数据类型协议

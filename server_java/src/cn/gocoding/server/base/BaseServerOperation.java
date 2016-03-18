@@ -30,29 +30,41 @@ public class BaseServerOperation {
         }
     }
 
-    public boolean handle(byte[] data) {
+    public Tuple6<ErrorCode, Integer, Integer, Byte, Integer, byte[]> parse(byte[] data) {
         if (data != null) {
             System.arraycopy(data, 0, this.buf, size, data.length);
             size += data.length;
 
             Tuple6<ErrorCode, Integer, Integer, Byte, Integer, byte[]> item = Protocol.getProtocolItem(buf, size);
-            if (item._1().isPresent() && !ErrorCode.isError(item._1().get())) {
-                if (Protocol.isPingType(item._4().get())) {
-                    logger.info("handle data from client {}, client id : {}, version : {}, ping type",
-                            addr,
-                            item._2().get(),
-                            item._3().get());
-                    logger.info("write pong data to client {}", addr);
-                    byte[] pong = Protocol.createPongProtocol(item._2().get(), unit.getVersion());
-                    write(pong);
-                    return true;
-                } else {
-                    handle(item);
-                }
-            }
+            return item;
         }
-        return false;
+        return null;
     }
+
+//    public boolean handle(byte[] data) {
+//        if (data != null) {
+//            System.arraycopy(data, 0, this.buf, size, data.length);
+//            size += data.length;
+//
+//            Tuple6<ErrorCode, Integer, Integer, Byte, Integer, byte[]> item = Protocol.getProtocolItem(buf, size);
+//            if (item._1().isPresent() && !ErrorCode.isError(item._1().get())) {
+//                if (Protocol.isPingType(item._4().get())) {
+//                    logger.info("handle data from client {}, client id : {}, version : {}, ping type",
+//                            addr,
+//                            item._2().get(),
+//                            item._3().get());
+//                    logger.info("write pong data to client {}", addr);
+//                    byte[] pong = Protocol.createPongProtocol(item._2().get(), unit.getVersion());
+//                    write(pong);
+//                    size = Protocol.removeFirstProtocol(buf, size);
+//                    return true;
+//                } else {
+//                    handle(item);
+//                }
+//            }
+//        }
+//        return false;
+//    }
 
     /**
      * 子类需要重写这个方法来处理
@@ -60,7 +72,27 @@ public class BaseServerOperation {
      * @return 处理完成返回true,否则返回false
      */
     public boolean handle(Tuple6<ErrorCode, Integer, Integer, Byte, Integer, byte[]> item) {
+        if (item._1().isPresent() && !ErrorCode.isError(item._1().get())) {
+            if (Protocol.isPingType(item._4().get())) {
+                logger.info("handle data from client {}, client id : {}, version : {}, ping type",
+                        addr,
+                        item._2().get(),
+                        item._3().get());
+                logger.info("write pong data to client {}", addr);
+                byte[] pong = Protocol.createPongProtocol(item._2().get(), unit.getVersion());
+                write(pong);
+                handleSuccess();;
+                return true;
+            }
+        }
         return false;
+    }
+
+    /**
+     * 处理协议成功
+     */
+    public void handleSuccess() {
+        size = Protocol.removeFirstProtocol(buf, size);
     }
 
     public void write(byte[] data) {

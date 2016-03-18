@@ -1,6 +1,8 @@
 package cn.gocoding.server.base;
 
+import cn.gocoding.common.error.ErrorCode;
 import cn.gocoding.common.network.tcp.server.ServerManager;
+import cn.gocoding.common.tuple.Tuple6;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -31,6 +33,15 @@ public class BaseServerManagerImpl implements ServerManager, MessageNotifyRecevi
         }
     }
 
+    public int getClientIDBySocket(AsynchronousSocketChannel socketChannel) {
+        for (int id : socketChannelMap.keySet()) {
+            if (socketChannelMap.get(id).equals(socketChannel)) {
+                return id;
+            }
+        }
+        return -1;
+    }
+
     @Override
     public void newConnection(AsynchronousSocketChannel socketChannel) {
         if (socketChannel != null) {
@@ -46,6 +57,15 @@ public class BaseServerManagerImpl implements ServerManager, MessageNotifyRecevi
         try {
             socketChannel.close();
             operationMap.remove(socketChannel);
+
+            for (int id : socketChannelMap.keySet()) {
+                AsynchronousSocketChannel s = socketChannelMap.get(id);
+                if (s.equals(socketChannel)) {
+                    socketChannelMap.remove(id);
+                    break;
+                }
+            }
+
         } catch (IOException e) {
             try {
                 logger.error("close client {} error, the reason : {}", socketChannel.getRemoteAddress(), e.getStackTrace());
@@ -62,10 +82,21 @@ public class BaseServerManagerImpl implements ServerManager, MessageNotifyRecevi
                 logger.info("handle client {} data {}", socketChannel.getRemoteAddress(), data);
                 if (operationMap.containsKey(socketChannel)) {
                     BaseServerOperation serverOperation = operationMap.get(socketChannel);
-                    return serverOperation.handle(data);
+                    Tuple6<ErrorCode, Integer, Integer, Byte, Integer, byte[]> item = serverOperation.parse(data);
+                    if (item._1().isPresent() && !ErrorCode.isError(item._1().get())) {
+                        boolean suc = handle(item);
+
+                        if (suc) {
+                            serverOperation.handleSuccess();
+                            return true;
+                        } else {
+                            return serverOperation.handle(item);
+                        }
+                    }
+
                 }
             } catch (IOException e) {
-                logger.error("handle data from client error, the reason : {}", e.getStackTrace());
+                logger.error("handle data from client error, the reason : {}", e.getMessage());
             } finally {
                 return false;
             }
@@ -73,6 +104,10 @@ public class BaseServerManagerImpl implements ServerManager, MessageNotifyRecevi
             logger.info("handle client or data is null");
         }
 
+        return false;
+    }
+
+    public boolean handle(Tuple6<ErrorCode, Integer, Integer, Byte, Integer, byte[]> item) {
         return false;
     }
 

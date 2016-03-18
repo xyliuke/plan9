@@ -1,9 +1,11 @@
 package cn.gocoding.main;
 
-import cn.gocoding.common.error.ErrorCode;
+
+import cn.gocoding.server.config.MajorConfig;
+import cn.gocoding.server.config.MinorConfig;
+import com.alibaba.fastjson.JSONObject;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
 
 
 /**
@@ -13,31 +15,64 @@ import org.apache.logging.log4j.Logger;
 public class Main {
     private static Logger logger = LogManager.getLogger(Main.class);
     public static void main(String[] args) {
+        if (args.length > 0) {
+            configFile = args[0];
+        }
 
-        byte b = (byte)0xFF;
-        int a = (int)b;
-        logger.info("a : {}", Byte.toUnsignedInt(b));
-
-//        try {
-//            BaseServer baseServer = new BaseServer(8081, new ServerOperationManager());
-//            baseServer.listen();
-//        } catch (IOException e) {
-//            logger.info(e.getMessage());
-//        }
-//        byte[] buf = new byte[10];
-//        logger.info("buf size {}", buf.length);
-//        ErrorCode e1 = ErrorCode.NOT_ERROR;
-
-//        logger.info("error num {}, msg {}, {}", e1.getErrorCode(), e1.getErrorMsg(), ErrorCode.isError(e1));
-//        tuple<Integer, String, Double> t = tuple.of(1, "abc", 1.2);
-//        logger.info("tuple 1 {}, 2 {} , 3 {}, string : {}", t._1().get().getClass(), t._2(), t._3(), t);
-//        T<Integer, String, Float> t = new T<Integer, String, Float>(1, "", 1.2);
-//        T<Integer, String, Float> t1 = new T<Integer, String, Float>(1, "");
-//        T<Integer> t1;
-
-//        Tuple2<Integer, String> t = tuple.of(1, "");
-
-//        List<String> list = new ArrayList<Integer>();
-//        logger.info("tuple 1 {}, 2 {} , string : {}", t._1(), t._2(), t);
+        logger.info("read config file from {}", configFile);
+        JSONObject config = ConfigFile.readConfigFile(configFile);
+        if (config != null) {
+            logger.info("config json : {}", config);
+            if (isMajorServer(config)) {
+                runMajorServer(config);
+            } else if (isMinorServer(config)) {
+                runMinorServer(config);
+            }
+        }
     }
+
+
+    private static boolean isMajorServer(JSONObject json) {
+        if (json.containsKey("identity")) {
+            if ("major-config-server".equals(json.getString("identity"))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static boolean isMinorServer(JSONObject json) {
+        if (json.containsKey("identity")) {
+            if ("minor-config-server".equals(json.getString("identity"))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static void runMajorServer(JSONObject json) {
+        if (json.containsKey("port") && json.containsKey("version")) {
+            int port = json.getInteger("port");
+            int version = json.getInteger("version");
+            MajorConfig.run(port, version);
+        }
+    }
+
+    private static void runMinorServer(JSONObject json) {
+        if (json.containsKey("client-id") && json.containsKey("major-config-server-ip")
+                && json.containsKey("major-config-server-port") && json.containsKey("version")) {
+            int clientID = json.getInteger("client-id");
+            String major_ip = json.getString("major-config-server-ip");
+            int major_port = json.getInteger("major-config-server-port");
+            int port = json.getInteger("port");
+            int version = json.getInteger("version");
+            byte managerServerType = json.getByteValue("manager-server-type");
+            int managerServerNum = json.getByteValue("manager-server-num");
+
+            MinorConfig.run(major_ip, major_port, port, version, clientID, managerServerType, managerServerNum);
+        }
+    }
+
+
+    private static String configFile = "./config.json";
 }

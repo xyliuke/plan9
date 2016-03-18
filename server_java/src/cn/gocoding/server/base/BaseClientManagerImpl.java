@@ -3,6 +3,7 @@ package cn.gocoding.server.base;
 import cn.gocoding.common.error.ErrorCode;
 import cn.gocoding.common.network.tcp.client.ClientManager;
 import cn.gocoding.common.tuple.Tuple2;
+import cn.gocoding.common.tuple.Tuple6;
 import cn.gocoding.server.protocol.Protocol;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -53,6 +54,25 @@ public class BaseClientManagerImpl implements ClientManager, MessageNotifyRecevi
     public boolean handle(byte[] data) {
         sendPing();
         checkDisconnect();
+        System.arraycopy(data, 0, buf, size, data.length);
+        size += data.length;
+
+        Tuple6<ErrorCode, Integer, Integer, Byte, Integer, byte[]> item = Protocol.getProtocolItem(buf, size);
+        if (item._1().isPresent() && !ErrorCode.isError(item._1().get())) {
+            logger.info("handle data from client {}, client id : {}, version : {}, type : {}, len : {}, data : {}",
+                    addr,
+                    item._2().get(),
+                    item._3().get(),
+                    item._4().get(),
+                    item._5().get(),
+                    item._6().get());
+            handle(item);
+        }
+
+        return false;
+    }
+
+    public boolean handle(Tuple6<ErrorCode, Integer, Integer, Byte, Integer, byte[]> item) {
         return false;
     }
 
@@ -182,7 +202,7 @@ public class BaseClientManagerImpl implements ClientManager, MessageNotifyRecevi
     }
 
     private WeakReference<BaseClientManagerImplDelegate> delegateWeakReference;
-    private ClientUnit unit;
+    protected ClientUnit unit;
     private ServerUnit serverUnit;//连接成功后的服务器基本数据
     private Timer pingTimer = new Timer();
     private TimerTask pingTimerTask = null;
@@ -197,4 +217,6 @@ public class BaseClientManagerImpl implements ClientManager, MessageNotifyRecevi
     private static final Logger logger = LogManager.getLogger(BaseClientManagerImpl.class);
     private String addr;
     private String serverAddr;
+    private byte[] buf = new byte[64 * 1024];
+    private int size = 0;
 }

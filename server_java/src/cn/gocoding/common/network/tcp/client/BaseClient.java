@@ -11,6 +11,7 @@ import java.nio.channels.AsynchronousChannelGroup;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.CompletionHandler;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 基本的TCP客户端
@@ -55,6 +56,12 @@ public class BaseClient {
             });
         } catch (IOException e) {
             logger.error("connect to ip : {} , port : {} error, the reason : {}", ip, port, e.getMessage());
+        }
+
+        try {
+            group.awaitTermination(Long.MAX_VALUE, TimeUnit.HOURS);
+        } catch (InterruptedException e) {
+            logger.error("tcp server listen error, the reason : {}", e.getMessage());
         }
 
     }
