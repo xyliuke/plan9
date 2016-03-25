@@ -11,7 +11,7 @@ lua_c_bridge:register_lua_function("config", config)
 config.log_level = "debug" --"debug","info","warn","error"
 
 --- 服务器相关配置
-config.server = {ip = "127.0.0.1", port = 8081, timeout = 50000}
+config.server = {ip = "127.0.0.1", port = 9099, timeout = 50000}
 
 --- 获取配置项
 function config:get_config(param, callback)

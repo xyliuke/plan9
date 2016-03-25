@@ -283,6 +283,7 @@ function native:get_error_code(param, callback)
     callback(param, true, error_code, nil)
 end
 
+--- 设置当前平台,供内部使用
 function native:set_platform(param)
     lua_c_bridge.platform = param.args.platform
     lua_c_bridge:log_i("platform set " .. lua_c_bridge.platform)

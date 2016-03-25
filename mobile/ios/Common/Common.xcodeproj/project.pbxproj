@@ -12,6 +12,7 @@
 		1F40C3511C473D27006EFE0A /* thread_wrap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1F40C34E1C473D27006EFE0A /* thread_wrap.cpp */; };
 		1F5823551C4B3EC7009B6802 /* timer_wrap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1F5823531C4B3EC7009B6802 /* timer_wrap.cpp */; };
 		1F657CCD1C48C54500F45F11 /* timer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1F657CCB1C48C54500F45F11 /* timer.cpp */; };
+		1F6D4A301CA3D74700F0FD0C /* protocol.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1F6D4A2E1CA3D74700F0FD0C /* protocol.cpp */; };
 		1FB1973C1C2CDE4300CFC44F /* bizlayer.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1FB1973B1C2CDE4300CFC44F /* bizlayer.h */; };
 		1FB1973E1C2CDE4300CFC44F /* bizlayer.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1FB1973D1C2CDE4300CFC44F /* bizlayer.mm */; };
 		1FB197581C2CE4FE00CFC44F /* JsonHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 1FB197551C2CE4FE00CFC44F /* JsonHelper.m */; };
@@ -88,6 +89,8 @@
 		1F5823541C4B3EC7009B6802 /* timer_wrap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = timer_wrap.h; sourceTree = "<group>"; };
 		1F657CCB1C48C54500F45F11 /* timer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = timer.cpp; sourceTree = "<group>"; };
 		1F657CCC1C48C54500F45F11 /* timer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = timer.h; sourceTree = "<group>"; };
+		1F6D4A2E1CA3D74700F0FD0C /* protocol.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = protocol.cpp; sourceTree = "<group>"; };
+		1F6D4A2F1CA3D74700F0FD0C /* protocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = protocol.h; sourceTree = "<group>"; };
 		1FADC3DA1C4E3B6E002B3E1E /* thread_define.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = thread_define.h; sourceTree = "<group>"; };
 		1FB197381C2CDE4300CFC44F /* libCommon.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libCommon.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		1FB1973B1C2CDE4300CFC44F /* bizlayer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = bizlayer.h; sourceTree = "<group>"; };
@@ -406,6 +409,8 @@
 		1FB71D0F1C45F48E00412128 /* network */ = {
 			isa = PBXGroup;
 			children = (
+				1F6D4A2E1CA3D74700F0FD0C /* protocol.cpp */,
+				1F6D4A2F1CA3D74700F0FD0C /* protocol.h */,
 				1FB71D131C464BE000412128 /* tcp_wrap_default.cpp */,
 				1FB71D141C464BE000412128 /* tcp_wrap_default.h */,
 				1FB71D101C45F48E00412128 /* tcp.cpp */,
@@ -515,6 +520,7 @@
 				1FB198241C2CF86500CFC44F /* lua_bind.cpp in Sources */,
 				1FB1980E1C2CF86500CFC44F /* ldebug.c in Sources */,
 				1FB1981E1C2CF86500CFC44F /* lstring.c in Sources */,
+				1F6D4A301CA3D74700F0FD0C /* protocol.cpp in Sources */,
 				1FB198091C2CF86500CFC44F /* lbitlib.c in Sources */,
 				1FB1981B1C2CF86500CFC44F /* loslib.c in Sources */,
 				1FB1982A1C2CF86500CFC44F /* time.cpp in Sources */,
@@ -626,6 +632,11 @@
 		1FB197421C2CDE4300CFC44F /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+					IOS,
+				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -635,6 +646,7 @@
 		1FB197431C2CDE4300CFC44F /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				GCC_PREPROCESSOR_DEFINITIONS = IOS;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
