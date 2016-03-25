@@ -33,6 +33,55 @@ namespace plan9
 //            return str.erase(str.find_last_not_of(" \n\r\t") + 1);
             return ltrim(rtrim(str));
         }
+
+        std::string char_to_string(const char* data, int len) {
+            std::stringstream ss;
+            ss << "[";
+            for (int i = 0; i < len; ++i) {
+                unsigned char c = (unsigned char)data[i];
+                if (c > 0x20 && c < 0x7F) {
+                    ss << data[i];
+                    ss << "(";
+                    ss << (int)c;
+                    ss << ")";
+                } else {
+                    ss << (int)c;
+                }
+
+                if (i != (len - 1)) {
+                    ss << " ";
+                }
+            }
+            ss << "]";
+            return ss.str();
+        }
+
+        std::string char_to_dex_string(const char* data, int len) {
+            std::stringstream ss;
+            ss << "[";
+            for (int i = 0; i < len; ++i) {
+                unsigned char c = (unsigned char)data[i];
+                ss << (int)c;
+                if (i != (len - 1)) {
+                    ss << " ";
+                }
+            }
+            ss << "]";
+            return ss.str();
+        }
+
+        std::string char_to_char_string(const char* data, int len) {
+            std::stringstream ss;
+            ss << "[";
+            for (int i = 0; i < len; ++i) {
+                ss << data[i];
+                if (i != (len - 1)) {
+                    ss << " ";
+                }
+            }
+            ss << "]";
+            return ss.str();
+        }
     };
 
 
@@ -46,11 +95,23 @@ namespace plan9
     }
 
 
-    bool util::isSuffix(std::string str, char end) {
+    bool util::is_suffix(std::string str, char end) {
         return impl->isSuffix(str, end);
     }
 
     std::string util::trim(std::string str) {
         return impl->trim(str);
+    }
+
+    std::string util::char_to_string(const char *data, int len) {
+        return impl->char_to_string(data, len);
+    }
+
+    std::string util::char_to_dex_string(const char *data, int len) {
+        return impl->char_to_dex_string(data, len);
+    }
+
+    std::string util::char_to_char_string(const char *data, int len) {
+        return impl->char_to_char_string(data, len);
     }
 }

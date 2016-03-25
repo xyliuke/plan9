@@ -23,12 +23,12 @@
 
 namespace plan9 {
 
-    enum class network_server_type {
-        SERVER_CONNECT = 0x00, //连接服务器
-        SERVER_ROUTE   = 0x10, //路由服务器
-        SERVER_SESSION = 0x20, //事务服务器
-        SERVER_DATABASE = 0x30, //数据库服务器
-    };
+//    enum class network_server_type {
+//        SERVER_CONNECT = 0x00, //连接服务器
+//        SERVER_ROUTE   = 0x10, //路由服务器
+//        SERVER_SESSION = 0x20, //事务服务器
+//        SERVER_DATABASE = 0x30, //数据库服务器
+//    };
 
     class tcp {
     public:
@@ -43,7 +43,7 @@ namespace plan9 {
          * 连接服务器
          * @param url 服务器的域名和端口  格式为: www.gocoding.cn:8080
          */
-        void connect(std::string url);
+//        void connect(std::string url);
 
         /**
          * 重新连接服务器
@@ -51,18 +51,16 @@ namespace plan9 {
         void reconnect();
 
         /**
-         * 是否向服务器发送ping包,保证在线.默认不发送ping包
-         */
-        void enable_ping();
-
-        /**
          * 关闭连接
          */
         void close();
 
-        void write(std::string msg);
-
-        void write(network_server_type type, std::string msg);
+        /**
+         * 向服务器发送数据
+         * @param data 数据数组
+         * @param len 数据长度
+         */
+        void write(const char data[], int len);
 
         /**
          * 设置连接后的函数回调
@@ -70,9 +68,9 @@ namespace plan9 {
          */
         void set_connect_handler(std::function<void(bool)> function);
 
-        void set_read_handler(std::function<void(std::string msg)> function);
+        void set_read_handler(std::function<void(char data[], int len)> function);
 
-        void set_write_handler(std::function<void(std::string msg)> function);
+        void set_write_handler(std::function<void(char data[], int len)> function);
 
     private:
         class tcp_impl;

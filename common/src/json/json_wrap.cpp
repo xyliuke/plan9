@@ -26,10 +26,10 @@ namespace plan9
         return root;
     }
 
-    std::string json_wrap::toString(Json::Value value) {
+    std::string json_wrap::to_string(Json::Value value) {
         Json::FastWriter writer;
         std::string ret = writer.write(value);
-        if (util::instance().isSuffix(ret, '\n')) {
+        if (util::instance().is_suffix(ret, '\n')) {
             ret = ret.erase(ret.length() - 1, 1);
         }
         return ret;

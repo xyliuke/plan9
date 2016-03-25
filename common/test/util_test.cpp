@@ -29,10 +29,10 @@ TEST(util_test, id) {
     std::cout << "id:" << id1 << std::endl;
     std::cout << "id:" << id2 << std::endl;
 
-    EXPECT_EQ(plan9::util::instance().isSuffix("abc\n", '\n'), true);
-    EXPECT_EQ(plan9::util::instance().isSuffix("abcd", 'd'), true);
-    EXPECT_EQ(plan9::util::instance().isSuffix("abc_", '_'), true);
-    EXPECT_EQ(plan9::util::instance().isSuffix("abc\r", '\r'), true);
+    EXPECT_EQ(plan9::util::instance().is_suffix("abc\n", '\n'), true);
+    EXPECT_EQ(plan9::util::instance().is_suffix("abcd", 'd'), true);
+    EXPECT_EQ(plan9::util::instance().is_suffix("abc_", '_'), true);
+    EXPECT_EQ(plan9::util::instance().is_suffix("abc\r", '\r'), true);
 }
 
 TEST(util_test, trim) {
@@ -54,6 +54,26 @@ TEST(util_test, random) {
     for (int i = 0; i < 10; ++i) {
         std::cout << plan9::UUID::random() << std::endl;
     }
+}
+
+TEST(util_test, char_string) {
+    char c[129];
+    for (int i = 0; i < 129; ++i) {
+        c[i] = (char)i;
+    }
+//    const char* c = "hello world";
+    std::string s = plan9::util::instance().char_to_string(c, 129);
+    std::cout << s << std::endl;
+
+    s = plan9::util::instance().char_to_char_string(c, 129);
+    std::cout << s << std::endl;
+
+    s = plan9::util::instance().char_to_dex_string(c, 129);
+    std::cout << s << std::endl;
+
+    const char c1[] = "我们是祖国的花朵";
+    std::string s1 = plan9::util::instance().char_to_string(c1, sizeof(c1));
+    std::cout << s1 << std::endl;
 }
 
 #endif

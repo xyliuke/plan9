@@ -12,32 +12,53 @@
 #include <network/tcp_wrap_default.h>
 #include <list>
 #include <json/json_wrap.h>
+#include <network/protocol.h>
 
 TEST(network_test, tcp) {
 
-    plan9::tcp_wrap_default::instance().set_connect_handler([=](bool connect){
-        std::cout << "connect : " << connect << std::endl;
-        if (connect) {
-//            plan9::tcp_wrap_default::instance().send(plan9::network_server_type::SERVER_DATABASE ,"hello wrold from clion");
-            Json::Value msg;
-            msg["aux"]["id"] = "12121323213";
-            msg["aux"]["to"] = "call_sss";
-            plan9::tcp_wrap_default::instance().send(plan9::network_server_type::SERVER_DATABASE, msg, [=](Json::Value result){
-                std::string result_str = plan9::json_wrap::toString(result);
-                std::cout << result_str << std::endl;
-            }, 10000);
-        }
-    });
-
-    plan9::tcp_wrap_default::instance().set_read_handler([=](std::string msg){
-        std::cout << "recv : " << msg << std::endl;
-    });
-    plan9::tcp_wrap_default::instance().connect("127.0.0.1", 8081);
+//    plan9::tcp_wrap_default::instance().set_connect_handler([=](bool connect){
+//        std::cout << "connect : " << connect << std::endl;
+//        if (connect) {
+////            plan9::tcp_wrap_default::instance().send(plan9::network_server_type::SERVER_DATABASE ,"hello wrold from clion");
+//            Json::Value msg;
+//            msg["aux"]["id"] = "12121323213";
+//            msg["aux"]["to"] = "call_sss";
+//            plan9::tcp_wrap_default::instance().send(plan9::network_server_type::SERVER_DATABASE, msg, [=](Json::Value result){
+//                std::string result_str = plan9::json_wrap::to_string(result);
+//                std::cout << result_str << std::endl;
+//            }, 10000);
+//        }
+//    });
+//
+//    plan9::tcp_wrap_default::instance().set_read_handler([=](std::string msg){
+//        std::cout << "recv : " << msg << std::endl;
+//    });
+//    plan9::tcp_wrap_default::instance().connect("127.0.0.1", 8081);
 //    std::cout << "finish";
 
 //    plan9::network_server_type type = plan9::network_server_type::SERVER_DATABASE;
 //    int itype = static_cast<int>(type);
 //    plan9::network_server_type tt = static_cast<plan9::network_server_type>(0x21);
+}
+
+TEST(network_test, protocol) {
+    std::cout << "test protocol" << std::endl;
+    std::string str = "{\"args\":{\"server\":0,\"test_data\":\"hello world from ios\",\"timeout\":50000},\"aux\":{\"action\":\"callback\",\"from\":[\"ID-IOS-1458880327450927-5906-BF\"],\"id\":\"ID-IOS-1458880327450927-5906-BF\",\"to\":\"function\"}}";
+
+    std::tuple<char*, int> ret = plan9::protocol::create_protocol(0x12345678, 2, plan9::protocol::CONNECTION_SERVER_TYPE, plan9::protocol::NORMAL_STRING_DATA_TYPE, str.length(), str.c_str());
+
+    std::tuple<bool, int, char, char, char, int, char*> item = plan9::protocol::get_protocol(std::get<0>(ret), std::get<1>(ret));
+    std::string ret_str(std::get<6>(item), 198);
+
+//    ret = plan9::protocol::create_ping_protocol(0x78563412, 3);
+//    item = plan9::protocol::get_protocol(std::get<0>(ret), std::get<1>(ret));
+
+
+//    char d[] = {'^', 0, 0, 0, 0, 0, 0, 0, 0x05, 'a', 'b', 'c', 'd', 'e', '^', 1, 1, 1, 1, 1, 1, 1, 0x0};
+//    int l = plan9::protocol::remove_first_protocol(d, sizeof(d));
+
+//    char* c = "hello world";
+//    std::string string(c, 4);
 }
 
 #endif

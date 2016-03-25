@@ -57,10 +57,12 @@ namespace plan9
                     //调用失败,则查询失败原因
                     if (error == LUA_FUNCTION_NOT_EXSIT) {
                         if (callback != nullptr) {
-                            log_wrap::io().i("execute function , method : ", method, ", param : ", json_wrap::toString(param), ", callback : yes");
+                            log_wrap::io().i("execute function , method : ", method, ", param : ",
+                                             json_wrap::to_string(param), ", callback : yes");
                             cmd_factory::instance().execute(method, param, callback);
                         } else {
-                            log_wrap::io().i("execute function , method : ", method, ", param : ", json_wrap::toString(param), ", callback : no");
+                            log_wrap::io().i("execute function , method : ", method, ", param : ",
+                                             json_wrap::to_string(param), ", callback : no");
                             cmd_factory::instance().execute(method, param);
                         }
                     } else {
@@ -90,11 +92,11 @@ namespace plan9
         if (callback != nullptr) {
             if ("" == param) {
                 call_(method, [=](Json::Value result){
-                    callback(json_wrap::toString(result));
+                    callback(json_wrap::to_string(result));
                 });
             } else {
                 call_(method, param, [=](Json::Value result){
-                    callback(json_wrap::toString(result));
+                    callback(json_wrap::to_string(result));
                 });
             }
         } else {
@@ -189,7 +191,7 @@ namespace plan9
             Json::Value tmp;
             tmp["aux"]["to"] = "network";
             tmp["result"]["success"] = connect;
-            std::string msg = json_wrap::toString(tmp);
+            std::string msg = json_wrap::to_string(tmp);
             send_notify_msg(msg);
         };
 
@@ -214,7 +216,7 @@ namespace plan9
             if (param.isMember("args")) {
                 std::string level = param["args"]["level"].asString();
                 std::string target = param["args"]["target"].asString();
-                std::string msg = json_wrap::toString(param["args"]["msg"]);
+                std::string msg = json_wrap::to_string(param["args"]["msg"]);
                 if ("ui" == target) {
                     if (level == "info") {
                         log_wrap::ui().i(msg);
@@ -312,13 +314,16 @@ namespace plan9
          * }
          */
         cmd_factory::instance().register_cmd("send", [=](Json::Value param){
-            log_wrap::net().i("call send : ", json_wrap::toString(param));
+            log_wrap::net().i("call send : ", json_wrap::to_string(param));
             if (param.isMember("args")) {
                 Json::Value args = param["args"];
-                network_server_type type = network_server_type::SERVER_CONNECT;
+                char type = 0;
                 if (args.isMember("server")) {
-                    int st = args["server"].asInt();
-                    type = static_cast<network_server_type>(st);
+                    type = (char)args["server"].asInt();
+                }
+                int cid = 0;
+                if (args.isMember("client_id")) {
+                    cid = args["client_id"].asInt();
                 }
                 int timeout = 0;
                 if (args.isMember("timeout")) {
@@ -326,10 +331,9 @@ namespace plan9
                 }
                 param["aux"]["to"] = param["args"]["to"];
                 param["args"].removeMember("to");
-                tcp_wrap_default::instance().send(type, param, [=](Json::Value data){
-                    log_wrap::net().d("callback from send before : ", json_wrap::toString(data));
-                    cmd_factory::instance().callback(data, true);
-                    log_wrap::net().d("callback from send after : ", json_wrap::toString(param));
+
+                tcp_wrap_default::instance().send(cid, type, param, [=](Json::Value data){
+                    cmd_factory::instance().callback(data);
                 }, timeout);
             }
         });
@@ -385,7 +389,7 @@ namespace plan9
 
                 }
             }
-            log_wrap::io().d("read config : ", json_wrap::toString(result));
+            log_wrap::io().d("read config : ", json_wrap::to_string(result));
         });
     }
 }

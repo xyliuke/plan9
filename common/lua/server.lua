@@ -30,7 +30,15 @@ end
 
 function server:send(param, callback)
     self:send_server_connect("function", param, function(result)
-        callback(param, true, result.result, nil)
+        if result.result then
+            local suc = false;
+            if result.result.success ~= nil then
+                suc = result.result.success
+            end
+            callback(param, suc, result.result.data, nil)
+        else
+            callback(param, false, nil, nil)
+        end
     end)
 end
 

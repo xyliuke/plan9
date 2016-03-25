@@ -13,7 +13,7 @@ namespace plan9 {
     public:
         static Json::Value parse(std::string json_str, bool* error);
         static Json::Value parseFile(std::string filepath, bool* error);
-        static std::string toString(Json::Value);
+        static std::string to_string(Json::Value);
     };
 
 }

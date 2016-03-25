@@ -61,7 +61,7 @@ namespace plan9
             }
 
             ss << msg;
-            if (!util::instance().isSuffix(msg, '\n')) {
+            if (!util::instance().is_suffix(msg, '\n')) {
                 ss << "\n";
             }
 

@@ -37,12 +37,21 @@ namespace plan9 {
          * @param end 结尾字符
          * @return 如果str是以end结尾,返回true;否则返回false
          */
-        bool isSuffix(std::string str, char end);
+        bool is_suffix(std::string str, char end);
 
         /**
          * 去掉字符串前后的空格,回车,\r字符
          */
         std::string trim(std::string str);
+
+        /**
+         * 将char数据转变成string打印
+         */
+        std::string char_to_char_string(const char* data, int len);
+
+        std::string char_to_dex_string(const char* data, int len);
+
+        std::string char_to_string(const char* data, int len);
 
     private:
         util();

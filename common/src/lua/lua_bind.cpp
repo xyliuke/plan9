@@ -326,6 +326,11 @@ namespace plan9 {
             } else {
                 ret["args"] = param;
             }
+
+            if (param.isMember("result")) {
+                ret["result"] = param["result"];
+            }
+
             return ret;
         }
 
