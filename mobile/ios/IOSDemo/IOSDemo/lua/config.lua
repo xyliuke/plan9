@@ -17,5 +17,7 @@ config.server = {ip = "127.0.0.1", port = 9099, timeout = 50000}
 function config:get_config(param, callback)
     callback(param, true, {
         log_level = config.log_level,
+        compress = true, -- tcp包是否压缩
+        encrypt = false  -- tcp包是否加密,如果需要加密,则必须要压缩
     }, nil)
 end
