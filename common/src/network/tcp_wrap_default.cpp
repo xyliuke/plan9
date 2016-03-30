@@ -67,55 +67,74 @@ namespace plan9
                                               " server type : ", (int)std::get<3>(item),
                                               " data type : ", (int)std::get<4>(item),
                                               " data len : ", std::get<5>(item));
-                        } else if (protocol::is_normal_json_type(item)) {
+                        } else {
                             char* c = std::get<6>(item);
                             int l = std::get<5>(item);
-                            std::string str(c, l);
-                            log_wrap::net().d("recv json from server, id : ", std::get<1>(item),
-                                              " version : ", (int)std::get<2>(item),
-                                              " server type : ", (int)std::get<3>(item),
-                                              " data type : ", (int)std::get<4>(item),
-                                              " data len : ", std::get<5>(item),
-                                              " data json : ", str);
-                            bool error;
-                            Json::Value data = json_wrap::parse(str, &error);
-                            if (!error) {
-                                if (data.isMember("aux") && data["aux"].isMember("id")) {
-                                    std::string id = data["aux"]["id"].asString();
-                                    if (send_map.find(id) != send_map.end()) {
-                                        auto callback = send_map[id];
-                                        callback(data);
-                                        send_map.erase(id);
+                            std::string json_string = "";
+                            if (protocol::is_normal_json_type(item)) {
+                                std::string str(c, l);
+                                json_string = str;
+                                log_wrap::net().d("recv json from server, id : ", std::get<1>(item),
+                                                  " version : ", (int)std::get<2>(item),
+                                                  " server type : ", (int)std::get<3>(item),
+                                                  " data type : ", (int)std::get<4>(item),
+                                                  " data len : ", std::get<5>(item),
+                                                  " data json : ", str);
+                            } else if (protocol::is_normal_string_type(item)) {
+                                std::string str(std::get<6>(item), std::get<5>(item));
+                                json_string = str;
+                                log_wrap::net().d("recv string from server, id : ", std::get<1>(item),
+                                                  " version : ", (int)std::get<2>(item),
+                                                  " server type : ", (int)std::get<3>(item),
+                                                  " data type : ", (int)std::get<4>(item),
+                                                  " data len : ", std::get<5>(item),
+                                                  " data string : ", str);
+                                send_read_handler(str);
+                            } else if (protocol::is_compress_json_type(item)) {
+                                int buf_len = 0xFFFF;
+                                char buf[buf_len];
+                                if (compress_wrap::decompress(c, l, buf, &buf_len) > 0) {
+                                    std::string str(buf, buf_len);
+                                    json_string = str;
+                                    log_wrap::net().d("recv compress data : ", str);
+                                }
+                            } else if (protocol::is_encrypt_json_type(item)) {
+                                log_wrap::net().d("recv encrypt data : ",
+                                                  plan9::util::instance().char_to_string(data, len));
+                            } else if (protocol::is_encrypt_compress_json_type(item)) {
+                                log_wrap::net().d("recv encrypt and compress data : ",
+                                                  plan9::util::instance().char_to_string(data, len));
+                            } else {
+                                log_wrap::net().e("recv data : ", plan9::util::instance().char_to_string(data, len));
+                            }
+
+                            if (json_string != "") {
+                                bool error;
+                                Json::Value data = json_wrap::parse(json_string, &error);
+                                if (!error) {
+                                    if (data.isMember("aux") && data["aux"].isMember("id")) {
+                                        std::string id = data["aux"]["id"].asString();
+                                        if (send_map.find(id) != send_map.end()) {
+                                            auto callback = send_map[id];
+                                            callback(data);
+                                            send_map.erase(id);
+                                        } else {
+                                            send_read_handler(json_string);
+                                        }
+                                        if (send_timer_map.find(id) != send_timer_map.end()) {
+                                            auto t = send_timer_map[id];
+                                            t->cancel();
+                                            send_timer_map.erase(id);
+                                        }
+
                                     } else {
-                                        send_read_handler(str);
+                                        log_wrap::net().e("recv data is illegal json format : ", json_string);
                                     }
                                 } else {
-                                    log_wrap::net().e("recv data is illegal json format : ", str);
+                                    log_wrap::net().e("recv data is illegal json format : ", json_string);
+                                    send_read_handler(json_string);
                                 }
-                            } else {
-                                log_wrap::net().e("recv data is illegal json format : ", str);
-                                send_read_handler(str);
                             }
-                        } else if (protocol::is_normal_string_type(item)) {
-                            std::string str(std::get<6>(item), std::get<5>(item));
-                            log_wrap::net().d("recv string from server, id : ", std::get<1>(item),
-                                              " version : ", (int)std::get<2>(item),
-                                              " server type : ", (int)std::get<3>(item),
-                                              " data type : ", (int)std::get<4>(item),
-                                              " data len : ", std::get<5>(item),
-                                              " data string : ", str);
-                            send_read_handler(str);
-                        } else if (protocol::is_compress_json_type(item)) {
-                            log_wrap::net().d("recv compress data : ",
-                                              plan9::util::instance().char_to_string(data, len));
-                        } else if (protocol::is_encrypt_json_type(item)) {
-                            log_wrap::net().d("recv encrypt data : ",
-                                              plan9::util::instance().char_to_string(data, len));
-                        } else if (protocol::is_encrypt_compress_json_type(item)) {
-                            log_wrap::net().d("recv encrypt and compress data : ",
-                                              plan9::util::instance().char_to_string(data, len));
-                        } else {
-                            log_wrap::net().e("recv data : ", plan9::util::instance().char_to_string(data, len));
                         }
                         removeFinishProtocol();
                     }
@@ -150,14 +169,22 @@ namespace plan9
                 }
 
 #ifdef THREAD_ENABLE
-//                if (timeout > 0) {
-//                    timer_wrap::instance().create_timer(timeout, [=]() mutable {
-//                        send_map.erase(sid);
-//                        msg["result"]["success"] = false;
-//                        msg["result"]["reason"] = "timeout";
-//                        callback(msg);
-//                    });
-//                }
+                if (timeout > 0) {
+                    std::shared_ptr<timer> timer_ptr(new timer);
+                    timer_ptr->start([=]() mutable {
+                        log_wrap::net().i("time out run");
+                        if (send_map.find(sid) != send_map.end()) {
+                            log_wrap::net().i("time out callback run");
+                            auto callback_ = send_map[sid];
+                            send_map.erase(sid);
+                            msg["result"]["success"] = false;
+                            msg["result"]["reason"] = "timeout";
+                            callback_(msg);
+                        }
+                        send_timer_map.erase(sid);
+                    }, timeout);
+                    send_timer_map[sid] = timer_ptr;
+                }
 #endif
             } else {
                 log_wrap::net().e("send data is illegal json format : ", json_wrap::to_string(msg));
@@ -219,11 +246,14 @@ namespace plan9
                 const char* data = str.c_str();
                 int buf_len = compress_wrap::maybe_compressed_size(str.length());
                 char buf[buf_len];
-                compress_wrap::compress(data, str.length(), buf, &buf_len);
-                std::tuple<char*, int> p = protocol::create_protocol(id, protocol::get_protocol_version(), type, protocol::COMPRESS_JSON_DATA_TYPE, buf_len, buf);
-                char* protocol = std::get<0>(p);
-                tcp_->write(protocol, std::get<1>(p));
-                delete(protocol);
+                if (compress_wrap::compress(data, str.length(), buf, &buf_len) > 0) {
+                    std::tuple<char*, int> p = protocol::create_protocol(id, protocol::get_protocol_version(), type, protocol::COMPRESS_JSON_DATA_TYPE, buf_len, buf);
+                    char* protocol = std::get<0>(p);
+                    tcp_->write(protocol, std::get<1>(p));
+                    delete(protocol);
+                } else {
+                    log_wrap::net().e("compress data error");
+                }
             }
         }
 
@@ -291,6 +321,7 @@ namespace plan9
 
         long next_connect_time;
         std::map<std::string, std::function<void(Json::Value)>> send_map;
+        std::map<std::string, std::shared_ptr<timer>> send_timer_map;
 
         char buf[0xFFFF];
         int buf_size = 0;

@@ -35,6 +35,7 @@ function server:send(param, callback)
             if result.result.success ~= nil then
                 suc = result.result.success
             end
+            param.result = result.result
             callback(param, suc, result.result.data, nil)
         else
             callback(param, false, nil, nil)
