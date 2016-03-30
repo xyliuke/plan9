@@ -20,6 +20,7 @@ LOCAL_CFLAGS := -I$(LOCAL_PATH)/../../../../../boost-1_55/
 LOCAL_CFLAGS += -I$(LOCAL_PATH)/../../../../../../../common/src/
 LOCAL_CFLAGS += -I$(LOCAL_PATH)/../../../../../../../common/header/
 LOCAL_CFLAGS += -I$(LOCAL_PATH)/../../../../../../../3rd/jsoncpp/dist
+LOCAL_CFLAGS += -I$(LOCAL_PATH)/../../../../../../../3rd/zlib
 LOCAL_CFLAGS += -D__ARM_ARCH_5__
 LOCAL_CFLAGS += -DANDROID
 LOCAL_CFLAGS += -lstdc++
@@ -27,6 +28,7 @@ LOCAL_CFLAGS += -lstdc++
 MY_CPP_LIST := $(wildcard $(LOCAL_PATH)/../../../../../../../common/src/*/*.cpp)
 MY_CPP_LIST += $(wildcard $(LOCAL_PATH)/../../../../../../../common/src/*/*.c)
 MY_CPP_LIST += $(wildcard $(LOCAL_PATH)/../../../../../../../3rd/jsoncpp/dist/*.cpp)
+MY_CPP_LIST += $(wildcard $(LOCAL_PATH)/../../../../../../../3rd/zlib/*.c)
 
 LOCAL_SRC_FILES := $(MY_CPP_LIST:$(LOCAL_PATH)/%=%)
 

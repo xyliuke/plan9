@@ -99,7 +99,7 @@ static void logi(std::string msg) {
     tmp["level"] = "info";
     tmp["target"] = "ui";
     tmp["msg"] = msg;
-    call("log", plan9::json_wrap::toString(tmp), false);
+    call("log", plan9::json_wrap::to_string(tmp), false);
 }
 
 static void logw(std::string msg) {
@@ -107,7 +107,7 @@ static void logw(std::string msg) {
     tmp["level"] = "info";
     tmp["target"] = "warn";
     tmp["msg"] = msg;
-    call("log", plan9::json_wrap::toString(tmp), false);
+    call("log", plan9::json_wrap::to_string(tmp), false);
 }
 
 static void loge(std::string msg) {
@@ -115,7 +115,7 @@ static void loge(std::string msg) {
     tmp["level"] = "info";
     tmp["target"] = "error";
     tmp["msg"] = msg;
-    call("log", plan9::json_wrap::toString(tmp), false);
+    call("log", plan9::json_wrap::to_string(tmp), false);
 }
 
 void JNICALL Java_cn_gocoding_common_Bizlayer_call(JNIEnv *env, jclass cls, jstring method, jstring param, jboolean isCallback)
