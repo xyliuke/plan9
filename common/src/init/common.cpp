@@ -387,6 +387,16 @@ namespace plan9
                         }
                     }
 
+                    if (data.isMember("compress")) {
+                        bool compress = data["compress"].asBool();
+                        tcp_wrap_default::instance().set_compress(compress);
+                    }
+
+                    if (data.isMember("encrypt")) {
+                        bool encrypt = data["encrypt"].asBool();
+                        tcp_wrap_default::instance().set_encrypt(encrypt);
+                    }
+
                 }
             }
             log_wrap::io().d("read config : ", json_wrap::to_string(result));

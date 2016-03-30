@@ -28,17 +28,17 @@ namespace plan9
         ss << "ID-";
 
 #ifdef IOS
-        ss << "IOS-";
+        ss << "I-";
 #elif ANDROID
-        ss << "ANDROID-";
+        ss << "A-";
 #elif WIN32
-        ss << "WIN-";
+        ss << "W-";
 #elif MACOSX
-        ss << "MACOSX-";
+        ss << "M-";
 #elif LINUX
-        ss << "LINUX-";
+        ss << "L-";
 #else
-        ss << "OTHER-";
+        ss << "O-";
 #endif
 
         ss << time::microseconds();

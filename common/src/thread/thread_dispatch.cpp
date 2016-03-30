@@ -46,23 +46,33 @@ namespace plan9 {
                 if (stop_) {
                     break;
                 }
-                thread_mutex_raii();
-
-                if (timer_loop_count == count) {
-                    op_timer(tid);
-                    count = 0;
-                }
-                ++ count;
-
-                if (thread_queue.find(tid) != thread_queue.end()) {
-                    auto queue = thread_queue[tid];
-                    if (queue->empty()) {
-                        std::this_thread::yield();
-                    } else {
-                        std::function<void(void)> func = queue->front();
-                        queue->pop_front();
-                        func();
+                
+                std::function<void(void)> func = nullptr;
+                
+                {
+                    thread_mutex_raii();
+                    
+                    if (timer_loop_count == count) {
+                        op_timer(tid);
+                        count = 0;
                     }
+                    ++ count;
+
+                    
+                    if (thread_queue.find(tid) != thread_queue.end()) {
+                        auto queue = thread_queue[tid];
+                        if (queue->empty()) {
+                            std::this_thread::yield();
+                        } else {
+                            func = queue->front();
+                            queue->pop_front();
+                        }
+                    }
+    
+                }
+                
+                if (func != nullptr) {
+                    func();
                 }
             }
         }));

@@ -28,6 +28,15 @@ namespace plan9 {
         void set_connect_handler(std::function<void(bool)> function);
         void set_read_handler(std::function<void(std::string)> function);
 
+        /**
+         * 数据是否压缩
+         */
+        void set_compress(bool compress);
+
+        /**
+         * 数据是否加密
+         */
+        void set_encrypt(bool encrypt);
 
     private:
         tcp_wrap_default();

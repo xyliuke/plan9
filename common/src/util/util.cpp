@@ -3,6 +3,7 @@
 //
 
 #include "util.h"
+#include <algorithm>
 
 
 namespace plan9

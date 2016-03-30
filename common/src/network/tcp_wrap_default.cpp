@@ -11,6 +11,7 @@
 #include <thread/timer_wrap.h>
 #include <thread/thread_wrap.h>
 #include <thread/thread_define.h>
+#include <algorithm/compress.h>
 
 namespace plan9
 {
@@ -25,7 +26,9 @@ namespace plan9
                                   next_connect_time(1000),
                                   ping_interval(30 * 1000),
                                   buf_size(0),
-                                  network_disconnect_interval(ping_interval * 3) {
+                                  network_disconnect_interval(ping_interval * 3),
+                                  compress(false),
+                                  encrypt(false)  {
             tcp_->set_connect_handler([=](bool connect) {
                 thread_wrap::post_background([=](){
                     if (connect) {
@@ -137,16 +140,24 @@ namespace plan9
             if (msg.isMember("aux") && msg["aux"].isMember("id")) {
                 std::string sid = msg["aux"]["id"].asString();
                 send_map[sid] = callback;
-                write(id, type, msg);
-#ifdef THREAD_ENABLE
-                if (timeout > 0) {
-                    timer_wrap::instance().create_timer(timeout, [=]() mutable {
-                        send_map.erase(sid);
-                        msg["result"]["success"] = false;
-                        msg["result"]["reason"] = "timeout";
-                        callback(msg);
-                    });
+
+                if (compress && encrypt) {
+                    write_compress_encrypt(id, type, msg);
+                } else if (compress) {
+                    write_compress(id, type, msg);
+                } else {
+                    write(id, type, msg);
                 }
+
+#ifdef THREAD_ENABLE
+//                if (timeout > 0) {
+//                    timer_wrap::instance().create_timer(timeout, [=]() mutable {
+//                        send_map.erase(sid);
+//                        msg["result"]["success"] = false;
+//                        msg["result"]["reason"] = "timeout";
+//                        callback(msg);
+//                    });
+//                }
 #endif
             } else {
                 log_wrap::net().e("send data is illegal json format : ", json_wrap::to_string(msg));
@@ -176,6 +187,13 @@ namespace plan9
             }
         }
 
+        void set_compress(bool compress) {
+            this->compress = compress;
+        }
+
+        void set_encrypt(bool encrypt) {
+            this->encrypt = encrypt;
+        }
 
 
     private:
@@ -191,6 +209,39 @@ namespace plan9
                 tcp_->write(std::get<0>(p), std::get<1>(p));
             }
         }
+
+        void write_compress(int id, char type, Json::Value json) {
+            std::string str = json_wrap::to_string(json);
+            if (str.length() > 0xFFF0) {
+                log_wrap::net().e("send data from tcp_wrap_default error, the data length is over 65536 byte : ", str);
+            } else {
+                log_wrap::net().d("send compress data from tcp_wrap_default : ", str);
+                const char* data = str.c_str();
+                int buf_len = compress_wrap::maybe_compressed_size(str.length());
+                char buf[buf_len];
+                compress_wrap::compress(data, str.length(), buf, &buf_len);
+                std::tuple<char*, int> p = protocol::create_protocol(id, protocol::get_protocol_version(), type, protocol::COMPRESS_JSON_DATA_TYPE, buf_len, buf);
+                char* protocol = std::get<0>(p);
+                tcp_->write(protocol, std::get<1>(p));
+                delete(protocol);
+            }
+        }
+
+        void write_compress_encrypt(int id, char type, Json::Value json) {
+            std::string str = json_wrap::to_string(json);
+            if (str.length() > 0xFFF0) {
+                log_wrap::net().e("send data from tcp_wrap_default error, the data length is over 65536 byte : ", str);
+            } else {
+                log_wrap::net().d("send encrypt and compress data from tcp_wrap_default : ", str);
+//                const char* data = str.c_str();
+//                char buf[compress_wrap::maybe_compressed_size(str.length())];
+//                int buf_len = 0;
+//                compress_wrap::compress(data, str.length(), buf, &buf_len);
+//                std::tuple<char*, int> p = protocol::create_protocol(id, protocol::get_protocol_version(), type, protocol::ENCRYPT_COMPRESS_JSON_DATA_TYPE, buf_len, buf);
+//                tcp_->write(std::get<0>(p), std::get<1>(p));
+            }
+        }
+
 
         void do_ping() {
             ping_timer_->cancel();
@@ -243,6 +294,9 @@ namespace plan9
 
         char buf[0xFFFF];
         int buf_size = 0;
+
+        bool compress;
+        bool encrypt;
     };
 
 
@@ -270,5 +324,14 @@ namespace plan9
     void tcp_wrap_default::send(int id, char type, Json::Value msg, std::function<void(Json::Value)> callback,
                                 int timeout) {
         impl->send(id, type, msg, callback, timeout);
+    }
+
+
+    void tcp_wrap_default::set_compress(bool compress) {
+        impl->set_compress(compress);
+    }
+
+    void tcp_wrap_default::set_encrypt(bool encrypt) {
+        impl->set_encrypt(encrypt);
     }
 }
