@@ -4,13 +4,13 @@ import (
 	"time"
 	"container/list"
 	"sync"
-	"fmt"
+	"common/log"
 )
 
 var timerMap map[int64]*list.List = make(map[int64]*list.List)
 var cancel_map map[int64]*timer_record = make(map[int64]*timer_record)
 var once sync.Once
-
+var mutex sync.Mutex
 var earliestTime int64 = time.Now().Unix()
 
 type timer_record struct {
@@ -36,6 +36,12 @@ func NewInaccuracyTimer(ticker time.Duration) (int64, chan int64) {
 		go runTimer()
 	})
 
+	mutex.Lock()
+
+	if ticker == 0 {
+		log.W_OTH("create timer ticker is zero")
+	}
+
 	t := time.Now().Add(ticker).Unix()
 	l := timerMap[t]
 	if l == nil {
@@ -55,16 +61,18 @@ func NewInaccuracyTimer(ticker time.Duration) (int64, chan int64) {
 		earliestTime = t
 	}
 
+	mutex.Unlock()
+
 	return id, c
 }
 
 func CancelInaccuracyTimer(id int64)  {
+	mutex.Lock()
 	cancel, ok := cancel_map[id]
 	if ok {
 		for e := cancel.parent.Front(); e != nil; e = e.Next() {
 			tr, ok := e.Value.(*timer_record)
 			if ok && tr.id == id {
-				fmt.Println("find cancel id")
 				go func() {
 					tr.ch <- int64(0)
 				}()
@@ -75,13 +83,14 @@ func CancelInaccuracyTimer(id int64)  {
 		cancel.parent = nil
 		delete(cancel_map, id)
 	}
+	mutex.Unlock()
 }
 
 func runTimer() {
 	t := time.NewTicker(time.Second)
 	for _ = range t.C {
 		currentTime := time.Now().Unix()
-
+		mutex.Lock()
 		for i := earliestTime; i <= currentTime; i ++ {
 			l := timerMap[i]
 			if l != nil {
@@ -95,6 +104,7 @@ func runTimer() {
 			}
 		}
 		earliestTime = currentTime + 1
+		mutex.Unlock()
 	}
 }
 

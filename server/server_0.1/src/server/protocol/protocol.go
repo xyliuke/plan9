@@ -2,7 +2,6 @@ package protocol
 
 import (
 	"common/compress"
-	"fmt"
 )
 
 const PROTOCOL_FRIST_LETTER byte = '^'
@@ -16,6 +15,8 @@ const PROTOCOL_DATA_INDEX int = 9
 const PROTOCOL_CONNECTION_SERVER_TYPE byte = 0x00
 const PROTOCOL_VERIFY_SERVER_TYPE byte = 0x10
 const PROTOCOL_SESSION_SERVER_TYPE byte = 0x20
+const PROTOCOL_MAJOR_SERVER_TYPE byte = 0xE0
+const PROTOCOL_MINOR_SERVER_TYPE byte = 0xF0
 
 const PROTOCOL_NORMAL_STRING_DATA_TYPE byte = 0x00
 const PROTOCOL_NORMAL_JSON_DATA_TYPE byte = 0x01
@@ -85,7 +86,6 @@ func NewPongProtocol(id int) []byte {
 
 func RemoveFristProtocol(oriData []byte, oriDataLen int) (destDataLen int)  {
 	is, _, _, _, _, plen, _, _, _ := ParseProtocol(oriData, oriDataLen)
-	fmt.Println("remove ", is, plen)
 	if is {
 		allLen := plen + PROTOCOL_HEADER_LEN
 		copy(oriData[:], oriData[allLen:oriDataLen])
@@ -116,9 +116,9 @@ func ParseProtocol(data []byte, dataLen int) (result bool, id int, version byte,
 			dt := tp & 0x0F
 			if dt == PROTOCOL_COMPRESS_JSON_DATA_TYPE {
 				deCom := compress.DeCompress(oriData, pLen)
-				return true, getID(data), data[PROTOCOL_VERSION_INDEX], tp & 0xF0, tp & 0x0F, pLen, oriData, len(deCom), deCom
+				return true, getID(data), data[PROTOCOL_VERSION_INDEX], tp & 0xF0, dt, pLen, oriData, len(deCom), deCom
 			} else {
-				return true, getID(data), data[PROTOCOL_VERSION_INDEX], tp & 0xF0, tp & 0x0F, pLen, oriData, pLen, oriData
+				return true, getID(data), data[PROTOCOL_VERSION_INDEX], tp & 0xF0, dt, pLen, oriData, pLen, oriData
 			}
 
 		}
@@ -147,7 +147,7 @@ func IsPong(data []byte, dataLen int) bool {
 }
 
 func IsPongByType(tp byte) bool {
-	return (tp & 0xF0) == PROTOCOL_PONG_DATA_TYPE
+	return (tp & 0x0F) == PROTOCOL_PONG_DATA_TYPE
 }
 
 func getID(data []byte) int {

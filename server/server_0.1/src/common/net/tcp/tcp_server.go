@@ -30,7 +30,7 @@ func (this *TcpServer) Listen() {
 	ip := ":" + strconv.Itoa(this.port)
 	listen, err := net.Listen("tcp", ip)
 	if err == nil {
-		log.I_NET("tcp server listening")
+		log.I_NET("tcp server", ip, "listening")
 		for true {
 			conn, err_conn := listen.Accept()
 			if err_conn == nil {
@@ -62,11 +62,12 @@ func (this *TcpServer) doConnect(conn net.Conn)  {
 		if err == nil {
 			read_data := make([]byte, len)
 			copy(read_data, data)
-			log.D_NET("read data from client ", conn.RemoteAddr(), " the content : ", read_data)
+			log.D_NET(conn.LocalAddr(), "read from client", conn.RemoteAddr(), "data :", read_data)
 			if this.manager != nil {
 				this.manager.ReadData(conn, read_data)
 			}
 		} else {
+			log.E_NET("read from client", conn.RemoteAddr(),"error, reason :", err)
 			break
 		}
 	}

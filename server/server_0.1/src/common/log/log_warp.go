@@ -5,6 +5,8 @@ import (
 	"os"
 	"time"
 	"fmt"
+	"runtime"
+	"strings"
 )
 
 var logger_ *log.Logger = nil
@@ -142,35 +144,60 @@ func E_OTH(args ... interface{})  {
 
 func print(args ... interface{})  {
 	if log_file_enable {
-		logger().Println(args)
+		pc, file, line, ok := runtime.Caller(2)
+		if ok {
+			logger().Println(getShortFile(file), line, runtime.FuncForPC(pc).Name(), args)
+		} else {
+			logger().Println(args)
+		}
 	}
 	printToTerminal(args)
 }
 
 func print_network(args ... interface{})  {
 	if log_file_enable {
-		logger_network().Println(args)
+		pc, file, line, ok := runtime.Caller(2)
+		if ok {
+			logger_network().Println(getShortFile(file), line, runtime.FuncForPC(pc).Name(), args)
+		} else {
+			logger_network().Println(args)
+		}
 	}
 	printToTerminal(args)
 }
 
 func print_common(args ... interface{})  {
 	if log_file_enable {
-		logger_common().Println(args)
+		pc, file, line, ok := runtime.Caller(2)
+		if ok {
+			logger_common().Println(getShortFile(file), line, runtime.FuncForPC(pc).Name(), args)
+		} else {
+			logger_common().Println(args)
+		}
 	}
 	printToTerminal(args)
 }
 
 func print_other(args ... interface{})  {
 	if log_file_enable {
-		logger_other().Println(args)
+		pc, file, line, ok := runtime.Caller(2)
+		if ok {
+			logger_other().Println(getShortFile(file), line, runtime.FuncForPC(pc).Name(), args)
+		} else {
+			logger_other().Println(args)
+		}
 	}
 	printToTerminal(args)
 }
 
 func printToTerminal(args ... interface{})  {
 	if log_terminal_enable {
-		log.Println(args)
+		pc, file, line, ok := runtime.Caller(3)
+		if ok {
+			log.Println(getShortFile(file), line, runtime.FuncForPC(pc).Name(), args)
+		} else {
+			log.Println(args)
+		}
 	}
 }
 
@@ -284,4 +311,11 @@ func EnableOutputTerminal(enable bool)  {
 
 func EnableOutputFile(enable bool)  {
 	log_file_enable = enable
+}
+
+func getShortFile(file string) string {
+	index := strings.LastIndex(file, "/")
+	rs := []rune(file)
+	f := string(rs[index + 1 :])
+	return f
 }
