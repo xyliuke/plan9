@@ -4,6 +4,8 @@ import (
 	"net"
 	"common/timer"
 	"time"
+	"errors"
+	"fmt"
 )
 
 type TcpProtocolServer struct {
@@ -11,6 +13,7 @@ type TcpProtocolServer struct {
 	op_map map[net.Conn]*tcpProtocolServerOperation
 	id_map map[int]net.Conn
 	operation_handler func(conn net.Conn, id int, version byte, serverType byte, dataType byte, dataLen int, data []byte, rawData []byte)
+	raw_operation_handler func(conn net.Conn, id int, version byte, serverType byte, dataType byte, dataLen int, rawData []byte)
 }
 
 func NewTcpProtocolServer(port int) *TcpProtocolServer {
@@ -36,14 +39,49 @@ func NewTcpProtocolServer(port int) *TcpProtocolServer {
 			})
 			t.op_map[conn] = op
 		}
-		op.read(conn, data, t.operation_handler)
+
+		op.read(conn, data, t.operation_handler != nil, func(conn net.Conn, id int, version byte, serverType byte, dataType byte, dataLen int, data []byte, rawData []byte) {
+			if t.operation_handler != nil {
+				t.operation_handler(conn, id, version, serverType, dataType, dataLen, data, rawData)
+			}
+			if t.raw_operation_handler != nil {
+				t.raw_operation_handler(conn, id, version, serverType, dataType, dataLen, rawData)
+			}
+		})
 	})
 
 	return t
 }
 
+//设置协议数据处理后的handler,如果解压/加密后,该处理会将数据解析,将最终数据返回
 func (this *TcpProtocolServer) SetOperationHandler(h func(conn net.Conn, id int, version byte, serverType byte, dataType byte, dataLen int, data []byte, raw[]byte))  {
 	this.operation_handler = h
+}
+//设置协议数据基本处理的handler,无论数据是否解压/加密,都将最原始的数据返回
+func (this *TcpProtocolServer) SetRawOperationHandler(h func(conn net.Conn, id int, version byte, serverType byte, dataType byte, dataLen int, raw[]byte))  {
+	this.raw_operation_handler = h
+}
+
+func (this *TcpProtocolServer) BindIDAndConnection(id int, conn net.Conn) {
+	this.id_map[id] = conn
+}
+
+func (this *TcpProtocolServer) RemoveIDAndConnection(id int) {
+	delete(this.id_map, id)
+}
+
+func (this *TcpProtocolServer) Write(id int, data []byte, callback func(error))  {
+	conn, ok := this.id_map[id]
+	if ok {
+		err := this.write(conn, data)
+		if callback != nil {
+			callback(err)
+		}
+	} else {
+		if callback != nil {
+			callback(errors.New(fmt.Sprintf("write to client id error, the client id : %d  is not exist", id)))
+		}
+	}
 }
 
 type tcpProtocolServerOperation struct {
@@ -68,7 +106,7 @@ func (this *tcpProtocolServerOperation) setDisconnectedHandler(h func(conn net.C
 	this.disconnected_handler = h
 }
 
-func (this *tcpProtocolServerOperation) read(conn net.Conn, data []byte, callback func(conn net.Conn, id int, version byte, serverType byte, dataType byte, dataLen int, data []byte, rawData []byte)) {
+func (this *tcpProtocolServerOperation) read(conn net.Conn, data []byte, parse bool, callback func(conn net.Conn, id int, version byte, serverType byte, dataType byte, dataLen int, data []byte, rawData []byte)) {
 	this.conn = conn
 
 	timer.CancelInaccuracyTimer(this.timer_id)
@@ -81,12 +119,21 @@ func (this *tcpProtocolServerOperation) read(conn net.Conn, data []byte, callbac
 			}
 		}
 	})
-
-	result, id, version, serverType, dataType, dataLen, protocolData, raw := this.OpData(conn, data)
-	if result {
-		//需要处理
-		if callback != nil {
-			callback(conn, id, version, serverType, dataType, dataLen, protocolData, raw)
+	if parse {
+		result, id, version, serverType, dataType, dataLen, protocolData, raw := this.OpData(conn, data)
+		if result {
+			//需要处理
+			if callback != nil {
+				callback(conn, id, version, serverType, dataType, dataLen, protocolData, raw)
+			}
+		}
+	} else {
+		result, id, version, serverType, dataType, dataLen, raw := this.OpRawData(conn, data)
+		if result {
+			//需要处理
+			if callback != nil {
+				callback(conn, id, version, serverType, dataType, dataLen, nil, raw)
+			}
 		}
 	}
 }

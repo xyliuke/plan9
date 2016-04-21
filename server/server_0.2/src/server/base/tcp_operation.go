@@ -56,7 +56,7 @@ func (this *BaseTcpOperation) OpData(conn net.Conn, data []byte) (result bool, i
 	this.copyBuf(data)
 
 	for true {
-		exist, id, version, serverType, dataType, oLen, _, protocolLen, protocolData := protocol.ParseProtocol(this.buf, this.buf_len)
+		exist, id, version, serverType, dataType, oLen, rawData, protocolLen, protocolData := protocol.ParseProtocol(this.buf, this.buf_len)
 		if exist {
 			if protocol.IsPingByType(dataType) {
 				log.I_NET(conn.LocalAddr(), "write to client", conn.RemoteAddr(), "pong")
@@ -70,9 +70,8 @@ func (this *BaseTcpOperation) OpData(conn net.Conn, data []byte) (result bool, i
 				d := make([]byte, protocolLen)
 				copy(d, protocolData)
 
-				p := this.buf[:oLen + protocol.PROTOCOL_HEADER_LEN]
-				np := make([]byte, len(p))
-				copy(np, p)
+				np := make([]byte, oLen)
+				copy(np, rawData)
 
 				this.FinishOneProtocol()
 				return true, id, version, serverType, dataType, protocolLen, d, np
@@ -83,4 +82,33 @@ func (this *BaseTcpOperation) OpData(conn net.Conn, data []byte) (result bool, i
 	}
 
 	return false, 0, 0, 0, 0, 0, nil, nil
+}
+
+func (this *BaseTcpOperation) OpRawData(conn net.Conn, data []byte) (result bool, id int, version byte, serverType byte, dataType byte, dataLen int, rawData []byte) {
+	this.copyBuf(data)
+
+	for true {
+
+		exist, id, version, serverType, dataType, oLen, rawData := protocol.ParseRawProtocol(this.buf, this.buf_len)
+		if exist {
+			if protocol.IsPingByType(dataType) {
+				log.I_NET(conn.LocalAddr(), "write to client", conn.RemoteAddr(), "pong")
+				conn.Write(protocol.NewPongProtocol(id))
+				this.FinishOneProtocol()
+			} else if protocol.IsPongByType(dataType) {
+				log.I_NET("client", conn.LocalAddr(), "read from server", conn.RemoteAddr(), " pong")
+				this.FinishOneProtocol()
+			} else {
+
+				d := make([]byte, oLen)
+				copy(d, rawData)
+
+				this.FinishOneProtocol()
+				return true, id, version, serverType, dataType, oLen, d
+			}
+		} else {
+			return false, 0, 0, 0, 0, 0, nil
+		}
+	}
+	return false, 0, 0, 0, 0, 0, nil
 }
