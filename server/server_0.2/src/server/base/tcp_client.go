@@ -15,13 +15,15 @@ type BaseClient struct {
 	conn                    net.Conn
 	addr                    string
 
-	ping_timer_id int64
-	ping_interval time.Duration
-	id int
+	ping_timer_id           int64
+	ping_interval           time.Duration
+	id                      int
 
-	read_handler func(net.Conn, []byte)
-	disconnected_handler func()
-	connected_handler func(net.Conn)
+	read_handler            func(net.Conn, []byte)
+	disconnected_handler    func()
+	connected_handler       func(net.Conn)
+
+	is_connect              bool
 }
 
 func NewBaseClient() *BaseClient {
@@ -51,13 +53,14 @@ func (this *BaseClient) Connect(addr string) {
 		log.I_NET(conn.LocalAddr(), " connect to ", conn.RemoteAddr(), " success")
 		this.conn = conn
 		this.reconnect_interval_time = 2 * time.Second
-
-		this.doRead(conn)
+		this.is_connect = true
+		go this.doRead(conn)
 	} else {
 		log.E_NET(" connect to ", addr, " failure")
 		if this.disconnected_handler != nil {
 			this.disconnected_handler()
 		}
+		this.is_connect = false
 		this.delayReconnect()
 	}
 }
@@ -71,13 +74,14 @@ func (this *BaseClient) GetConnection() net.Conn {
 }
 
 func (this *BaseClient) Write(data []byte, callback func(error, []byte)) {
+	log.I_NET("client connect state is ", this.is_connect)
 	err := this.write(data)
 	if callback != nil {
 		callback(err, data)
 	}
 }
 
-func (this BaseClient) write(data []byte) error {
+func (this *BaseClient) write(data []byte) error {
 	if this.conn != nil {
 		log.D_NET(this.conn.LocalAddr(), "write to server", this.conn.RemoteAddr(), " data : ", data)
 		read_n := 0
@@ -96,8 +100,8 @@ func (this BaseClient) write(data []byte) error {
 	return errors.New("the connection is nil")
 }
 
-func (this BaseClient) ReConnect() {
-	if this.auto_connect && "" != this.addr {
+func (this *BaseClient) ReConnect() {
+	if !this.is_connect && this.auto_connect && "" != this.addr {
 		log.I_NET("try to reconnect ", this.addr)
 		this.Connect(this.addr)
 	}
@@ -120,7 +124,7 @@ func (this *BaseClient) delayReconnect() {
 	})
 }
 
-func (this BaseClient) doRead(conn net.Conn) {
+func (this *BaseClient) doRead(conn net.Conn) {
 	this.Connected()
 
 	defer this.Disconnected()
@@ -138,6 +142,7 @@ func (this BaseClient) doRead(conn net.Conn) {
 }
 
 func (this *BaseClient) Connected() {
+	this.is_connect = true
 	if this.connected_handler != nil {
 		this.connected_handler(this.conn)
 	}
@@ -145,11 +150,14 @@ func (this *BaseClient) Connected() {
 }
 
 func (this *BaseClient) Disconnected() {
+	log.E_NET("client disconnect to server", this.addr)
+	this.is_connect = false
+	this.conn.Close()
+	this.conn = nil
 	if this.disconnected_handler != nil {
 		this.disconnected_handler()
 	}
-	this.conn.Close()
-	this.ReConnect()
+	this.delayReconnect()
 }
 
 func (this *BaseClient) ReadData(data []byte) {
@@ -171,65 +179,4 @@ func (this *BaseClient) doPing() {
 			this.doPing()
 		}
 	})
-}
-
-type BaseClientOperation struct  {
-	buf []byte
-	buf_len int
-	conn net.Conn
-}
-
-func NewBaseClientOperation(conn net.Conn) *BaseClientOperation {
-	b := new(BaseClientOperation)
-	b.buf = make([]byte, 0x400)
-	b.buf_len = 0
-	b.conn = conn
-	return b
-}
-
-func (this *BaseClientOperation) DisconnectedFromServer() {
-
-}
-
-func (this *BaseClientOperation) ConnectedToServer(conn net.Conn) {
-	this.conn = conn
-}
-
-func (this *BaseClientOperation) ReadDataFromServer(data []byte) bool {
-	copy(this.buf[this.buf_len:], data)
-	this.buf_len += len(data)
-	ret := false
-	for true {
-		is, _, _, _, dt, _, _, _, _ := protocol.ParseProtocol(this.buf, this.buf_len)
-		if is {
-			if protocol.IsPongByType(dt) {
-				ret = true
-				this.FinishFirstProtocol()
-			} else {
-				ret = false
-				break
-			}
-		} else {
-			ret = true
-			break
-		}
-	}
-
-	return ret
-}
-
-func (this *BaseClientOperation) FinishFirstProtocol() {
-	this.buf_len = protocol.RemoveFristProtocol(this.buf, this.buf_len)
-}
-
-func (this *BaseClientOperation) Write(data []byte) {
-	if data == nil {
-		log.E_NET("can not write nil data")
-		return
-	}
-	if this.conn == nil {
-		log.E_NET("can not write, because conn is nil")
-		return
-	}
-	this.conn.Write(data)
 }
