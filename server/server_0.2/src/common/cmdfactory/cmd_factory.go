@@ -3,6 +3,7 @@ package commander
 import (
 	"common/json"
 	"common/util"
+	"common/log"
 )
 
 type function_callback func(json.JSONObject)
@@ -57,6 +58,24 @@ func ExecuteCmd(cmd string, param json.JSONObject, callback function_callback) {
 	}
 }
 
+func ExecuteCmd1(param json.JSONObject, callback function_callback) {
+	if param != nil {
+		aux_ok, aux := param.GetJSON("aux")
+		if aux_ok {
+			name_ok, name := aux.GetString("to")
+			if name_ok {
+				ExecuteCmd(name, param, callback)
+			} else {
+				log.E_COM("execute cmd error, reason : aux has not name paramter")
+			}
+		} else {
+			log.E_COM("execute cmd error, reason : param has not aux paramter")
+		}
+	} else {
+		log.E_COM("execute cmd error, reason : param is nil")
+	}
+}
+
 func ExecuteCmdDirect(cmd string, json json.JSONObject) {
 	ExecuteCmd(cmd, json, nil)
 }
@@ -69,10 +88,46 @@ func Callback(param json.JSONObject) {
 			if iss {
 				last, isss := arr.GetLast().(string)
 				if isss {
-					call_map[last](param)
 					aux.RemoveLast("from")
+					call_map[last](param)
 				}
 			}
 		}
+	}
+}
+
+func CallbackWithFailResult(param json.JSONObject, reason string) {
+	if param != nil {
+		if !param.HasMember("result") {
+			result := json.NewJSONEmpty()
+			param.Put("result", result)
+		}
+
+		ok, result := param.GetJSON("result")
+		if ok {
+			result.Put("success", false)
+			result.Put("reason", reason)
+		}
+		Callback(param)
+	}
+}
+
+func CallbackWithSuccessResult(param json.JSONObject, data json.JSONObject) {
+	if param != nil {
+		if !param.HasMember("result") {
+			result := json.NewJSONEmpty()
+			param.Put("result", result)
+		}
+
+		ok, result := param.GetJSON("result")
+		if ok {
+			result.Put("success", true)
+			if data != nil {
+				result.Put("data", data)
+			} else {
+				result.Put("data", json.NewJSONEmpty())
+			}
+		}
+		Callback(param)
 	}
 }
