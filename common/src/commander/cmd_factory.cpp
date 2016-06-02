@@ -36,8 +36,15 @@ namespace plan9
             jsonWrap["aux"]["to"] = cmd;
             if (callback != nullptr) {
                 jsonWrap["aux"]["action"] = "callback";
-                jsonWrap["aux"]["from"].append(id);
-                tmp_cmd_map_[id] = callback;
+                if (jsonWrap["aux"].isMember("from") && jsonWrap["aux"]["from"].isArray()) {
+                    jsonWrap["aux"]["from"].append(id);
+                    tmp_cmd_map_[id] = callback;
+                } else {
+                    jsonWrap["aux"]["from"].append(jsonWrap["aux"]["id"]);
+                    tmp_cmd_map_[jsonWrap["aux"]["id"].asString()] = callback;
+                }
+
+
                 if (cmd_map_.find(cmd) == cmd_map_.end()) {
                     //没有找到注册函数
                     jsonWrap["result"]["success"] = false;

@@ -14,11 +14,10 @@ namespace plan9 {
     public:
 
             //前4bit的服务器类型协议
-        static const char LOGIN_SERVER_TYPE = (char) 0x00;
+        static const char CONNECTION_SERVER_TYPE = (char) 0x00;
         static const char VERIFY_SERVER_TYPE = (char) 0x10;
         static const char SESSION_SERVER_TYPE = (char) 0x20;
         static const char DATABASE_SERVER_TYPE = (char) 0x30;
-        static const char CONNECTION_SERVER_TYPE = (char) 0x40;
 
         static const char MAJOR_CONFIG_TYPE = (char) 0xE0;
         static const char MINOR_CONFIG_TYPE = (char) 0xF0;

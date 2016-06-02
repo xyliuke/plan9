@@ -27,7 +27,9 @@ namespace plan9
         /**
          * 得到当前年月日
          */
-        static void current_date(int* yead, int* month, int* day);
+        static void current_date(int* year, int* month, int* day);
+
+        static void current_time(int* year, int* month, int* day, int* hour, int* minute, int* second, int* microsecond);
 
         /**
          * 得到1970至今的微秒数

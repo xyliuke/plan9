@@ -30,14 +30,26 @@ namespace plan9
         *day = ptm->tm_mday;
     }
 
-    std::string time::current_data_time() {
+    void time::current_time(int *year, int *month, int *day, int *hour, int *minute, int *second, int* microsecond) {
         auto tt = std::chrono::system_clock::to_time_t
                 (std::chrono::system_clock::now());
         struct tm* ptm = std::localtime(&tt);
+        *year = ptm->tm_year;
+        *month = ptm->tm_mon;
+        *day = ptm->tm_mday;
+        *hour = ptm->tm_hour;
+        *minute = ptm->tm_min;
+        *second = ptm->tm_sec;
+        *microsecond = microsecond_in_second();
+    }
+
+    std::string time::current_data_time() {
+        int year, month, day, hour, minute, second, microsecond;
+        current_time(&year, &month, &day, &hour, &minute, &second, &microsecond);
         char date[60] = {0};
         sprintf(date, "%d-%02d-%02d %02d:%02d:%02d.%06d",
-                ptm->tm_year + 1900, ptm->tm_mon + 1, ptm->tm_mday,
-                ptm->tm_hour, ptm->tm_min, ptm->tm_sec, microsecond_in_second());
+                year + 1900, month + 1, day,
+                hour, minute, second, microsecond);
         return std::string(date);
     }
 
