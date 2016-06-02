@@ -19,7 +19,8 @@ using namespace plan9;
 TEST(common_test, init) {
     using namespace plan9;
 
-    plan9::common::init("./data", "../../luac");
+    plan9::common::init("./data", "./abc.zip");
+//    plan9::common::init("./data", "../../lua");
     plan9::common::set_macosx_platform();
 //    Json::Value param;
 //    param["level"] = "info";

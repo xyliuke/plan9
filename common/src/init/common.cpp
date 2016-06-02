@@ -11,6 +11,7 @@
 #include <network/tcp_wrap_default.h>
 #include <thread/timer.h>
 #include <thread/thread_wrap.h>
+#include "algorithm/compress.h"
 
 namespace plan9
 {
@@ -22,6 +23,8 @@ namespace plan9
     std::function<void(std::string)> common::read_function = nullptr;
     std::function<void(bool)> common::connect_function = nullptr;
     std::function<void(std::string)> common::write_function = nullptr;
+
+    static const char* password = "soapy88Pict";
 
     void common::init(std::string path, std::string lua_path) {
         common::path = path;
@@ -346,6 +349,17 @@ namespace plan9
             log_wrap::io().e("init lua error, lua path : ", lua_path, " is not exist");
             return;
         }
+
+        bool is_zip = false;
+
+        if (bfs::is_regular_file(lua_path)) {
+            //是压缩包,则需要解压
+            bfs::path p = bfs::path(lua_path).parent_path() / "lua_tmp";
+            compress_wrap::decompress_zip(lua_path, password, p.string());
+            lua_path = p.string();
+            is_zip = true;
+        }
+
         lua_bind::instance().lua_bind_init(lua_path);
 
         bfs::path p(lua_path);
@@ -354,7 +368,12 @@ namespace plan9
         bfs::path common = p / "common.lua";
         lua_bind::instance().lua_bind_loadfile(bridge.string());
         lua_bind::instance().lua_bind_loadfile(common.string());
+
+        if (is_zip) {
+            bfs::remove_all(lua_path);
+        }
     }
+
 
     void common::send_notify_msg(std::string msg) {
         if (common::notify_function != nullptr) {
