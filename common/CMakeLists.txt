@@ -44,4 +44,4 @@ add_executable(common ${SOURCE_FILES} ${COMMADNER_SRC} ${TEST_SRC} ${JSONCPP_SRC
 #add_library(common SHARED ${SOURCE_FILES} ${COMMADNER_SRC} ${JSONCPP_SRC} ${JSONWRAP_SRC} ${UTIL_SRC} ${LOG_SRC} ${LUA_SRC} ${INIT_SRC} ${DATABASE_SRC})
 
 
-target_link_libraries(common boost_system boost_thread boost_filesystem boost_date_time gtest)
+target_link_libraries(common  gtest boost_system boost_thread boost_filesystem boost_date_time curl)
