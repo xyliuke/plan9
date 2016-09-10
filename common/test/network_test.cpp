@@ -63,8 +63,8 @@ TEST(network_test, protocol) {
 }
 
 TEST(network_test, http) {
-    plan9::http http;
-    std::string url = "http://image.baidu.com/search/down?tn=download&word=download&ie=utf8&fr=detail&url=http%3A%2F%2Fb.hiphotos.baidu.com%2Fzhidao%2Fwh%253D600%252C800%2Fsign%3Dabb1ea66bb12c8fcb4a6fecbcc33be7d%2F4ec2d5628535e5dd3e2b3d9974c6a7efce1b6275.jpg&thumburl=http%3A%2F%2Fimg3.imgtn.bdimg.com%2Fit%2Fu%3D2438896525%2C1071232700%26fm%3D21%26gp%3D0.jpg";
+//    plan9::http http;
+//    std::string url = "http://image.baidu.com/search/down?tn=download&word=download&ie=utf8&fr=detail&url=http%3A%2F%2Fb.hiphotos.baidu.com%2Fzhidao%2Fwh%253D600%252C800%2Fsign%3Dabb1ea66bb12c8fcb4a6fecbcc33be7d%2F4ec2d5628535e5dd3e2b3d9974c6a7efce1b6275.jpg&thumburl=http%3A%2F%2Fimg3.imgtn.bdimg.com%2Fit%2Fu%3D2438896525%2C1071232700%26fm%3D21%26gp%3D0.jpg";
 //    http.get(url, [=](char* data, size_t len){
 //        std::ofstream ostream;
 //        ostream.open("./a.jpg", std::ios::trunc);
@@ -79,9 +79,9 @@ TEST(network_test, http) {
 //    http.get(url, "./a/b.jpg", [=](long now, long total){
 //        std::cout << "now download " << now << " , total " << total << std::endl;
 //    });
-    http.get_string("https://www.microsoft.com/zh-cn", [=](std::string ret){
-        std::cout << ret << std::endl;
-    });
+//    http.get_string("https://www.microsoft.com/zh-cn", [=](std::string ret){
+//        std::cout << ret << std::endl;
+//    });
 }
 
 #endif
