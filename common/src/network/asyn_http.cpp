@@ -561,5 +561,13 @@ namespace plan9
         get(url, timeout_second, nullptr, callback);
     }
 
+    bool asyn_http::is_timeout(int curl_code) {
+        return curl_code == CURLE_OPERATION_TIMEDOUT;
+    }
+
+    bool asyn_http::is_ok(int curl_code) {
+        return curl_code == CURLE_OK;
+    }
+
 
 }

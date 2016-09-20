@@ -12,6 +12,11 @@
 #include <map>
 
 namespace plan9 {
+    /**
+     * 异步的http请求类
+     * 支持常用的get/post请求和下载文件请求
+     */
+    //TODO 后续添加断点续传和断点下载功能,并可暂停、重传
     class asyn_http {
     public:
         static asyn_http instance();
@@ -23,6 +28,9 @@ namespace plan9 {
 
         void post(std::string url, long timeout_second, std::map<std::string, std::string>* header, std::map<std::string, std::string>* form_params,
                   std::function<void(int curl_code, std::string debug_trace, long http_state, char* data, size_t len)> callback);
+
+        static bool is_timeout(int curl_code);
+        static bool is_ok(int curl_code);
     private:
         asyn_http();
         class asyn_http_impl;
