@@ -33,9 +33,22 @@ namespace plan9 {
         JSONObject(std::string& key, const char* value);
         JSONObject(std::string& key, std::string& value);
 
+        static inline JSONObject createObject() { JSONObject object; object.set_object_type(); return object; }
+        static inline JSONObject createArray() { JSONObject object; object.set_array_type(); return object; }
+
+        /**
+         * 设置当前对象为数组类型，通过JSONObject()生成的对象默认为NULL类型
+         */
         void set_array_type();
+        /**
+         * 设置当前对象为对象类型，通过JSONObject()生成的对象默认为NULL类型
+         */
         void set_object_type();
 
+        /**
+         * 对象是否为bool类型
+         * @return
+         */
         bool is_bool();
         bool is_int();
         bool is_long();
@@ -47,22 +60,54 @@ namespace plan9 {
         bool is_object();
         bool is_undefined();//没有定义的JSON，一般是通过get返回时，没有找到后的返回值为undefine
 
+        /**
+         * 获取该对象中的整型数值
+         * @return
+         */
         int get_int();
         long get_long();
         float get_float();
         double get_double();
         bool get_bool();
         std::string get_string();
+        /**
+         * 获取array类型对象的中元素, 如果没有打到该元素，则对象为undefined状态
+         * @param index 索引值
+         * @return
+         */
         JSONObject get(int index);
+        /**
+         * 获取array类型对象的中元素
+         * @param index 索引值
+         * @param find 是否有该元素的标志
+         * @return
+         */
         JSONObject get(int index, bool* find);
+        /**
+         * 获取object类型对象中的元素, 如果没有打到该元素，则对象为undefined状态
+         * @param key 元素key值
+         * @return
+         */
         JSONObject get(std::string& key);
         JSONObject get(const char* key);
+        /**
+         * 获取object类型对象中的元素, 如果没有打到该元素，则对象为undefined状态
+         * @param key 元素key值
+         * @param find 是否存在该key的标志
+         * @return
+         */
         JSONObject get(std::string& key, bool* find);
         JSONObject get(const char* key, bool* find);
-        //数组和字典会有正确返回值，其他返回为0
+        /**
+         * 返回元素的个数，数组和字典会有正确返回值，其他返回为0
+         * @return
+         */
         unsigned long size();
 
-        //数组中添加元素
+        /**
+         * 向array类型对象中添加元素
+         * @param value
+         */
         void append(int value);
         void append(long value);
         void append(float value);
@@ -72,15 +117,31 @@ namespace plan9 {
         void append(std::string& value);
         void append(JSONObject& value);
 
-        //数组中删除元素
+        /**
+         * 删除array类型中元素
+         * @param index 元素的下标
+         */
         void remove(int index);
+        /**
+         * 删除array类型数据中的第一个元素
+         */
         void remove_first();
+        /**
+         * 删除array类型数据中的最后一个元素
+         */
         void remove_last();
-        //字典中删除元素
+        /**
+         * 删除object类型中的元素
+         * @param key 元素key值
+         */
         void remove(const char* key);
         void remove(std::string& key);
 
-        //字典中添加元素
+        /**
+         * 添加键值对
+         * @param key
+         * @param value
+         */
         void put(std::string key, int value);
         void put(std::string key, long value);
         void put(std::string key, float value);
@@ -90,20 +151,37 @@ namespace plan9 {
         void put(std::string key, std::string& value);
         void put(std::string key, JSONObject& value);
 
-        //是否存在元素，支持a.b的操作方式
+        /**
+         * 当前json对象中是否包含key值。支持a.b的操作方式
+         * @param key json的键值
+         * @return
+         */
         bool has(const char* key);
         bool has(std::string& key);
 
-        //字典返回
+        /**
+         * 返回字典中key的集合，如果非object类型的，则返回空的集合
+         * @return
+         */
         std::shared_ptr<std::vector<std::string>> all_keys();
-        //字典和数组返回
+        /**
+         * 返回字典或者数组元素的集合
+         * @return
+         */
         std::shared_ptr<std::vector<JSONObject>> all_values();
         /**
          * 遍历json对象，对于object类型，only_value为false; 其他类型时only_value为true,key为空字符
          */
         void enumerate(std::function<void(std::string key, JSONObject value, bool only_value)>);
-
+        /**
+         * 将json对象转换成字符串
+         * @return
+         */
         std::string to_string();
+        /**
+         * 将json对象转换成可视化的字符串
+         * @return
+         */
         std::string to_format_string();
 
         //重载运算符
