@@ -36,6 +36,11 @@ namespace plan9 {
         static inline JSONObject createObject() { JSONObject object; object.set_object_type(); return object; }
         static inline JSONObject createArray() { JSONObject object; object.set_array_type(); return object; }
 
+        void parse(std::string& json_string);
+        void parse(const char* json_string);
+        void parse_file(std::string& file_path);
+        void parse_file(const char* file_path);
+
         /**
          * 设置当前对象为数组类型，通过JSONObject()生成的对象默认为NULL类型
          */

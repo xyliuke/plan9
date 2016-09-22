@@ -5,6 +5,7 @@
 #include <iostream>
 #include <sstream>
 #include <assert.h>
+#include <fstream>
 #include "JSONObject.h"
 
 namespace plan9 {
@@ -420,6 +421,19 @@ namespace plan9 {
             return "";
         }
 
+        std::shared_ptr<JSONObject_impl> parse_file(std::string& path) {
+            std::stringstream ss;
+
+            std::ifstream ifstream(path, std::ios::in);
+            char buf[1024];
+            while (!ifstream.eof()) {
+                ifstream.read(buf, 1024);
+                std::streamsize count = ifstream.gcount();
+                ss << std::string(buf, count);
+            }
+
+            return parse(ss.str());
+        }
 
         std::shared_ptr<JSONObject_impl> parse(std::string json_string) {
             return _parse(json_string);
@@ -482,7 +496,7 @@ namespace plan9 {
                         } else if (type == _BOOL) {
                             ret->append(value == "true");
                         } else if (type == _NULL) {
-                            ret->append(nullptr);
+                            ret->append(std::shared_ptr<JSONObject_impl>(new JSONObject_impl));
                         }
                         if (index > trim_string.length()) {
                             break;
@@ -1141,6 +1155,25 @@ namespace plan9 {
 
     }
 
+    void JSONObject::parse(const char *json_string) {
+        std::string string(json_string);
+        parse(string);
+    }
+
+    void JSONObject::parse(std::string &json_string) {
+        if (check_undefined()) return;
+        impl_->set(impl_->parse(json_string));
+    }
+
+    void JSONObject::parse_file(const char *file_path) {
+        std::string file(file_path);
+        parse_file(file);
+    }
+
+    void JSONObject::parse_file(std::string &file_path) {
+        if (check_undefined()) return;
+        impl_->set(impl_->parse_file(file_path));
+    }
 
     bool JSONObject::check_undefined() {
         bool is = is_undefined();
