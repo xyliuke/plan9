@@ -31,7 +31,6 @@ namespace plan9
         }
 
         std::string trim(std::string str){
-//            return str.erase(str.find_last_not_of(" \n\r\t") + 1);
             return ltrim(rtrim(str));
         }
 
