@@ -19,6 +19,26 @@ namespace plan9 {
     static const char STRING_FLAG = '"';
     static const char TRANSFER_FLAG = '\\';
 
+    std::string double_to_string(double value) {
+        std::stringstream ss;
+        ss.setf(std::ios::fixed);
+        ss.precision(10);
+        ss << value;
+        std::string ret = ss.str();
+        int count = 0;
+        for (int i = ret.length() - 1; i >= 0; --i) {
+            if (ret.at(i) == '0') {
+                count ++;
+            } else {
+                break;
+            }
+        }
+        if (count == 0) {
+            return ret;
+        }
+        return ret.substr(0, ret.length() - count);
+    }
+
     static std::string &ltrim(std::string &s) {
         s.erase(s.begin(), std::find_if(s.begin(), s.end(), std::not1(std::ptr_fun<int, int>(std::isspace))));
         return s;
@@ -31,6 +51,10 @@ namespace plan9 {
 
     static std::string& trim(std::string str){
         return ltrim(rtrim(str));
+    }
+
+    bool char_is_number(char c) {
+        return std::isdigit(c) || '-' == c || '+' == c || 'e' == c || 'E' == c;
     }
 
     static bool string_is_number(std::string& str, bool* is_double) {
@@ -202,50 +226,23 @@ namespace plan9 {
                 trim_string = trim(trim_string.substr(1, trim_string.length() - 1));
             }
 
-            if (trim_string.find("true") == 0) {
-                //true
-                *index = 4;
-                for (std::string::size_type i = 4; i < trim_string.length(); ++i) {
+            char first_c = json_string.at(0);
+            if (char_is_number(first_c)) {
+                //数字
+                for (std::string::size_type i = 0; i < trim_string.length(); ++i) {
                     char c = trim_string.at(i);
                     if (c == VALUE_SEPARATE || c == OBJECT_END || c == ARRAY_END) {
                         *index = (i + 1);
                         break;
                     }
                 }
-                *type = _BOOL;
+                *type = _NUMBER;
                 if (*index > trim_string.length()) {
                     *index = trim_string.length();
+                    return trim(trim_string.substr(0, *index));
                 }
-                return "true";
-            } else if (trim_string.find("false") == 0) {
-                //false
-                for (std::string::size_type i = 5; i < trim_string.length(); ++i) {
-                    char c = trim_string.at(i);
-                    if (c == VALUE_SEPARATE || c == OBJECT_END || c == ARRAY_END) {
-                        *index = (i + 1);
-                        break;
-                    }
-                }
-                *type = _BOOL;
-                if (*index > trim_string.length()) {
-                    *index = trim_string.length();
-                }
-                return "false";
-            } else if (trim_string.find("null") == 0) {
-                //null
-                for (std::string::size_type i = 4; i < trim_string.length(); ++i) {
-                    char c = trim_string.at(i);
-                    if (c == VALUE_SEPARATE || c == OBJECT_END || c == ARRAY_END) {
-                        *index = (i + 1);
-                        break;
-                    }
-                }
-                *type = _NULL;
-                if (*index > trim_string.length()) {
-                    *index = trim_string.length();
-                }
-                return "null";
-            } else if (trim_string.find("{") == 0) {
+                return trim(trim_string.substr(0, *index - 1));
+            } else if (first_c == '{') {
                 //object
                 int object_count = 0;
                 int array_count = 0;
@@ -302,7 +299,8 @@ namespace plan9 {
                     return trim(trim_string.substr(0, *index));
                 }
                 return trim(trim_string.substr(0, *index - 1));
-            } else if (trim_string.find("[") == 0) {
+
+            } else if (first_c == '[') {
                 //array
                 int object_count = 0;
                 int array_count = 0;
@@ -357,7 +355,8 @@ namespace plan9 {
                 }
                 return trim(trim_string.substr(0, *index - 1));
 
-            } else if (trim_string.find("\"") == 0) {
+
+            } else if (first_c == '\"') {
                 //string
                 bool in_string = false;
                 for (std::string::size_type i = 0; i < trim_string.length(); ++i) {
@@ -366,13 +365,13 @@ namespace plan9 {
                         if (c == STRING_FLAG) {
                             in_string = !in_string;
                         }
-                        if(i == (trim_string.length() - 1)) {
+                        if (i == (trim_string.length() - 1)) {
                             *index = i + 2;
                         }
                     } else {
                         if (c == STRING_FLAG) {
                             in_string = !in_string;
-                            if(i == (trim_string.length() - 1)) {
+                            if (i == (trim_string.length() - 1)) {
                                 *index = i + 2;
                             }
                         } else if (c == VALUE_SEPARATE || c == OBJECT_END || c == ARRAY_END) {
@@ -400,21 +399,52 @@ namespace plan9 {
                 }
                 *type = _STRING;
                 return ret;
+
             } else {
-                //数字
-                for (std::string::size_type i = 0; i < trim_string.length(); ++i) {
-                    char c = trim_string.at(i);
-                    if (c == VALUE_SEPARATE || c == OBJECT_END || c == ARRAY_END) {
-                        *index = (i + 1);
-                        break;
+                if (trim_string.find("true") == 0) {
+                    //true
+                    *index = 4;
+                    for (std::string::size_type i = 4; i < trim_string.length(); ++i) {
+                        char c = trim_string.at(i);
+                        if (c == VALUE_SEPARATE || c == OBJECT_END || c == ARRAY_END) {
+                            *index = (i + 1);
+                            break;
+                        }
                     }
+                    *type = _BOOL;
+                    if (*index > trim_string.length()) {
+                        *index = trim_string.length();
+                    }
+                    return "true";
+                } else if (trim_string.find("false") == 0) {
+                //false
+                    for (std::string::size_type i = 5; i < trim_string.length(); ++i) {
+                        char c = trim_string.at(i);
+                        if (c == VALUE_SEPARATE || c == OBJECT_END || c == ARRAY_END) {
+                            *index = (i + 1);
+                            break;
+                        }
+                    }
+                    *type = _BOOL;
+                    if (*index > trim_string.length()) {
+                        *index = trim_string.length();
+                    }
+                    return "false";
+                } else if (trim_string.find("null") == 0) {
+                    //null
+                    for (std::string::size_type i = 4; i < trim_string.length(); ++i) {
+                        char c = trim_string.at(i);
+                        if (c == VALUE_SEPARATE || c == OBJECT_END || c == ARRAY_END) {
+                            *index = (i + 1);
+                            break;
+                        }
+                    }
+                    *type = _NULL;
+                    if (*index > trim_string.length()) {
+                        *index = trim_string.length();
+                    }
+                    return "null";
                 }
-                *type = _NUMBER;
-                if (*index > trim_string.length()) {
-                    *index = trim_string.length();
-                    return trim(trim_string.substr(0, *index));
-                }
-                return trim(trim_string.substr(0, *index - 1));
             }
             *type = _NULL;
             *index = 0;
@@ -425,9 +455,9 @@ namespace plan9 {
             std::stringstream ss;
 
             std::ifstream ifstream(path, std::ios::in);
-            char buf[1024];
+            char buf[10240];
             while (!ifstream.eof()) {
-                ifstream.read(buf, 1024);
+                ifstream.read(buf, 10240);
                 std::streamsize count = ifstream.gcount();
                 ss << std::string(buf, count);
             }
@@ -516,11 +546,7 @@ namespace plan9 {
             if (is_num) {
                 if (is_double) {
                     double val = get_double_from_string(json_string);
-                    if (val > std::numeric_limits<float>::max() || val < std::numeric_limits<float>::min()) {
-                        ret->set(val);
-                    } else {
-                        ret->set(static_cast<float>(val));
-                    }
+                    ret->set(val);
                 } else {
                     long val = get_long_from_string(json_string);
                     if (val > std::numeric_limits<int>::max() || val < std::numeric_limits<int>::min()) {
@@ -599,6 +625,10 @@ namespace plan9 {
                 if (is_double()) return value.d;
             }
             return 0.f;
+        }
+
+        std::string get_string_from_double() {
+            return double_to_string(get_double());
         }
 
         bool get_bool() {
@@ -1030,7 +1060,7 @@ namespace plan9 {
                 if (is_int()) {
                     ss << get_int();
                 } else if (is_double()) {
-                    ss << get_double();
+                    ss << get_string_from_double();
                 } else if (is_string()) {
                     ss << "\"" << get_string() << "\"";
                 } else if (is_float()) {
@@ -1081,7 +1111,7 @@ namespace plan9 {
                 if (is_int()) {
                     ss << get_int();
                 } else if (is_double()) {
-                    ss << get_double();
+                    ss << get_string_from_double();
                 } else if (is_string()) {
                     ss << "\"" << get_string() << "\"";
                 } else if (is_float()) {
