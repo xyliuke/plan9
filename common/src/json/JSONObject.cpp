@@ -334,17 +334,20 @@ namespace plan9 {
                                 object_count ++;
                             } else if (c == OBJECT_END) {
                                 object_count --;
+                                if (object_count == 0 && array_count == 0) {
+                                    *index = i + 2;
+                                }
                             } else if (c == ARRAY_BEGIN) {
                                 array_count ++;
                             } else if (c == ARRAY_END) {
                                 array_count --;
+                                if (object_count == 0 && array_count == 0) {
+                                    *index = i + 2;
+                                }
                             } else if (c == STRING_FLAG) {
                                 in_string = !in_string;
                             }
 
-                            if (object_count == 0 && array_count == 0 && i == trim_string.length() - 1) {
-                                *index = i + 2;
-                            }
                         }
                     }
                 }
@@ -364,9 +367,10 @@ namespace plan9 {
                     if (in_string) {
                         if (c == STRING_FLAG) {
                             in_string = !in_string;
-                        }
-                        if (i == (trim_string.length() - 1)) {
-                            *index = i + 2;
+
+                            if (i == (trim_string.length() - 1)) {
+                                *index = i + 2;
+                            }
                         }
                     } else {
                         if (c == STRING_FLAG) {
