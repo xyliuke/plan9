@@ -6,6 +6,7 @@
 #include <sstream>
 #include <assert.h>
 #include <fstream>
+#include <curses.h>
 #include "JSONObject.h"
 
 namespace plan9 {
@@ -22,7 +23,7 @@ namespace plan9 {
     std::string double_to_string(double value) {
         std::stringstream ss;
         ss.setf(std::ios::fixed);
-        ss.precision(10);
+        ss.precision(15);
         ss << value;
         std::string ret = ss.str();
         int count = 0;
@@ -39,6 +40,18 @@ namespace plan9 {
         return ret.substr(0, ret.length() - count);
     }
 
+    std::string chars_to_string(const char* chars, unsigned long begin, unsigned long end) {
+        if (begin <= end) {
+            char* buf = (char*)malloc(end - begin + 1);
+
+            std::copy(chars + begin, chars + end + 1, buf);
+            std::string ret(buf, 0, end - begin + 1);
+            free(buf);
+            return ret;
+        }
+        return "";
+    }
+
     static std::string &ltrim(std::string &s) {
         s.erase(s.begin(), std::find_if(s.begin(), s.end(), std::not1(std::ptr_fun<int, int>(std::isspace))));
         return s;
@@ -53,10 +66,54 @@ namespace plan9 {
         return ltrim(rtrim(str));
     }
 
+    static void trim(const char* string, unsigned long begin_index, unsigned long end_index, unsigned long *new_begin_index, unsigned long *new_end_index) {
+        if (string == NULL || string == nullptr) {
+            return;
+        }
+
+        unsigned long a = begin_index, b = end_index;
+
+        for (unsigned long i = begin_index; i <= end_index; ++i) {
+            char c = string[i];
+            if (std::isspace(c)) {
+                a ++;
+            } else {
+                break;
+            }
+        }
+
+
+        for (unsigned long i = end_index; i >= begin_index; --i) {
+            char c = string[i];
+            if (std::isspace(c)) {
+                b --;
+            } else {
+                break;
+            }
+        }
+
+        *new_begin_index = a;
+        *new_end_index = b;
+    }
+
     bool char_is_number(char c) {
         return std::isdigit(c) || '-' == c || '+' == c || 'e' == c || 'E' == c;
     }
 
+    static bool chars_is_number(const char* chars, unsigned long begin, unsigned end, bool* is_double) {
+        *is_double = false;
+        for (unsigned long i = begin; i <= end; ++i) {
+            char c = chars[i];
+            if (std::isdigit(c) || '-' == c || '+' == c || 'e' == c || 'E' == c) {
+
+            } else if ('.' == c) {
+                *is_double = true;
+            } else {
+                return false;
+            }
+        }
+        return true;
+    }
     static bool string_is_number(std::string& str, bool* is_double) {
         *is_double = false;
         auto it = str.begin();
@@ -73,10 +130,17 @@ namespace plan9 {
         return true;
     }
 
+    static long get_long_from_string(const char* string) {
+        return std::atol(string);
+    }
+
     static long get_long_from_string(std::string& string) {
         return std::stol(string);
     }
 
+    static double get_double_from_string(const char* string) {
+        return std::atof(string);
+    }
     static double get_double_from_string(std::string& string) {
         return std::stod(string);
     }
@@ -182,6 +246,46 @@ namespace plan9 {
         ~JSONObject_impl() {
         }
 
+        std::string get_next_key(const char* json_string, unsigned long begin_index, unsigned long end_index, unsigned long* new_begin_index) {
+            unsigned long begin = begin_index;
+            bool in_string = false;
+            for (unsigned long i = begin_index; i <= end_index; ++i) {
+                char c = json_string[i];
+                if (in_string) {
+                    if (c == STRING_FLAG) {
+                        in_string = !in_string;
+                    }
+                } else {
+                    if (c == OBJECT_COLON) {
+                        *new_begin_index = i + 1;
+                        break;
+                    } else if (c == STRING_FLAG) {
+                        in_string = !in_string;
+                        begin = i + 1;
+                    }
+                }
+            }
+            unsigned long ret_begin = begin, ret_end = *new_begin_index - 2;
+
+            unsigned long nn_begin_index, nn_end_index;
+            trim(json_string, *new_begin_index, end_index, &nn_begin_index, &nn_end_index);
+            *new_begin_index = nn_begin_index;
+
+            trim(json_string, ret_begin, ret_end, &ret_begin, &ret_end);
+            //去掉可能的引号
+            if (ret_end > ret_begin) {
+                if (json_string[ret_begin] == STRING_FLAG) {
+                    ret_begin ++;
+                }
+                if (json_string[ret_end] == STRING_FLAG) {
+                    ret_end --;
+                }
+            }
+            if (ret_end >= ret_begin) {
+                return chars_to_string(json_string, ret_begin, ret_end);
+            }
+            return "";
+        }
 
         std::string get_next_key(std::string& json_string, std::string::size_type* index) {
             std::string& trim_string = json_string;
@@ -216,6 +320,247 @@ namespace plan9 {
                 }
             }
             return ret;
+        }
+
+        //value_begin和value_end为获取值的前后索引；new_begin_index和new_end_index为除去value后，下次计算的索引
+        void get_next_value(const char* json_string, unsigned long begin_index, unsigned long end_index, unsigned long* value_begin,
+                            unsigned long* value_end, unsigned long* new_begin_index,
+                                   unsigned long* new_end_index, _json_type* type) {
+
+            *new_begin_index = begin_index;
+            *new_end_index = end_index;
+            *value_begin = begin_index;
+            *value_end = end_index;
+
+            //去掉可能的前冒号
+            if (end_index > begin_index && json_string[begin_index] == OBJECT_COLON) {
+                *value_begin += 1;
+            }
+
+            char first_c = json_string[*value_begin];
+            if (char_is_number(first_c)) {
+                //数字
+                for (unsigned long i = *value_begin; i <= end_index; ++i) {
+                    char c = json_string[i];
+                    if (c == VALUE_SEPARATE || c == OBJECT_END || c == ARRAY_END) {
+                        *value_end = i - 1;
+                        *new_begin_index = i + 1;
+                        break;
+                    }
+                }
+                *type = _NUMBER;
+                if (*new_begin_index > end_index) {
+                    *new_begin_index = end_index;
+                }
+
+                trim(json_string, *value_begin, *value_end, value_begin, value_end);
+
+            } else if (first_c == '{') {
+                //object
+                int object_count = 0;
+                int array_count = 0;
+                bool in_string = false;
+                for (unsigned long i = *value_begin; i <= end_index; ++i) {
+                    char c = json_string[i];
+                    if (object_count == 0 && array_count == 0) {
+                        if (c == OBJECT_END || c == ARRAY_END || c == VALUE_SEPARATE) {
+                            *new_begin_index = i + 1;
+                            *value_end = i - 1;
+                            break;
+                        } else {
+                            if (c == OBJECT_BEGIN) {
+                                object_count ++;
+                            } else if (c == OBJECT_END) {
+                                object_count --;
+                            } else if (c == ARRAY_BEGIN) {
+                                array_count ++;
+                            } else if (c == ARRAY_END) {
+                                array_count --;
+                            } else if (c == STRING_FLAG) {
+                                in_string = !in_string;
+                            }
+                        }
+                    } else {
+                        if (in_string) {
+                            if (c == STRING_FLAG) {
+                                in_string = !in_string;
+                            }
+                        } else {
+                            if (c == OBJECT_BEGIN) {
+                                object_count ++;
+                            } else if (c == ARRAY_BEGIN) {
+                                array_count ++;
+                            } else if (c == OBJECT_END) {
+                                object_count--;
+                                if (object_count == 0 && array_count == 0 && i == end_index) {
+                                    *new_begin_index = i + 1;
+                                    *value_end = i;
+                                }
+                            } else if (c == ARRAY_END) {
+                                array_count -- ;
+                                if (object_count == 0 && array_count == 0 && i == end_index) {
+                                    *new_begin_index = i + 1;
+                                    *value_end = i;
+                                }
+                            } else if (c == STRING_FLAG) {
+                                in_string = !in_string;
+                            }
+
+                        }
+                    }
+                }
+                *type = _OBJECT;
+                if (*new_begin_index > end_index) {
+                    *new_begin_index = end_index;
+                }
+            } else if (first_c == '[') {
+                //array
+                int object_count = 0;
+                int array_count = 0;
+                bool in_string = false;
+                for (unsigned long i = *value_begin; i <= end_index; ++i) {
+                    char c = json_string[i];
+                    if (object_count == 0 && array_count == 0) {
+                        if (c == OBJECT_END || c == ARRAY_END || c == VALUE_SEPARATE) {
+                            *new_begin_index = i + 1;
+                            *value_end = i - 1;
+                            break;
+                        } else {
+                            if (c == OBJECT_BEGIN) {
+                                object_count ++;
+                            } else if (c == ARRAY_BEGIN) {
+                                array_count ++;
+                            } else if (c == OBJECT_END) {
+                                object_count --;
+                            } else if ( c == ARRAY_END) {
+                                array_count --;
+                            } else if (c == STRING_FLAG) {
+                                in_string = !in_string;
+                            }
+                        }
+                    } else {
+                        if (in_string) {
+                            if (c == STRING_FLAG) {
+                                in_string = !in_string;
+                            }
+                        } else {
+                            if (c == OBJECT_BEGIN) {
+                                object_count ++;
+                            } else if (c == ARRAY_BEGIN) {
+                                array_count++;
+                            } else if (c == OBJECT_END) {
+                                object_count --;
+                                if (object_count == 0 && array_count == 0 && i == end_index) {
+                                    *new_begin_index = i + 1;
+                                    *value_end = i;
+                                }
+                            } else if (c == ARRAY_END) {
+                                array_count --;
+                                if (object_count == 0 && array_count == 0 && i == end_index) {
+                                    *new_begin_index = i + 1;
+                                    *value_end = i;
+                                }
+                            } else if (c == STRING_FLAG) {
+                                in_string = !in_string;
+                            }
+
+                        }
+                    }
+                }
+                *type = _ARRAY;
+                if (*new_begin_index> end_index) {
+                    *new_begin_index = end_index;
+                }
+            } else if (first_c == '\"') {
+                //string
+                bool in_string = false;
+                for (unsigned long i = *value_begin; i <= end_index; ++i) {
+                    char c = json_string[i];
+                    if (in_string) {
+                        if (c == STRING_FLAG) {
+                            in_string = !in_string;
+
+                            if (i == end_index) {
+                                *new_begin_index = i + 1;
+                                *value_end = i - 1;
+                            }
+                        }
+                    } else {
+                        if (c == STRING_FLAG) {
+                            in_string = !in_string;
+                            if (i == end_index) {
+                                *new_begin_index = i + 1;
+                                *value_end = i - 1;
+                            }
+                        } else if (c == VALUE_SEPARATE || c == OBJECT_END || c == ARRAY_END) {
+                            *new_begin_index = i + 1;
+                            *value_end = i - 1;
+                            break;
+                        }
+                    }
+                }
+
+                if (*new_begin_index > end_index) {
+                    *new_begin_index = end_index;
+                }
+                //去掉可能的引号
+                if (*value_end > *value_begin) {
+                    if (json_string[*value_begin] == STRING_FLAG) {
+                        *value_begin += 1;
+                    }
+                    if (json_string[*value_end] == STRING_FLAG) {
+                        *value_end-= 1;
+                    }
+                }
+                *type = _STRING;
+            } else {
+                if (json_string[*value_begin] == 't' && (end_index - *value_begin >= 3) && json_string[*value_begin + 1] == 'r'
+                    && json_string[*value_begin + 2] == 'u' && json_string[*value_begin + 3] == 'e' ) {
+                    //true
+                    *value_end = *value_begin + 3;
+                    for (unsigned long i = *value_end + 1; i <= end_index; ++i) {
+                        char c = json_string[i];
+                        if (c == VALUE_SEPARATE || c == OBJECT_END || c == ARRAY_END) {
+                            *new_begin_index = (i + 1);
+                            break;
+                        }
+                    }
+                    *type = _BOOL;
+                    if (*new_begin_index > end_index) {
+                        *new_begin_index = end_index;
+                    }
+                } else if (json_string[*value_begin] == 'f' && (end_index - *value_begin >= 4) && json_string[*value_begin + 1] == 'a'
+                    && json_string[*value_begin + 2] == 'l' && json_string[*value_begin + 3] == 's' && json_string[*value_begin + 4] == 'e' ) {
+                    //true
+                    *value_end = *value_begin + 4;
+                    for (unsigned long i = *value_end + 1; i <= end_index; ++i) {
+                        char c = json_string[i];
+                        if (c == VALUE_SEPARATE || c == OBJECT_END || c == ARRAY_END) {
+                            *new_begin_index = (i + 1);
+                            break;
+                        }
+                    }
+                    *type = _BOOL;
+                    if (*new_begin_index> end_index) {
+                        *new_begin_index = end_index;
+                    }
+                } else if (json_string[*value_begin] == 'n' && (end_index - *value_begin >= 3) && json_string[*value_begin + 1] == 'u'
+                           && json_string[*value_begin + 2] == 'l' && json_string[*value_begin + 3] == 'l') {
+                    //null
+                    *value_end = *value_begin + 3;
+                    for (unsigned long i = *value_end + 1; i <= end_index; ++i) {
+                        char c = json_string[i];
+                        if (c == VALUE_SEPARATE || c == OBJECT_END || c == ARRAY_END) {
+                            *new_begin_index = (i + 1);
+                            break;
+                        }
+                    }
+                    *type = _NULL;
+                    if (*new_begin_index > end_index) {
+                        *new_end_index = end_index;
+                    }
+                }
+            }
         }
 
         std::string get_next_value(std::string& json_string, std::string::size_type* index, _json_type* type) {
@@ -457,7 +802,6 @@ namespace plan9 {
 
         std::shared_ptr<JSONObject_impl> parse_file(std::string& path) {
             std::stringstream ss;
-
             std::ifstream ifstream(path, std::ios::in);
             char buf[10240];
             while (!ifstream.eof()) {
@@ -465,14 +809,105 @@ namespace plan9 {
                 std::streamsize count = ifstream.gcount();
                 ss << std::string(buf, count);
             }
-
-            return parse(ss.str());
+            std::string str = ss.str();
+            return parse(str);
         }
 
-        std::shared_ptr<JSONObject_impl> parse(std::string json_string) {
-            return _parse(json_string);
+        std::shared_ptr<JSONObject_impl> parse(std::string& json_string) {
+            return _parse(json_string.c_str(), 0, json_string.length() - 1);
         }
 
+
+        std::shared_ptr<JSONObject_impl> _parse(const char* json_string, unsigned long b_index, unsigned long e_index) {
+            std::shared_ptr<JSONObject_impl> ret(new JSONObject_impl);
+            unsigned long new_begin_index, new_end_index;
+            trim(json_string, b_index, e_index, &new_begin_index, &new_end_index);
+
+            if (new_end_index > new_begin_index) {
+                char c = json_string[new_begin_index];
+                if (c == OBJECT_BEGIN) {
+                    //object
+                    ret->set_object_type();
+
+                    //去掉前后两个{}
+                    new_begin_index ++;
+                    new_end_index --;
+
+                    trim(json_string, new_begin_index, new_end_index, &new_begin_index, &new_end_index);
+
+                    unsigned long index = 0;
+                    _json_type type;
+                    while (new_end_index > new_begin_index) {
+                        std::string key = get_next_key(json_string, new_begin_index, new_end_index, &new_begin_index);
+
+                        unsigned long value_begin, value_end;
+                        get_next_value(json_string, new_begin_index, new_end_index, &value_begin, &value_end, &new_begin_index, &new_end_index, &type);
+                        if (type == _OBJECT || type == _ARRAY) {
+                            auto sub_value = _parse(json_string, value_begin, value_end);
+                            ret->put(key, sub_value);
+                        } else if (type == _STRING) {
+                            std::string value = chars_to_string(json_string, value_begin, value_end);
+                            ret->put(key, value);
+                        } else if (type == _NUMBER) {
+                            //将字符串解析成数字
+                            ret->put(key, parse_number(json_string, value_begin, value_end));
+                        } else if (type == _BOOL) {
+                            ret->put(key, json_string[value_begin] == 't');
+                        } else if (type == _NULL) {
+                            ret->put(key, std::shared_ptr<JSONObject_impl>(new JSONObject_impl()));
+                        }
+                        if (value_end >= new_end_index) {
+                            break;
+                        }
+                        unsigned long nn_begin_index = new_begin_index, nn_end_index = new_end_index;
+                        trim(json_string, new_begin_index, new_end_index, &nn_begin_index, &nn_end_index);
+                        new_begin_index = nn_begin_index;
+                        new_end_index = nn_end_index;
+                    }
+
+                } else if (c == ARRAY_BEGIN) {
+                    //array
+                    ret->set_array_type();
+
+                    //去掉前后两个[]
+                    new_begin_index ++;
+                    new_end_index --;
+
+                    trim(json_string, new_begin_index, new_end_index, &new_begin_index, &new_end_index);
+
+                    std::string::size_type index = 0;
+                    _json_type type;
+                    while (new_end_index > new_begin_index) {
+                        unsigned long value_begin, value_end;
+                        get_next_value(json_string, new_begin_index, new_end_index, &value_begin, &value_end,
+                                       &new_begin_index, &new_end_index, &type);
+                        if (type == _OBJECT || type == _ARRAY) {
+                            auto sub_value = _parse(json_string, value_begin, value_end);
+                            ret->append(sub_value);
+                        } else if (type == _STRING) {
+                            std::string value = chars_to_string(json_string, value_begin, value_end);
+                            ret->append(value);
+                        } else if (type == _NUMBER) {
+                            //将字符串解析成数字
+//                            std::string value = chars_to_string(json_string, value_begin, value_end);
+                            ret->append(parse_number(json_string, value_begin, value_end));
+                        } else if (type == _BOOL) {
+                            ret->append(json_string[value_begin] == 't');
+                        } else if (type == _NULL) {
+                            ret->append(std::shared_ptr<JSONObject_impl>(new JSONObject_impl()));
+                        }
+                        if (value_end >= new_end_index) {
+                            break;
+                        }
+                        unsigned long nn_begin_index = new_begin_index, nn_end_index = new_end_index;
+                        trim(json_string, new_begin_index, new_end_index, &nn_begin_index, &nn_end_index);
+                        new_begin_index = nn_begin_index;
+                        new_end_index = nn_end_index;
+                    }
+                }
+            }
+            return ret;
+        }
         std::shared_ptr<JSONObject_impl> _parse(std::string json_string) {
             std::shared_ptr<JSONObject_impl> ret(new JSONObject_impl);
 
@@ -542,6 +977,30 @@ namespace plan9 {
             return ret;
         }
 
+        std::shared_ptr<JSONObject_impl> parse_number(const char* json_string, unsigned long begin, unsigned long end) {
+            std::shared_ptr<JSONObject_impl> ret(new JSONObject_impl);
+            bool is_double;
+            bool is_num = chars_is_number(json_string, begin, end, &is_double);
+            if (is_num) {
+                char* num = (char*)malloc(end - begin + 2);
+                std::copy(json_string + begin, json_string + end + 1, num);
+                *(num + end - begin + 1) = '\0';
+                if (is_double) {
+                    double val = get_double_from_string(num);
+                    ret->set(val);
+                } else {
+                    long val = get_long_from_string(num);
+                    if (val > std::numeric_limits<int>::max() || val < std::numeric_limits<int>::min()) {
+                        ret->set(val);
+                    } else {
+                        ret->set(static_cast<int>(val));
+                    }
+                }
+            } else {
+                ret->set(0);
+            }
+            return ret;
+        }
 
         std::shared_ptr<JSONObject_impl> parse_number(std::string& json_string) {
             std::shared_ptr<JSONObject_impl> ret(new JSONObject_impl);
