@@ -1,8 +1,10 @@
 package cn.gocoding.server.config;
 
-import cn.gocoding.server.base.ClientUnit;
+import cn.gocoding.main.ConfigUnit;
 import cn.gocoding.server.base.ServerUnit;
 import cn.gocoding.server.protocol.Protocol;
+
+import java.util.List;
 
 /**
  * 次配置服务,包含一个tcp-server和一个tcp-client,tcp-server被其他微服务连接,
@@ -11,15 +13,17 @@ import cn.gocoding.server.protocol.Protocol;
  */
 public class MinorConfig {
 
-    public static void run(String majorServerIP, int majorServerPort, int port, int version,
-                           int clientID, byte managerServerType, int managerServerNum) {
-        MinorConfig.majorServerIP = majorServerIP;
-        MinorConfig.majorServerPort = majorServerPort;
-        MinorConfig.minorServerPort = port;
-        MinorConfig.version = (byte)version;
-        MinorConfig.clientID = clientID;
-        MinorConfig.managerServerType = managerServerType;
-        MinorConfig.managerServerNum = managerServerNum;
+    public static void run(ConfigUnit configUnit) {
+        MinorConfig.majorServerIP = configUnit.getMajorIP();
+        MinorConfig.majorServerPort = configUnit.getMajorPort();
+        MinorConfig.minorServerPort = configUnit.getPort();
+        MinorConfig.version = (byte)configUnit.getVersion();
+        MinorConfig.clientID = configUnit.getClientID();
+        MinorConfig.managerServerType = configUnit.getManagerServerType();
+        MinorConfig.managerServerNum = configUnit.getManagerServerNum();
+        checkClientDisconnectPeriod = configUnit.getCheckClientDisconnectPerios();
+        jarFile = configUnit.getManagerServerJarFile();
+        jarConfigFile = configUnit.getManagerServerJarConfigFile();
         initClient();
         initServer();
     }
@@ -27,7 +31,9 @@ public class MinorConfig {
     private static void initServer() {
         new Thread(() -> {
             serverUnit = new ServerUnit(serverID, serverType, version);
-            server = new MinorConfigServer(minorServerPort, new MinorConfigServerManager(), serverUnit);
+            MinorConfigServerManager manager = new MinorConfigServerManager();
+            manager.setCheckDisconnectPeriod(checkClientDisconnectPeriod);
+            server = new MinorConfigServer(minorServerPort, manager, serverUnit);
             server.listen();
         }).start();
     }
@@ -35,7 +41,9 @@ public class MinorConfig {
     private static void initClient() {
         new Thread(() -> {
             clientUnit = new MinorClientUnit(clientID, version, managerServerType, managerServerNum);
-            client = new MinorConfigClient(clientUnit, new MinorConfigClientManager(clientUnit, managerServerType, managerServerNum));
+            MinorConfigClientManager manager = new MinorConfigClientManager(clientUnit, managerServerType, managerServerNum);
+            manager.setMircoServerFile(jarFile, jarConfigFile);
+            client = new MinorConfigClient(clientUnit, manager);
             client.connect(majorServerIP, majorServerPort);
         }).start();
     }
@@ -47,6 +55,7 @@ public class MinorConfig {
     private static MinorConfigClient client;
     private static MinorClientUnit clientUnit;
     private static ServerUnit serverUnit;
+    private static int checkClientDisconnectPeriod;
 
     private static int clientID = 0;
     private static byte version = 0;
@@ -55,4 +64,6 @@ public class MinorConfig {
 
     private static byte managerServerType = Protocol.CONNECTION_SERVER_TYPE;
     private static int managerServerNum = 1;
+    private static String jarFile;
+    private static List<String> jarConfigFile;
 }

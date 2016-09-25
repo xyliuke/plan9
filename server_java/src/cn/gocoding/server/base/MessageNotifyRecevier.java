@@ -10,7 +10,7 @@ public interface MessageNotifyRecevier {
      * 发送给所有连接tcp server的client;或者发送给client连接的server
      * @param data 数据
      */
-    void sendMessage(byte[] data);
+    void receiveMessage(int id, byte[] data);
 
     /**
      * 单向发送,只能是本程序中的client向本身中的server发送数据
@@ -18,5 +18,5 @@ public interface MessageNotifyRecevier {
      * @param clientID 客户端id
      * @param data 数据
      */
-    void sendMessage(int clientID, byte[] data);
+    void receiveMessage(int id, int clientID, byte[] data);
 }

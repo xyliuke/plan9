@@ -4,6 +4,7 @@ import cn.gocoding.common.tuple.Tuple;
 import cn.gocoding.common.tuple.Tuple2;
 import cn.gocoding.common.error.ErrorCode;
 import cn.gocoding.common.tuple.Tuple6;
+import cn.gocoding.common.tuple.Tuple7;
 
 /**
  * 服务器的协议处理类
@@ -53,7 +54,7 @@ public class Protocol {
      * @return 返回二元组,第一个元素为错误类型,也可以不是错误,NOT_ERROR;当第一个元素为NOT_ERROR时,第二个元素为协议中数据实体部分长度（不包括协议头部）
      */
     public static Tuple2<ErrorCode, Integer> isLegalProtocol(byte[] data, int len) {
-        if (len > PROTOCOL_HEADER_LEN && data.length >= len && data[0] == PROTOCOL_FIRST_LETTER) {
+        if (len >= PROTOCOL_HEADER_LEN && data.length >= len && data[0] == PROTOCOL_FIRST_LETTER) {
             int size = getDataLen(data);
             if (len >= size + PROTOCOL_HEADER_LEN) {
                 return Tuple.of(ErrorCode.NOT_ERROR, size);
@@ -68,7 +69,7 @@ public class Protocol {
      * @param len 原始数据包中有效字节长度
      * @return 返回五元组,如果出错,第一个值返回错误类型,其他值忽略
      */
-    public static Tuple6<ErrorCode, Integer, Integer, Byte, Integer, byte[]> getProtocolItem(byte[] data, int len) {
+    public static Tuple7<ErrorCode, Integer, Integer, Byte, Integer, byte[], byte[]> getProtocolItem(byte[] data, int len) {
         Tuple2<ErrorCode, Integer> ret = isLegalProtocol(data, len);
         if (ret._1().isPresent()) {
             if (ret._1().get() == ErrorCode.NOT_ERROR) {
@@ -76,12 +77,14 @@ public class Protocol {
                 int ver = getVersion(data);
                 byte type = getType(data);
                 byte[] d = getData(data);
-                return Tuple.of(ret._1().get(), cid, ver, type, ret._2().get(), d);
+                byte[] protocol = new byte[ret._2().get() + PROTOCOL_HEADER_LEN];
+                System.arraycopy(data, 0, protocol, 0, protocol.length);
+                return Tuple.of(ret._1().get(), cid, ver, type, ret._2().get(), d, protocol);
             } else {
-                return Tuple.of(ret._1().get(), 0, 0, (byte)0, 0, null);
+                return Tuple.of(ret._1().get(), 0, 0, (byte)0, 0, null, null);
             }
         }
-        return Tuple.of(ErrorCode.UNKNOW_ERROR, 0, 0, (byte)0, 0, null);
+        return Tuple.of(ErrorCode.UNKNOW_ERROR, 0, 0, (byte)0, 0, null, null);
     }
 
     /**
@@ -134,6 +137,29 @@ public class Protocol {
             return len - flen;
         }
         return len;
+    }
+
+    /**
+     * 修改一个协议包中的客户端id数据
+     * @param data 一个完整的协议包
+     * @param id 新的id
+     * @return 修改成功返回true
+     */
+    public static boolean modifyID(byte[] data, int id) {
+        Tuple2<ErrorCode, Integer> is = isLegalProtocol(data, data.length);
+        if (is._1().isPresent() && !ErrorCode.isError(is._1().get())) {
+            data[PROTOCOL_ID_INDEX] = (byte)((id & 0xFF000000) >> 24);
+            data[PROTOCOL_ID_INDEX + 1] = (byte)((id & 0x00FF0000) >> 16);
+            data[PROTOCOL_ID_INDEX + 2] = (byte)((id & 0x0000FF00) >> 8);
+            data[PROTOCOL_ID_INDEX + 3] = (byte)(id & 0x000000FF);
+            return true;
+        }
+        return false;
+    }
+
+    public static Tuple7<ErrorCode, Integer, Integer, Byte, Integer, byte[], byte[]> modifyID(Tuple7<ErrorCode, Integer, Integer, Byte, Integer, byte[], byte[]> item, int id) {
+        modifyID(item._7().get(), id);
+        return Tuple.of(item._1().get(), id, item._3().get(), item._4().get(), item._5().get(), item._6().get(), item._7().get());
     }
 
     /**

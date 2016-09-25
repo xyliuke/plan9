@@ -49,26 +49,27 @@ func (this *MajorConfig) ReadData(conn net.Conn, data []byte)  {
 			if msg_type == MSG_TYPE_VALUE_IDENTIFICATION {
 				//minor上报身份
 				is, micro_server_type := j.GetInt(MICRO_SERVER_TYPE)
-				iss, micro_server_num := j.GetInt(MICRO_SERVER_NUM)
-
-				if is && iss {
+				if is {
 					mi := new(minorInfo)
 					mi.id = id
-					mi.micro_server_num = micro_server_num
 					mi.micro_server_type = byte(micro_server_type)
 
 					this.addMinor(mi)
-					log.I_NET("add minor identification id:", id, " , type:", micro_server_type, " , num", micro_server_num, " success")
+					log.I_NET("add minor identification id:", id, " , type:", micro_server_type, " success")
 				}
 
 			} else if msg_type == MSG_TYPE_VALUE_UPDATE_IDENTIFICATION {
 				//minor更新身份
 				is, micro_server_num := j.GetInt(MICRO_SERVER_NUM)
-
-				if is {
+				iss, addr := j.GetArray(MICRO_SERVER_ADDRESS)
+				if is && iss{
 					mi := this.getMinor(id)
 					mi.micro_server_num = micro_server_num
-					log.I_NET("update minor identification id:", id, " , num", micro_server_num, " success")
+					address := make([]string, addr.GetLen())
+					for i := 0; i < addr.GetLen(); i ++ {
+						address[i] = addr[i].(string)
+					}
+					log.I_NET("update minor identification id:", id, " , num:", micro_server_num, "address:", address," success")
 				}
 			}
 
@@ -110,9 +111,10 @@ func newMajorConfigServerOperation() *majorConfigServerOperation {
 }
 
 type minorInfo struct  {
-	id int
-	micro_server_type byte
-	micro_server_num int
+	id int //minor id
+	micro_server_type byte //minor 中管理的micro server type
+	micro_server_num int //当前共有几个micro server
+	address []string //每个micro server 的地址
 }
 
 

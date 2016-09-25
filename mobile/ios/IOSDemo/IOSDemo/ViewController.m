@@ -35,10 +35,11 @@
 - (void) action
 {
     NSLog(@"xxxxxxxxxxx\n");
-    [@"ddd" hasSuffix:@""];
-    [BizProxy call:@"server.send" param:@{@"test_data" : @"hello world from ios"} callback:^(NSDictionary *data) {
-        NSLog(@"callback : %@", data);
-    }];
+//    [@"ddd" hasSuffix:@""];
+//    [BizProxy call:@"server.send" param:@{@"test_data" : @"hello world from ios"} callback:^(NSDictionary *data) {
+//        NSLog(@"callback : %@", data);
+//    }];
+    [BizProxy logI:@"test lua log"];
 }
 
 - (void)didReceiveMemoryWarning {

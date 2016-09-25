@@ -2,6 +2,7 @@ package cn.gocoding.server.config;
 
 import cn.gocoding.common.error.ErrorCode;
 import cn.gocoding.common.tuple.Tuple6;
+import cn.gocoding.common.tuple.Tuple7;
 import cn.gocoding.server.base.BaseServerOperation;
 import cn.gocoding.server.base.ServerUnit;
 
@@ -18,7 +19,7 @@ public class MinorConfigServerOperation extends BaseServerOperation {
     }
 
     @Override
-    public boolean handle(Tuple6<ErrorCode, Integer, Integer, Byte, Integer, byte[]> item) {
+    public boolean handle(Tuple7<ErrorCode, Integer, Integer, Byte, Integer, byte[], byte[]> item) {
         if (super.handle(item)) {
             return true;
         }

@@ -180,6 +180,10 @@ func (this JSONObject) RemoveFirst(key string)  {
 	}
 }
 
+func (this JSONArray) GetLen() int {
+	return len(this)
+}
+
 func (this JSONArray) GetString(index int) (bool, string) {
 	if index >= len(this){
 		return false, ""

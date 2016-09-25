@@ -1,5 +1,6 @@
 package cn.gocoding.common.command;
 
+import cn.gocoding.common.error.ErrorCode;
 import cn.gocoding.common.util.IDUtil;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -207,6 +208,10 @@ public class CmdFactory {
 
             callback(param);
         }
+    }
+
+    public static void callback(JSONObject param, ErrorCode errorCode) {
+        callback(param, errorCode.getErrorCode(), errorCode.getErrorMsg());
     }
 
 

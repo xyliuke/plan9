@@ -3,6 +3,7 @@ package test.cn.gocoding.server.protocol;
 import cn.gocoding.common.error.ErrorCode;
 import cn.gocoding.common.tuple.Tuple2;
 import cn.gocoding.common.tuple.Tuple6;
+import cn.gocoding.common.tuple.Tuple7;
 import cn.gocoding.server.protocol.Protocol;
 import org.junit.Test;
 import org.junit.Before; 
@@ -125,8 +126,9 @@ public void testCreateProtocol() throws Exception {
 //TODO: Test goes here...
     String str = "abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz0123456789";
     Tuple2<ErrorCode, byte[]> data = Protocol.createProtocol(0xFF00FF00, (byte) 12, Protocol.LOGIN_SERVER_TYPE, Protocol.PING_DATA_TYPE, str.length(), str.getBytes());
-    Tuple6<ErrorCode, Integer, Integer, Byte, Integer, byte[]> item = Protocol.getProtocolItem(data._2().get(), data._2().get().length);
-    byte[] d = item._6().get();
+    Tuple7<ErrorCode, Integer, Integer, Byte, Integer, byte[], byte[]> item = Protocol.getProtocolItem(data._2().get(), data._2().get().length);
+    Protocol.modifyID(item._7().get(), 0x1);
+//    byte[] d = item._6().get();
 } 
 
 

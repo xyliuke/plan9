@@ -12,9 +12,9 @@ func Test_Mysql(t *testing.T) {
 	if err == nil {
 		log.I_COM("connect to db success")
 
-		result, result_err := db.Exec("insert into user(id, mobile, name) values(10,'10', '10')")
+		result, result_err := db.Exec("insert into user(id, mobile, name) values(11,'11', '11')")
 		if result_err == nil {
-			log.I_COM(result.LastInsertId())
+			log.I_COM(result.RowsAffected())
 		}
 
 		rows, row_err := db.Query("select * from user")

@@ -22,10 +22,10 @@ func Test_config(t *testing.T) {
 }
 
 func Test_Protocol(t *testing.T) {
-	fmt.Println("minor 2 major identify byte:", Minor2MajorIdentify(12, 0x10, 2))
-	fmt.Println("minor 2 major identify string:", string(Minor2MajorIdentify(12, 0x10, 2)))
+	fmt.Println("minor 2 major identify byte:", Minor2MajorIdentify(12, 0x10))
+	fmt.Println("minor 2 major identify string:", string(Minor2MajorIdentify(12, 0x10)))
 
 
-	fmt.Println("minor 2 major update identify byte:", Minor2MajorUpdateMicroServerNum (12, 3))
-	fmt.Println("minor 2 major update identify string:", string(Minor2MajorUpdateMicroServerNum (12, 3)))
+	fmt.Println("minor 2 major update identify byte:", Minor2MajorUpdateMicroServerNum (12, 3, []string{"127.0.0.1:9999", "127.0.0.1:9998"}))
+	fmt.Println("minor 2 major update identify string:", string(Minor2MajorUpdateMicroServerNum (12, 3, []string{"127.0.0.1:9999", "127.0.0.1:9998"})))
 }

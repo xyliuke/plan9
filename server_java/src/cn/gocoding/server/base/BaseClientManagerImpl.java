@@ -4,6 +4,7 @@ import cn.gocoding.common.error.ErrorCode;
 import cn.gocoding.common.network.tcp.client.ClientManager;
 import cn.gocoding.common.tuple.Tuple2;
 import cn.gocoding.common.tuple.Tuple6;
+import cn.gocoding.common.tuple.Tuple7;
 import cn.gocoding.server.protocol.Protocol;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -57,7 +58,7 @@ public class BaseClientManagerImpl implements ClientManager, MessageNotifyRecevi
         System.arraycopy(data, 0, buf, size, data.length);
         size += data.length;
 
-        Tuple6<ErrorCode, Integer, Integer, Byte, Integer, byte[]> item = Protocol.getProtocolItem(buf, size);
+        Tuple7<ErrorCode, Integer, Integer, Byte, Integer, byte[], byte[]> item = Protocol.getProtocolItem(buf, size);
         if (item._1().isPresent() && !ErrorCode.isError(item._1().get())) {
             logger.info("handle data from client {}, client id : {}, version : {}, type : {}, len : {}, data : {}",
                     addr,
@@ -72,7 +73,7 @@ public class BaseClientManagerImpl implements ClientManager, MessageNotifyRecevi
         return false;
     }
 
-    public boolean handle(Tuple6<ErrorCode, Integer, Integer, Byte, Integer, byte[]> item) {
+    public boolean handle(Tuple7<ErrorCode, Integer, Integer, Byte, Integer, byte[], byte[]> item) {
         return false;
     }
 
@@ -107,12 +108,12 @@ public class BaseClientManagerImpl implements ClientManager, MessageNotifyRecevi
     }
 
     @Override
-    public void sendMessage(byte[] data) {
+    public void receiveMessage(int id, byte[] data) {
         write(data);
     }
 
     @Override
-    public void sendMessage(int clientID, byte[] data) {
+    public void receiveMessage(int id, int clientID, byte[] data) {
         //在客户端不需要实现
     }
 

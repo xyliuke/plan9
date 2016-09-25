@@ -10,12 +10,25 @@ import java.util.List;
  */
 public class MessageNotify {
 
-    public synchronized void send(byte[] data) {
+    public synchronized void send(int id, byte[] data) {
 
         List<WeakReference<MessageNotifyRecevier>> del = new ArrayList<>();
         for (WeakReference<MessageNotifyRecevier> recevier : receviers) {
             if (recevier.get() != null) {
-                recevier.get().sendMessage(data);
+                recevier.get().receiveMessage(id, data);
+            } else {
+                del.add(recevier);
+            }
+        }
+
+        receviers.remove(del);
+    }
+
+    public synchronized void send(int id, int clientID, byte[] data) {
+        List<WeakReference<MessageNotifyRecevier>> del = new ArrayList<>();
+        for (WeakReference<MessageNotifyRecevier> recevier : receviers) {
+            if (recevier.get() != null) {
+                recevier.get().receiveMessage(id, clientID, data);
             } else {
                 del.add(recevier);
             }

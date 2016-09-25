@@ -8,10 +8,10 @@ import (
 	"common/log"
 )
 
-const BUF_LEVEL_1 int = 2048 //默认2k的数据缓存
-const BUF_LEVEL_2 int = BUF_LEVEL_1 * 8 //第二级20K的缓存
-const BUF_LEVEL_3 int = BUF_LEVEL_1 * 16 //第三级40K的缓存
-const BUF_LEVEL_4 int = BUF_LEVEL_1 * 32 //第四级64K的缓存
+const BUF_LEVEL_1 int = 4 * 1048 //默认4k的数据缓存
+const BUF_LEVEL_2 int = 16 * 1024 //第二级16K的缓存
+const BUF_LEVEL_3 int = 32 * 1024 //第三级32K的缓存
+const BUF_LEVEL_4 int = 64 * 1024 //第四级64K的缓存
 
 type BaseProtocolTcpServerOperationInterface interface  {
 	GetID() int

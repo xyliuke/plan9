@@ -1,9 +1,10 @@
+# -*- coding:utf-8 -*- 
 import os
 import shutil
 
-passwd = '123'  #压缩时的密码,请自行修改
+passwd = 'soapy88Pict'  #压缩时的密码,请自行修改
 zip_file = 'abc.zip'  #这个是默认生成zip包的文件名,不需要修改
-lua_src_path = '/Users/liuke/Desktop/test_lua' #原始lua源代码的路径,请自行修改
+lua_src_path = '/Users/liuke/workspace/plan9/common/lua' #原始lua源代码的路径,请自行修改
 
 
 def compile_one_lua(lua_file, luac_file):

@@ -4,5 +4,6 @@
     <content url="file://$MODULE_DIR$" />
     <orderEntry type="jdk" jdkName="Go 1.6" jdkType="Go SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="GOPATH &lt;server_0.1&gt;" level="project" />
   </component>
 </module>

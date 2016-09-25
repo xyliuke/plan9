@@ -2,6 +2,7 @@ package cn.gocoding.server.config;
 
 import cn.gocoding.common.error.ErrorCode;
 import cn.gocoding.common.tuple.Tuple6;
+import cn.gocoding.common.tuple.Tuple7;
 import cn.gocoding.server.base.BaseServerManagerImpl;
 import cn.gocoding.server.protocol.Protocol;
 import com.alibaba.fastjson.JSON;
@@ -26,8 +27,8 @@ public class MajorConfigServerManager extends BaseServerManagerImpl {
     }
 
     @Override
-    public boolean handle(Tuple6<ErrorCode, Integer, Integer, Byte, Integer, byte[]> item) {
-        if (super.handle(item)) {
+    public boolean handle(AsynchronousSocketChannel socketChannel, Tuple7<ErrorCode, Integer, Integer, Byte, Integer, byte[], byte[]> item) {
+        if (super.handle(socketChannel, item)) {
             return true;
         }
 
@@ -82,7 +83,8 @@ public class MajorConfigServerManager extends BaseServerManagerImpl {
     }
 
     private void handleCloseClientID(int client) {
-        
+//        MinorClientUnit minorClientUnit = clients.get(client);
+        clients.remove(client);
     }
 
     private Map<Integer, MinorClientUnit> clients = new HashMap<>();

@@ -889,7 +889,6 @@ namespace plan9 {
                             ret->append(value);
                         } else if (type == _NUMBER) {
                             //将字符串解析成数字
-//                            std::string value = chars_to_string(json_string, value_begin, value_end);
                             ret->append(parse_number(json_string, value_begin, value_end));
                         } else if (type == _BOOL) {
                             ret->append(json_string[value_begin] == 't');

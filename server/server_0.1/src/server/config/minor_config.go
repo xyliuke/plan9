@@ -5,12 +5,14 @@ import (
 	"net"
 	"common/log"
 	"server/protocol"
+	"common/json"
 )
 
 type MinorConfigEntity struct {
 	clientID        int
 	microServerType byte
 	microServerNum int
+	microServerAddress []string
 	serverPort      int
 	version         byte
 	majorAddress    string
@@ -20,6 +22,9 @@ type MinorConfig struct {
 	server *base.BaseProtocolTcpServer
 	client *base.BaseProtocolTcpClient
 	config *MinorConfigEntity
+
+	connectedMicroServerNum int
+	connectedMicroServerAddress map[int]string
 }
 
 func NewMinorConfig(config *MinorConfigEntity) *MinorConfig {
@@ -30,6 +35,8 @@ func NewMinorConfig(config *MinorConfigEntity) *MinorConfig {
 	clientEntity.Version = config.version
 	m.client = base.NewBaseProtocolTcpClient(clientEntity, m)
 	m.config = config
+	m.connectedMicroServerNum = 0
+	m.connectedMicroServerAddress = make(map[int]string)
 	return m
 }
 
@@ -48,15 +55,30 @@ func (this *MinorConfig) Connect() {
 
 //服务器处理接口
 func (this *MinorConfig) Connected(conn net.Conn)  {
-
+	//micro_server连接成功
 }
 
 func (this *MinorConfig) Disconnected(conn net.Conn)  {
-
+	//micro_server连接失败
 }
 
 func (this *MinorConfig) ReadData(conn net.Conn, data []byte)  {
+	ret, id, _, st, dt, _, _, l, d := protocol.ParseProtocol(data, len(data))
+	if ret {
+		if dt == protocol.PROTOCOL_NORMAL_JSON_DATA_TYPE{
+			j := json.NewJSON(d[:l])
+			ok, msg_type := j.GetString(MSG_TYPE)
+			okk, identity := j.GetString(IDENTITY)
+			if ok && okk {
+				if msg_type == MSG_TYPE_VALUE_IDENTIFICATION && identity == IDENTITY_VALUE_MICRO_SERVER && st == this.config.microServerType {
+					this.connectedMicroServerNum ++
+					this.connectedMicroServerAddress[id] = conn.RemoteAddr().String()
 
+					this.write2MajorUpdataMicroServer()
+				}
+			}
+		}
+	}
 }
 
 func (this *MinorConfig) WriteData(id int, data []byte)  {
@@ -68,7 +90,7 @@ func (this *MinorConfig) ClientConnect()  {
 	log.I_NET("minor id", this.config.clientID, "connect to major", this.client.GetConnection().RemoteAddr(), "success")
 	this.write2MajorIdentification()
 
-	this.write2MajorUpdateMicroServerNum(10)
+	this.write2MajorUpdateMicroServerNum(2, []string{"127.0.0.1:9999", "127.0.0.1:9998"})
 }
 
 func (this *MinorConfig) ClientDisconnect()  {
@@ -96,9 +118,23 @@ func (this *MinorConfig) write2Major(data []byte) {
 }
 
 func (this *MinorConfig) write2MajorIdentification()  {
-	this.write2Major(Minor2MajorIdentify(this.config.clientID, this.config.microServerType, this.config.microServerNum))
+	this.write2Major(Minor2MajorIdentify(this.config.clientID, this.config.microServerType))
 }
 
-func (this *MinorConfig) write2MajorUpdateMicroServerNum(num int) {
-	this.write2Major(Minor2MajorUpdateMicroServerNum(this.config.clientID, num))
+func (this *MinorConfig) write2MajorUpdataMicroServer()  {
+	addr := make([]string, len(this.connectedMicroServerAddress))
+	index := 0
+	for _, v := range this.connectedMicroServerAddress {
+		addr[index] = v
+		index ++
+	}
+	this.write2MajorUpdateMicroServerNum(this.connectedMicroServerNum, addr)
+}
+
+func (this *MinorConfig) write2MajorUpdateMicroServerNum(num int, addr []string) {
+	if num != len(addr) {
+		log.E_NET("update identification info error, the micro server num:", num, ",address:", addr)
+	} else {
+		this.write2Major(Minor2MajorUpdateMicroServerNum(this.config.clientID, num,addr))
+	}
 }
