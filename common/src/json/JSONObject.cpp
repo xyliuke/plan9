@@ -67,10 +67,6 @@ namespace plan9 {
     }
 
     static void trim(const char* string, unsigned long begin_index, unsigned long end_index, unsigned long *new_begin_index, unsigned long *new_end_index) {
-        if (string == NULL || string == nullptr) {
-            return;
-        }
-
         unsigned long a = begin_index, b = end_index;
 
         for (unsigned long i = begin_index; i <= end_index; ++i) {
@@ -333,14 +329,14 @@ namespace plan9 {
             *value_end = end_index;
 
             //去掉可能的前冒号
-            if (end_index > begin_index && json_string[begin_index] == OBJECT_COLON) {
+            if (json_string[begin_index] == OBJECT_COLON) {
                 *value_begin += 1;
             }
 
             char first_c = json_string[*value_begin];
             if (char_is_number(first_c)) {
                 //数字
-                for (unsigned long i = *value_begin; i <= end_index; ++i) {
+                for (unsigned long i = *value_begin + 1; i <= end_index; ++i) {
                     char c = json_string[i];
                     if (c == VALUE_SEPARATE || c == OBJECT_END || c == ARRAY_END) {
                         *value_end = i - 1;
@@ -357,10 +353,10 @@ namespace plan9 {
 
             } else if (first_c == '{') {
                 //object
-                int object_count = 0;
+                int object_count = 1;
                 int array_count = 0;
                 bool in_string = false;
-                for (unsigned long i = *value_begin; i <= end_index; ++i) {
+                for (unsigned long i = *value_begin + 1; i <= end_index; ++i) {
                     char c = json_string[i];
                     if (object_count == 0 && array_count == 0) {
                         if (c == OBJECT_END || c == ARRAY_END || c == VALUE_SEPARATE) {
@@ -392,15 +388,17 @@ namespace plan9 {
                                 array_count ++;
                             } else if (c == OBJECT_END) {
                                 object_count--;
-                                if (object_count == 0 && array_count == 0 && i == end_index) {
+                                if (i == end_index && object_count == 0 && array_count == 0) {
                                     *new_begin_index = i + 1;
                                     *value_end = i;
+                                    break;
                                 }
                             } else if (c == ARRAY_END) {
                                 array_count -- ;
-                                if (object_count == 0 && array_count == 0 && i == end_index) {
+                                if (i == end_index && object_count == 0 && array_count == 0) {
                                     *new_begin_index = i + 1;
                                     *value_end = i;
+                                    break;
                                 }
                             } else if (c == STRING_FLAG) {
                                 in_string = !in_string;
@@ -416,12 +414,12 @@ namespace plan9 {
             } else if (first_c == '[') {
                 //array
                 int object_count = 0;
-                int array_count = 0;
+                int array_count = 1;
                 bool in_string = false;
-                for (unsigned long i = *value_begin; i <= end_index; ++i) {
+                for (unsigned long i = *value_begin + 1; i <= end_index; ++i) {
                     char c = json_string[i];
-                    if (object_count == 0 && array_count == 0) {
-                        if (c == OBJECT_END || c == ARRAY_END || c == VALUE_SEPARATE) {
+                    if (array_count == 0 && object_count == 0) {
+                        if (c == VALUE_SEPARATE || c == ARRAY_END || c == OBJECT_END) {
                             *new_begin_index = i + 1;
                             *value_end = i - 1;
                             break;
@@ -450,15 +448,17 @@ namespace plan9 {
                                 array_count++;
                             } else if (c == OBJECT_END) {
                                 object_count --;
-                                if (object_count == 0 && array_count == 0 && i == end_index) {
+                                if (i == end_index && object_count == 0 && array_count == 0) {
                                     *new_begin_index = i + 1;
                                     *value_end = i;
+                                    break;
                                 }
                             } else if (c == ARRAY_END) {
                                 array_count --;
-                                if (object_count == 0 && array_count == 0 && i == end_index) {
+                                if (i == end_index && object_count == 0 && array_count == 0) {
                                     *new_begin_index = i + 1;
                                     *value_end = i;
+                                    break;
                                 }
                             } else if (c == STRING_FLAG) {
                                 in_string = !in_string;
@@ -473,8 +473,8 @@ namespace plan9 {
                 }
             } else if (first_c == '\"') {
                 //string
-                bool in_string = false;
-                for (unsigned long i = *value_begin; i <= end_index; ++i) {
+                bool in_string = true;
+                for (unsigned long i = *value_begin + 1; i <= end_index; ++i) {
                     char c = json_string[i];
                     if (in_string) {
                         if (c == STRING_FLAG) {
@@ -837,10 +837,11 @@ namespace plan9 {
 
                     unsigned long index = 0;
                     _json_type type;
+
+                    unsigned long value_begin, value_end;
                     while (new_end_index > new_begin_index) {
                         std::string key = get_next_key(json_string, new_begin_index, new_end_index, &new_begin_index);
 
-                        unsigned long value_begin, value_end;
                         get_next_value(json_string, new_begin_index, new_end_index, &value_begin, &value_end, &new_begin_index, &new_end_index, &type);
                         if (type == _OBJECT || type == _ARRAY) {
                             auto sub_value = _parse(json_string, value_begin, value_end);
@@ -859,15 +860,12 @@ namespace plan9 {
                         if (value_end >= new_end_index) {
                             break;
                         }
-                        unsigned long nn_begin_index = new_begin_index, nn_end_index = new_end_index;
-                        trim(json_string, new_begin_index, new_end_index, &nn_begin_index, &nn_end_index);
-                        new_begin_index = nn_begin_index;
-                        new_end_index = nn_end_index;
+                        trim(json_string, new_begin_index, new_end_index, &new_begin_index, &new_end_index);
                     }
 
                 } else if (c == ARRAY_BEGIN) {
                     //array
-                    ret->set_array_type();
+                    ret->set_array_type((unsigned int)((new_end_index - new_begin_index) / 100));
 
                     //去掉前后两个[]
                     new_begin_index ++;
@@ -877,8 +875,8 @@ namespace plan9 {
 
                     std::string::size_type index = 0;
                     _json_type type;
+                    unsigned long value_begin, value_end;
                     while (new_end_index > new_begin_index) {
-                        unsigned long value_begin, value_end;
                         get_next_value(json_string, new_begin_index, new_end_index, &value_begin, &value_end,
                                        &new_begin_index, &new_end_index, &type);
                         if (type == _OBJECT || type == _ARRAY) {
@@ -898,10 +896,7 @@ namespace plan9 {
                         if (value_end >= new_end_index) {
                             break;
                         }
-                        unsigned long nn_begin_index = new_begin_index, nn_end_index = new_end_index;
-                        trim(json_string, new_begin_index, new_end_index, &nn_begin_index, &nn_end_index);
-                        new_begin_index = nn_begin_index;
-                        new_end_index = nn_end_index;
+                        trim(json_string, new_begin_index, new_end_index, &new_begin_index, &new_end_index);
                     }
                 }
             }
@@ -975,7 +970,6 @@ namespace plan9 {
             }
             return ret;
         }
-
         std::shared_ptr<JSONObject_impl> parse_number(const char* json_string, unsigned long begin, unsigned long end) {
             std::shared_ptr<JSONObject_impl> ret(new JSONObject_impl);
             bool is_double;
@@ -995,6 +989,7 @@ namespace plan9 {
                         ret->set(static_cast<int>(val));
                     }
                 }
+                free(num);
             } else {
                 ret->set(0);
             }
@@ -1026,6 +1021,13 @@ namespace plan9 {
         void set_array_type() {
             if (!is_array()) {
                 this->value_array.reset(new std::vector<std::shared_ptr<JSONObject_impl>>);
+                type = _ARRAY;
+            }
+        }
+        void set_array_type(unsigned int size) {
+            if (!is_array()) {
+                this->value_array.reset(new std::vector<std::shared_ptr<JSONObject_impl>>);
+                this->value_array->reserve(size);
                 type = _ARRAY;
             }
         }
