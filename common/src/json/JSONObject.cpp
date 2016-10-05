@@ -100,28 +100,10 @@ namespace plan9 {
         *is_double = false;
         for (unsigned long i = begin; i <= end; ++i) {
             char c = chars[i];
-            if (std::isdigit(c) || '-' == c || '+' == c || 'e' == c || 'E' == c) {
-
-            } else if ('.' == c) {
+            if ('.' == c || ('E' == c && '-' == chars[i + 1])) {
                 *is_double = true;
-            } else {
-                return false;
+                return true;
             }
-        }
-        return true;
-    }
-    static bool string_is_number(std::string& str, bool* is_double) {
-        *is_double = false;
-        auto it = str.begin();
-        while (it != str.end()) {
-            if (std::isdigit(*it) || '-' == *it || '+' == *it || 'e' == *it || 'E' == *it) {
-
-            } else if ('.' == *it) {
-                *is_double = true;
-            } else {
-                return false;
-            }
-            ++ it;
         }
         return true;
     }
@@ -141,6 +123,7 @@ namespace plan9 {
         return std::stod(string);
     }
 
+    static char num_buf[100];
 
     class JSONObject::JSONObject_impl {
     private:
@@ -281,41 +264,6 @@ namespace plan9 {
                 return chars_to_string(json_string, ret_begin, ret_end);
             }
             return "";
-        }
-
-        std::string get_next_key(std::string& json_string, std::string::size_type* index) {
-            std::string& trim_string = json_string;
-            std::string::size_type begin_index = 0;
-            bool in_string = false;
-            for (std::string::size_type i = 0; i < trim_string.length(); ++i) {
-                char c = trim_string.at(i);
-                if (in_string) {
-                    if (c == STRING_FLAG) {
-                        in_string = !in_string;
-                    }
-                } else {
-                    if (c == OBJECT_BEGIN || c == ARRAY_BEGIN) {
-                        begin_index = i + 1;
-                    } else if (c == STRING_FLAG) {
-                        in_string = !in_string;
-                        begin_index = i + 1;
-                    } else if (c == OBJECT_COLON) {
-                        *index = i + 1;
-                        break;
-                    }
-                }
-            }
-            std::string ret = trim(trim_string.substr(begin_index, (unsigned long)(*index - 1 - begin_index)));
-            //去掉可能的引号
-            if (ret.length() > 1) {
-                if (ret.at(0) == STRING_FLAG) {
-                    ret = ret.substr(1, ret.length() - 1);
-                }
-                if (ret.at(ret.length() - 1) == STRING_FLAG) {
-                    ret = ret.substr(0, ret.length() - 1);
-                }
-            }
-            return ret;
         }
 
         //value_begin和value_end为获取值的前后索引；new_begin_index和new_end_index为除去value后，下次计算的索引
@@ -563,243 +511,6 @@ namespace plan9 {
             }
         }
 
-        std::string get_next_value(std::string& json_string, std::string::size_type* index, _json_type* type) {
-            std::string& trim_string = json_string;
-
-            //去掉可能的前冒号
-            if (trim_string.length() > 0 && trim_string.at(0) == OBJECT_COLON) {
-                trim_string = trim(trim_string.substr(1, trim_string.length() - 1));
-            }
-
-            char first_c = json_string.at(0);
-            if (char_is_number(first_c)) {
-                //数字
-                for (std::string::size_type i = 0; i < trim_string.length(); ++i) {
-                    char c = trim_string.at(i);
-                    if (c == VALUE_SEPARATE || c == OBJECT_END || c == ARRAY_END) {
-                        *index = (i + 1);
-                        break;
-                    }
-                }
-                *type = _NUMBER;
-                if (*index > trim_string.length()) {
-                    *index = trim_string.length();
-                    return trim(trim_string.substr(0, *index));
-                }
-                return trim(trim_string.substr(0, *index - 1));
-            } else if (first_c == '{') {
-                //object
-                int object_count = 0;
-                int array_count = 0;
-                bool in_string = false;
-                for (std::string::size_type i = 0; i < trim_string.length(); ++i) {
-                    char c = trim_string.at(i);
-                    if (object_count == 0 && array_count == 0) {
-                        if (c == OBJECT_END || c == ARRAY_END || c == VALUE_SEPARATE) {
-                            *index = i + 1;
-                            break;
-                        } else {
-                            if (c == OBJECT_BEGIN) {
-                                object_count ++;
-                            } else if (c == OBJECT_END) {
-                                object_count --;
-                            } else if (c == ARRAY_BEGIN) {
-                                array_count ++;
-                            } else if (c == ARRAY_END) {
-                                array_count --;
-                            } else if (c == STRING_FLAG) {
-                                in_string = !in_string;
-                            }
-                        }
-                    } else {
-                        if (in_string) {
-                            if (c == STRING_FLAG) {
-                                in_string = !in_string;
-                            }
-                        } else {
-                            if (c == OBJECT_BEGIN) {
-                                object_count ++;
-                            } else if (c == OBJECT_END) {
-                                object_count --;
-                                if (object_count == 0 && array_count == 0) {
-                                    *index = i + 2;
-                                }
-                            } else if (c == ARRAY_BEGIN) {
-                                array_count ++;
-                            } else if (c == ARRAY_END) {
-                                array_count --;
-                                if (object_count == 0 && array_count == 0) {
-                                    *index = i + 2;
-                                }
-                            } else if (c == STRING_FLAG) {
-                                in_string = !in_string;
-                            }
-
-                        }
-                    }
-                }
-                *type = _OBJECT;
-                if (*index > trim_string.length()) {
-                    *index = trim_string.length();
-                    return trim(trim_string.substr(0, *index));
-                }
-                return trim(trim_string.substr(0, *index - 1));
-
-            } else if (first_c == '[') {
-                //array
-                int object_count = 0;
-                int array_count = 0;
-                bool in_string = false;
-                for (std::string::size_type i = 0; i < trim_string.length(); ++i) {
-                    char c = trim_string.at(i);
-                    if (object_count == 0 && array_count == 0) {
-                        if (c == OBJECT_END || c == ARRAY_END || c == VALUE_SEPARATE) {
-                            *index = i + 1;
-                            break;
-                        } else {
-                            if (c == OBJECT_BEGIN) {
-                                object_count ++;
-                            } else if (c == OBJECT_END) {
-                                object_count --;
-                            } else if (c == ARRAY_BEGIN) {
-                                array_count ++;
-                            } else if (c == ARRAY_END) {
-                                array_count --;
-                            } else if (c == STRING_FLAG) {
-                                in_string = !in_string;
-                            }
-                        }
-                    } else {
-                        if (in_string) {
-                            if (c == STRING_FLAG) {
-                                in_string = !in_string;
-                            }
-                        } else {
-                            if (c == OBJECT_BEGIN) {
-                                object_count ++;
-                            } else if (c == OBJECT_END) {
-                                object_count --;
-                                if (object_count == 0 && array_count == 0) {
-                                    *index = i + 2;
-                                }
-                            } else if (c == ARRAY_BEGIN) {
-                                array_count ++;
-                            } else if (c == ARRAY_END) {
-                                array_count --;
-                                if (object_count == 0 && array_count == 0) {
-                                    *index = i + 2;
-                                }
-                            } else if (c == STRING_FLAG) {
-                                in_string = !in_string;
-                            }
-
-                        }
-                    }
-                }
-                *type = _ARRAY;
-                if (*index > trim_string.length()) {
-                    *index = trim_string.length();
-                    return trim(trim_string.substr(0, *index));
-                }
-                return trim(trim_string.substr(0, *index - 1));
-
-
-            } else if (first_c == '\"') {
-                //string
-                bool in_string = false;
-                for (std::string::size_type i = 0; i < trim_string.length(); ++i) {
-                    char c = trim_string.at(i);
-                    if (in_string) {
-                        if (c == STRING_FLAG) {
-                            in_string = !in_string;
-
-                            if (i == (trim_string.length() - 1)) {
-                                *index = i + 2;
-                            }
-                        }
-                    } else {
-                        if (c == STRING_FLAG) {
-                            in_string = !in_string;
-                            if (i == (trim_string.length() - 1)) {
-                                *index = i + 2;
-                            }
-                        } else if (c == VALUE_SEPARATE || c == OBJECT_END || c == ARRAY_END) {
-                            *index = i + 1;
-                            break;
-                        }
-                    }
-                }
-
-                std::string ret;
-                if (*index > trim_string.length()) {
-                    *index = trim_string.length();
-                    ret = trim(trim_string.substr(0, *index));
-                } else {
-                    ret = trim(trim_string.substr(0, *index - 1));
-                }
-                //去掉可能的引号
-                if (ret.length() > 1) {
-                    if (ret.at(0) == STRING_FLAG) {
-                        ret = ret.substr(1, ret.length() - 1);
-                    }
-                    if (ret.at(ret.length() - 1) == STRING_FLAG) {
-                        ret = ret.substr(0, ret.length() - 1);
-                    }
-                }
-                *type = _STRING;
-                return ret;
-
-            } else {
-                if (trim_string.find("true") == 0) {
-                    //true
-                    *index = 4;
-                    for (std::string::size_type i = 4; i < trim_string.length(); ++i) {
-                        char c = trim_string.at(i);
-                        if (c == VALUE_SEPARATE || c == OBJECT_END || c == ARRAY_END) {
-                            *index = (i + 1);
-                            break;
-                        }
-                    }
-                    *type = _BOOL;
-                    if (*index > trim_string.length()) {
-                        *index = trim_string.length();
-                    }
-                    return "true";
-                } else if (trim_string.find("false") == 0) {
-                //false
-                    for (std::string::size_type i = 5; i < trim_string.length(); ++i) {
-                        char c = trim_string.at(i);
-                        if (c == VALUE_SEPARATE || c == OBJECT_END || c == ARRAY_END) {
-                            *index = (i + 1);
-                            break;
-                        }
-                    }
-                    *type = _BOOL;
-                    if (*index > trim_string.length()) {
-                        *index = trim_string.length();
-                    }
-                    return "false";
-                } else if (trim_string.find("null") == 0) {
-                    //null
-                    for (std::string::size_type i = 4; i < trim_string.length(); ++i) {
-                        char c = trim_string.at(i);
-                        if (c == VALUE_SEPARATE || c == OBJECT_END || c == ARRAY_END) {
-                            *index = (i + 1);
-                            break;
-                        }
-                    }
-                    *type = _NULL;
-                    if (*index > trim_string.length()) {
-                        *index = trim_string.length();
-                    }
-                    return "null";
-                }
-            }
-            *type = _NULL;
-            *index = 0;
-            return "";
-        }
-
         std::shared_ptr<JSONObject_impl> parse_file(std::string& path) {
             std::stringstream ss;
             std::ifstream ifstream(path, std::ios::in);
@@ -902,110 +613,19 @@ namespace plan9 {
             }
             return ret;
         }
-        std::shared_ptr<JSONObject_impl> _parse(std::string json_string) {
-            std::shared_ptr<JSONObject_impl> ret(new JSONObject_impl);
-
-            std::string trim_string = trim(json_string);
-
-            if (trim_string.length() > 1) {
-
-                if (trim_string.at(0) == OBJECT_BEGIN) {
-                    //object
-                    ret->set_object_type();
-
-                    trim_string = trim(trim_string.substr(1, trim_string.length() - 2));//去掉前后两个{}
-                    std::string::size_type index = 0;
-                    _json_type type;
-                    while (trim_string.length() > 0) {
-                        std::string key = get_next_key(trim_string, &index);
-                        trim_string = trim(trim_string.substr(index, trim_string.length() - index));
-                        std::string value = get_next_value(trim_string, &index, &type);
-                        if (type == _OBJECT || type == _ARRAY) {
-                            auto sub_value = _parse(value);
-                            ret->put(key, sub_value);
-                        } else if (type == _STRING) {
-                            ret->put(key, value);
-                        } else if (type == _NUMBER) {
-                            //将字符串解析成数字
-                            ret->put(key, parse_number(value));
-                        } else if (type == _BOOL) {
-                            ret->put(key, value == "true");
-                        } else if (type == _NULL) {
-                            ret->put(key, std::shared_ptr<JSONObject_impl>(new JSONObject_impl()));
-                        }
-                        if (index > trim_string.length()) {
-                            break;
-                        }
-                        trim_string = trim(trim_string.substr(index, trim_string.length() - index));
-                    }
-
-                } else if (trim_string.at(0) == ARRAY_BEGIN) {
-                    //array
-                    ret->set_array_type();
-
-                    trim_string = trim(trim_string.substr(1, trim_string.length() - 2));//去掉前后两个[]
-                    std::string::size_type index = 0;
-                    _json_type type;
-                    while (trim_string.length() > 0) {
-                        std::string value = get_next_value(trim_string, &index, &type);
-                        if (type == _OBJECT || type == _ARRAY) {
-                            auto sub_value = _parse(value);
-                            ret->append(sub_value);
-                        } else if (type == _STRING) {
-                            ret->append(value);
-                        } else if (type == _NUMBER) {
-                            //将字符串解析成数字
-                            ret->append(parse_number(value));
-                        } else if (type == _BOOL) {
-                            ret->append(value == "true");
-                        } else if (type == _NULL) {
-                            ret->append(std::shared_ptr<JSONObject_impl>(new JSONObject_impl));
-                        }
-                        if (index > trim_string.length()) {
-                            break;
-                        }
-                        trim_string = trim(trim_string.substr(index, trim_string.length() - index));
-                    }
-                }
-            }
-            return ret;
-        }
         std::shared_ptr<JSONObject_impl> parse_number(const char* json_string, unsigned long begin, unsigned long end) {
             std::shared_ptr<JSONObject_impl> ret(new JSONObject_impl);
-            bool is_double;
+            bool is_double = true;
             bool is_num = chars_is_number(json_string, begin, end, &is_double);
             if (is_num) {
-                char* num = (char*)malloc(end - begin + 2);
-                std::copy(json_string + begin, json_string + end + 1, num);
-                *(num + end - begin + 1) = '\0';
-                if (is_double) {
-                    double val = get_double_from_string(num);
-                    ret->set(val);
-                } else {
-                    long val = get_long_from_string(num);
-                    if (val > std::numeric_limits<int>::max() || val < std::numeric_limits<int>::min()) {
-                        ret->set(val);
-                    } else {
-                        ret->set(static_cast<int>(val));
-                    }
-                }
-                free(num);
-            } else {
-                ret->set(0);
-            }
-            return ret;
-        }
+                std::copy(json_string + begin, json_string + end + 1, num_buf);
+                num_buf[end - begin + 1] = '\0';
 
-        std::shared_ptr<JSONObject_impl> parse_number(std::string& json_string) {
-            std::shared_ptr<JSONObject_impl> ret(new JSONObject_impl);
-            bool is_double;
-            bool is_num = string_is_number(json_string, &is_double);
-            if (is_num) {
                 if (is_double) {
-                    double val = get_double_from_string(json_string);
+                    double val = get_double_from_string(num_buf);
                     ret->set(val);
                 } else {
-                    long val = get_long_from_string(json_string);
+                    long val = get_long_from_string(num_buf);
                     if (val > std::numeric_limits<int>::max() || val < std::numeric_limits<int>::min()) {
                         ret->set(val);
                     } else {
@@ -1151,45 +771,56 @@ namespace plan9 {
             append(v);
         }
 
-        void remove(int index) {
+        std::shared_ptr<JSONObject_impl> remove(int index) {
             if (is_array() && size() > index) {
                 int idx = 0;
                 auto it = value_array->begin();
                 while (it != value_array->end()) {
                     if (index == idx) {
+                        auto ret = *it;
                         value_array->erase(it);
-                        return;
+                        return ret;
                     }
                     ++ it;
                     idx ++;
                 }
             }
+            return std::shared_ptr<JSONObject_impl>();
         }
 
-        void remove_last() {
+        std::shared_ptr<JSONObject_impl> remove_last() {
             if (is_array() && size() > 0) {
+                auto ret = value_array->at(value_array->size() - 1);
                 value_array->pop_back();
+                return ret;
             }
+            return std::shared_ptr<JSONObject_impl>();
         }
 
-        void remove_first() {
+        std::shared_ptr<JSONObject_impl> remove_first() {
             if (is_array() && size() > 0) {
+                auto ret = *(value_array->begin());
                 value_array->erase(value_array->begin());
+                return ret;
             }
+            return std::shared_ptr<JSONObject_impl>();
         };
 
-        void remove(const char* key) {
+        std::shared_ptr<JSONObject_impl> remove(const char* key) {
             std::string k(key);
-            remove(k);
+            return remove(k);
         }
 
-        void remove(std::string& key) {
+        std::shared_ptr<JSONObject_impl> remove(std::string& key) {
             if (is_object()) {
                 auto it = value_object->find(key);
                 if (it != value_object->end()) {
+                    auto ret = it->second;
                     value_object->erase(key);
+                    return ret;
                 }
             }
+            return std::shared_ptr<JSONObject_impl>();
         }
 
         unsigned long size() {
@@ -1649,6 +1280,10 @@ namespace plan9 {
 
     }
 
+    JSONObject::JSONObject(std::shared_ptr<JSONObject_impl> value) : impl_(value) {
+
+    }
+
     void JSONObject::parse(const char *json_string) {
         std::string string(json_string);
         parse(string);
@@ -1760,38 +1395,39 @@ namespace plan9 {
         if (check_undefined()) return;
         impl_->append(value);
     }
-    void JSONObject::append(std::string& value) {
+    void JSONObject::append(std::string value) {
         if (check_undefined()) return;
         impl_->append(value);
     }
-    void JSONObject::append(JSONObject& value) {
+    void JSONObject::append(JSONObject value) {
         if (check_undefined()) return;
         impl_->append(value.impl_);
     }
 
-    void JSONObject::remove(int index) {
-        if (check_undefined()) return;
-        return impl_->remove(index);
+    JSONObject JSONObject::remove(int index) {
+        if (check_undefined()) return JSONObject();
+        JSONObject ret(impl_->remove(index));
+        return ret;
     }
 
-    void JSONObject::remove_first() {
-        if (check_undefined()) return;
-        return impl_->remove_first();
+    JSONObject JSONObject::remove_first() {
+        if (check_undefined()) return JSONObject();
+        return JSONObject(impl_->remove_first());
     }
 
-    void JSONObject::remove_last() {
-        if (check_undefined()) return;
-        return impl_->remove_last();
+    JSONObject JSONObject::remove_last() {
+        if (check_undefined()) return JSONObject();
+        return JSONObject(impl_->remove_last());
     }
 
-    void JSONObject::remove(const char *key) {
-        if (check_undefined()) return;
-        return impl_->remove(key);
+    JSONObject JSONObject::remove(const char *key) {
+        if (check_undefined()) return JSONObject();
+        return JSONObject(impl_->remove(key));
     }
 
-    void JSONObject::remove(std::string &key) {
-        if (check_undefined()) return;
-        return impl_->remove(key);
+    JSONObject JSONObject::remove(std::string key) {
+        if (check_undefined()) return JSONObject();
+        return JSONObject(impl_->remove(key));
     }
 
     JSONObject JSONObject::get(int index) {
@@ -1810,7 +1446,7 @@ namespace plan9 {
     }
 
 
-    JSONObject JSONObject::get(std::string& key) {
+    JSONObject JSONObject::get(std::string key) {
         JSONObject object;
         std::shared_ptr<JSONObject_impl> im = impl_->get(key);
         object.impl_ = im;
@@ -1827,7 +1463,7 @@ namespace plan9 {
         *find = !(ret.is_undefined());
         return ret;
     }
-    JSONObject JSONObject::get(std::string &key, bool *find) {
+    JSONObject JSONObject::get(std::string key, bool *find) {
         JSONObject ret = get(key);
         *find = !(ret.is_undefined());
         return ret;
@@ -1849,13 +1485,13 @@ namespace plan9 {
         impl_->put(key, object);
     }
 
-    void JSONObject::put(std::string key, std::string &value) {
+    void JSONObject::put(std::string key, std::string value) {
         if (check_undefined()) return;
         std::shared_ptr<JSONObject_impl> object(new JSONObject_impl(value));
         impl_->put(key, object);
     }
 
-    void JSONObject::put(std::string key, JSONObject &value) {
+    void JSONObject::put(std::string key, JSONObject value) {
         if (check_undefined()) return;
         impl_->put(key, value.impl_);
     }
@@ -1895,7 +1531,7 @@ namespace plan9 {
         return impl_->has(key);
     }
 
-    bool JSONObject::has(std::string &key) {
+    bool JSONObject::has(std::string key) {
         if (check_undefined()) return false;
         return impl_->has(key);
     }
@@ -1945,7 +1581,7 @@ namespace plan9 {
         return (*this)[k];
     }
 
-    JSONObject &JSONObject::operator=(std::string &value) {
+    JSONObject &JSONObject::operator=(std::string value) {
         if (!check_undefined()) {
             impl_->set(value);
         }

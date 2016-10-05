@@ -93,7 +93,7 @@ namespace plan9 {
          * @param key 元素key值
          * @return
          */
-        JSONObject get(std::string& key);
+        JSONObject get(std::string key);
         JSONObject get(const char* key);
         /**
          * 获取object类型对象中的元素, 如果没有打到该元素，则对象为undefined状态
@@ -101,7 +101,7 @@ namespace plan9 {
          * @param find 是否存在该key的标志
          * @return
          */
-        JSONObject get(std::string& key, bool* find);
+        JSONObject get(std::string key, bool* find);
         JSONObject get(const char* key, bool* find);
         /**
          * 返回元素的个数，数组和字典会有正确返回值，其他返回为0
@@ -119,28 +119,28 @@ namespace plan9 {
         void append(double value);
         void append(bool value);
         void append(const char* value);
-        void append(std::string& value);
-        void append(JSONObject& value);
+        void append(std::string value);
+        void append(JSONObject value);
 
         /**
          * 删除array类型中元素
          * @param index 元素的下标
          */
-        void remove(int index);
+        JSONObject remove(int index);
         /**
          * 删除array类型数据中的第一个元素
          */
-        void remove_first();
+        JSONObject remove_first();
         /**
          * 删除array类型数据中的最后一个元素
          */
-        void remove_last();
+        JSONObject remove_last();
         /**
          * 删除object类型中的元素
          * @param key 元素key值
          */
-        void remove(const char* key);
-        void remove(std::string& key);
+        JSONObject remove(const char* key);
+        JSONObject remove(std::string key);
 
         /**
          * 添加键值对
@@ -153,8 +153,8 @@ namespace plan9 {
         void put(std::string key, double value);
         void put(std::string key, bool value);
         void put(std::string key, const char* value);
-        void put(std::string key, std::string& value);
-        void put(std::string key, JSONObject& value);
+        void put(std::string key, std::string value);
+        void put(std::string key, JSONObject value);
 
         /**
          * 当前json对象中是否包含key值。支持a.b的操作方式
@@ -162,7 +162,7 @@ namespace plan9 {
          * @return
          */
         bool has(const char* key);
-        bool has(std::string& key);
+        bool has(std::string key);
 
         /**
          * 返回字典中key的集合，如果非object类型的，则返回空的集合
@@ -192,7 +192,7 @@ namespace plan9 {
         //重载运算符
         JSONObject operator[](std::string&);
         JSONObject operator[](const char*);
-        JSONObject& operator=(std::string&);
+        JSONObject& operator=(std::string);
         JSONObject& operator=(const char*);
         JSONObject& operator=(int);
         JSONObject& operator=(long);
@@ -208,6 +208,7 @@ namespace plan9 {
     private:
         class JSONObject_impl;
         std::shared_ptr<JSONObject_impl> impl_;
+        JSONObject(std::shared_ptr<JSONObject_impl>);
     };
 
 }
