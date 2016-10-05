@@ -86,8 +86,8 @@ namespace plan9 {
         }
 
         void lua_callback(lua_State* L) {
-            Json::Value result = table2json(L);
-            std::string id = result["aux"]["id"].asString();
+            JSONObject result = table2json(L);
+            std::string id = result["aux"]["id"].get_string();
             auto callback = callback_map[id];
             if (callback != nullptr) {
                 callback(result);
@@ -105,7 +105,7 @@ namespace plan9 {
                     is_callback = (bool)lua_toboolean(L, -1);
                     lua_pop(L, 1);
                 }
-                Json::Value param;
+                JSONObject param;
                 if (lua_type(L, -1) == LUA_TTABLE) {
                     param = table2json(L);
                 }
@@ -118,7 +118,7 @@ namespace plan9 {
                     callback_id = lua_tostring(L, -3);
                 }
                 if (is_callback) {
-                    cmd_factory::instance().execute(method, param, [=](Json::Value result){
+                    cmd_factory::instance().execute(method, param, [=](JSONObject result){
                         result["aux"]["callback_id"] = callback_id;
                         call("lua_c_bridge.callback_from_c", result, nullptr);
                     });
@@ -158,62 +158,64 @@ namespace plan9 {
         /**
          * 将JSON对象转换成Lua中的table
          */
-        void json2table(Json::Value json) {
+        void json2table(JSONObject json) {
             lua_newtable(L);
-            Json::Value::iterator it = json.begin();
-            while (it != json.end()) {
-                std::string key = it.key().asString();
-                Json::Value value = *it;
-                if (value.isObject()) {
+            json.enumerate([=](std::string key, JSONObject value, bool only_value){
+                if (value.is_object()) {
                     lua_pushstring(L, key.c_str());
                     json2table(value);
                     lua_settable(L, -3);
-                } else if (value.isInt()) {
+                } else if (value.is_int()) {
                     lua_pushstring(L, key.c_str());
-                    lua_pushinteger(L, value.asInt());
+                    lua_pushinteger(L, value.get_int());
                     lua_settable(L, -3);
-                } else if (value.isInt64()) {
+                } else if (value.is_long()) {
                     lua_pushstring(L, key.c_str());
-                    lua_pushinteger(L, value.asInt64());
+                    lua_pushinteger(L, value.get_long());
                     lua_settable(L, -3);
-                } else if (value.isDouble()) {
+                } else if (value.is_float()) {
                     lua_pushstring(L, key.c_str());
-                    lua_pushnumber(L, value.asDouble());
+                    lua_pushnumber(L, value.get_float());
                     lua_settable(L, -3);
-                } else if (value.isString()) {
+                } else if (value.is_double()) {
                     lua_pushstring(L, key.c_str());
-                    lua_pushstring(L, value.asString().c_str());
+                    lua_pushnumber(L, value.get_double());
                     lua_settable(L, -3);
-                } else if (value.isBool()) {
+                } else if (value.is_string()) {
                     lua_pushstring(L, key.c_str());
-                    if (value.asBool()) {
+                    lua_pushstring(L, value.get_string().c_str());
+                    lua_settable(L, -3);
+                } else if (value.is_bool()) {
+                    lua_pushstring(L, key.c_str());
+                    if (value.get_bool()) {
                         lua_pushboolean(L, 1);
                     } else {
                         lua_pushboolean(L, 0);
                     }
                     lua_settable(L, -3);
-                } else if (value.isArray()) {
+                } else if (value.is_array()) {
                     lua_pushstring(L, key.c_str());
                     lua_newtable(L);
-                    Json::ValueIterator it_arr = value.begin();
                     int index = 1;
-                    while (it_arr != value.end()) {
-                        Json::Value v = *it_arr;
+                    value.enumerate([=](std::string k, JSONObject v, bool o_value) mutable {
                         lua_pushnumber(L, index);
-                        if (v.isInt()) {
-                            lua_pushinteger(L, v.asInt());
+                        if (v.is_int()) {
+                            lua_pushinteger(L, v.get_int());
                             lua_settable(L, -3);
-                        } else if (v.isInt64()) {
-                            lua_pushinteger(L, v.asInt64());
+                        } else if (v.is_long()) {
+                            lua_pushinteger(L, v.get_long());
                             lua_settable(L, -3);
-                        } else if (v.isDouble()) {
-                            lua_pushnumber(L, v.asDouble());
+                        } else if (v.is_float()) {
+                            lua_pushnumber(L, v.get_float());
                             lua_settable(L, -3);
-                        } else if (v.isString()) {
-                            lua_pushstring(L, v.asString().c_str());
+                        } else if (v.is_double()) {
+                            lua_pushnumber(L, v.get_double());
                             lua_settable(L, -3);
-                        } else if (v.isBool()) {
-                            if (v.asBool()) {
+                        } else if (v.is_string()) {
+                            lua_pushstring(L, v.get_string().c_str());
+                            lua_settable(L, -3);
+                        } else if (v.is_bool()) {
+                            if (v.get_bool()) {
                                 lua_pushboolean(L, 1);
                             } else {
                                 lua_pushboolean(L, 0);
@@ -221,19 +223,18 @@ namespace plan9 {
                             lua_settable(L, -3);
                         }
                         index ++;
-                        it_arr ++;
-                    }
+                    });
                     lua_settable(L,-3);
                 }
-                it ++;
-            }
+
+            });
         }
 
         /**
          * 将一个Lua的table转换成Json对象
          */
-        Json::Value table2json(lua_State* L) {
-            Json::Value ret;
+        JSONObject table2json(lua_State* L) {
+            JSONObject ret;
 
             lua_pushnil(L);
             int type = lua_type(L, -2);
@@ -302,43 +303,43 @@ namespace plan9 {
             return ret;
         }
 
-        Json::Value wrap(Json::Value param) {
-            Json::Value ret;
+        JSONObject wrap(JSONObject param) {
+            JSONObject ret;
             std::string to;
             std::string id;
-            Json::Value aux;
-            Json::Value args;
-            if (param.isMember("aux")) {
+            JSONObject aux;
+            JSONObject args;
+            if (param.has("aux")) {
                 aux = param["aux"];
                 ret["aux"] = aux;
-                param.removeMember("aux");
+                param.remove("aux");
             } else {
-                ret["aux"] = Json::Value();
+                ret["aux"] = JSONObject::createObject();
             }
 
-            if (!ret["aux"].isMember("id")) {
+            if (!ret["aux"].has("id")) {
                 ret["aux"]["id"] = UUID::id();
             }
 
-            if (param.isMember("args")) {
+            if (param.has("args")) {
                 args = param["args"];
                 ret["args"] = args;
             } else {
                 ret["args"] = param;
             }
 
-            if (param.isMember("result")) {
+            if (param.has("result")) {
                 ret["result"] = param["result"];
             }
 
             return ret;
         }
 
-        Json::Value register_callback(Json::Value param, std::function<void(Json::Value)> callback) {
-            Json::Value ret = wrap(param);
+        JSONObject register_callback(JSONObject param, std::function<void(JSONObject)> callback) {
+            JSONObject ret = wrap(param);
             if (callback != nullptr) {
                 ret["aux"]["action"] = "callback";
-                std::string id = ret["aux"]["id"].asString();
+                std::string id = ret["aux"]["id"].get_string();
                 callback_map[id] = callback;
             } else {
                 ret["aux"]["action"] = "direct";
@@ -346,7 +347,7 @@ namespace plan9 {
             return ret;
         }
 
-        bool call(std::string method, Json::Value param, std::function<void(Json::Value)> callback) {
+        bool call(std::string method, JSONObject param, std::function<void(JSONObject)> callback) {
             if (!is_load_) {
                 return false;
             }
@@ -411,7 +412,7 @@ namespace plan9 {
 
     private:
         bool is_load_;
-        std::map<std::string, std::function<void(Json::Value)>> callback_map;
+        std::map<std::string, std::function<void(JSONObject)>> callback_map;
     };
 
     lua_bind lua_bind::instance() {
@@ -428,29 +429,49 @@ namespace plan9 {
     }
 
     bool lua_bind::call_lua(std::string method, Json::Value param) {
+//        return impl->call(method, param, nullptr);
+    }
+
+    bool lua_bind::call_lua(std::string method, JSONObject param) {
         return impl->call(method, param, nullptr);
     }
 
     bool lua_bind::call(std::string method, Json::Value param) {
-        Json::Value p = wrap(method, param);
+//        Json::Value p = wrap(method, param);
+//        return call_lua("lua_c_bridge.call_lua", p);
+    }
+    bool lua_bind::call(std::string method, JSONObject param) {
+        JSONObject p = wrap(method, param);
         return call_lua("lua_c_bridge.call_lua", p);
     }
 
     bool lua_bind::call_lua(std::string method, Json::Value param, std::function<void(Json::Value result)> callback) {
+//        return impl->call(method, param, callback);
+    }
+    bool lua_bind::call_lua(std::string method, JSONObject param, std::function<void(JSONObject)> callback) {
         return impl->call(method, param, callback);
     }
 
     bool lua_bind::call(std::string method, Json::Value param, std::function<void(Json::Value result)> callback) {
-        Json::Value p = wrap(method, param);
+//        Json::Value p = wrap(method, param);
+//        return call_lua("lua_c_bridge.call_lua", p, callback);
+    }
+
+    bool lua_bind::call(std::string method, JSONObject param, std::function<void(JSONObject)> callback) {
+        JSONObject p = wrap(method, param);
         return call_lua("lua_c_bridge.call_lua", p, callback);
     }
 
     bool lua_bind::call(std::string method, std::function<void(Json::Value result)> callback) {
-        return call(method, Json::Value(), callback);
+//        return call(method, Json::Value(), callback);
+    }
+
+    bool lua_bind::call(std::string method, std::function<void(JSONObject result)> callback) {
+        return call(method, JSONObject(), callback);
     }
 
     bool lua_bind::call(std::string method) {
-        return call(method, Json::Value());
+        return call(method, JSONObject());
     }
 
     lua_bind::lua_bind() : impl(new lua_bind_impl) {
@@ -464,12 +485,12 @@ namespace plan9 {
         impl->native_call(L);
     }
 
-    Json::Value lua_bind::wrap(std::string method, Json::Value param) {
-        if (param.isMember("aux")) {
+    JSONObject lua_bind::wrap(std::string method, JSONObject param) {
+        if (param.has("aux")) {
             param["aux"]["to"] = method;
             return param;
         } else {
-            Json::Value p;
+            JSONObject p;
             p["aux"]["to"] = method;
             p["args"] = param;
             return p;

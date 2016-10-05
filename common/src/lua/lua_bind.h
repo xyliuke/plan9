@@ -9,6 +9,7 @@
 #include <json/json.h>
 #include <functional>
 #include <memory>
+#include <json/JSONObject.h>
 #include "lua.hpp"
 
 namespace plan9
@@ -29,6 +30,7 @@ namespace plan9
          * @return 如果函数存在,则返回true,否则返回false
          */
         bool call_lua(std::string method, Json::Value param);
+        bool call_lua(std::string method, JSONObject param);
 
         /**
          * 调用lua函数,支持调用table中的函数,规则为a.b
@@ -38,6 +40,7 @@ namespace plan9
          * @return 如果函数存在,则返回true,否则返回false
          */
         bool call_lua(std::string method, Json::Value param, std::function<void(Json::Value result)> callback);
+        bool call_lua(std::string method, JSONObject param, std::function<void(JSONObject result)> callback);
 
         /**
          * 调用lua函数,调用参数格式按照cmd_facotry格式
@@ -45,6 +48,7 @@ namespace plan9
          * @param param  参数 lua参数的支持,为Json对象
          */
         bool call(std::string method, Json::Value param);
+        bool call(std::string method, JSONObject param);
 
         /**
          * 调用lua函数,调用参数格式按照cmd_facotry格式
@@ -53,11 +57,13 @@ namespace plan9
          * @param callback 回调函数
          */
         bool call(std::string method, Json::Value param, std::function<void(Json::Value result)> callback);
+        bool call(std::string method, JSONObject param, std::function<void(JSONObject result)> callback);
 
         /**
          * 函数功能同上,只是不需要传递参数
          */
         bool call(std::string method, std::function<void(Json::Value result)> callback);
+        bool call(std::string method, std::function<void(JSONObject result)> callback);
 
         /**
          * 函数同上,只是不需要参数和回调
@@ -80,7 +86,7 @@ namespace plan9
         lua_bind();
         class lua_bind_impl;
         std::shared_ptr<lua_bind_impl> impl;
-        Json::Value wrap(std::string method, Json::Value json);
+        JSONObject wrap(std::string method, JSONObject json);
     };
 }
 
