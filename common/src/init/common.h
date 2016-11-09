@@ -9,7 +9,9 @@
 #include <json/json.h>
 #include <functional>
 #include <memory>
+#include <json/JSONObject.h>
 
+//TODO 替换所有的json类
 namespace plan9
 {
     class common {
@@ -27,19 +29,19 @@ namespace plan9
          * @param param 参数
          * @param callback 调用的结果callback
          */
-        static void call_(std::string method, Json::Value param, std::function<void(Json::Value result)> callback);
-        static void call_(std::string method, std::string param, std::function<void(Json::Value result)> callback);
+        static void call_(std::string method, JSONObject param, std::function<void(JSONObject result)> callback);
+        static void call_(std::string method, std::string param, std::function<void(JSONObject result)> callback);
         static void call(std::string method, std::string param, std::function<void(std::string result)> callback);
         /**
          * 函数功能同上,只是没有回调
          */
-        static void call(std::string method, Json::Value param);
+        static void call(std::string method, JSONObject param);
         static void call(std::string method, std::string param);
         /**
          * 函数功能void call(std::string method, std::string param, std::function<void(Json::Value result)> callback);
          * 只是不需要传入参数
          */
-        static void call_(std::string method, std::function<void(Json::Value result)> callback);
+        static void call_(std::string method, std::function<void(JSONObject result)> callback);
         /**
          * 函数功能void call(std::string method, std::string param, std::function<void(Json::Value result)> callback);
          * 只是不需要传入参数和回调
@@ -68,7 +70,7 @@ namespace plan9
          * @param success 是否result返回成功,result[result][success] = true,则true,否则false
          * @return 如果失败返回error_code,否则返回空字符
          */
-        static std::string success(Json::Value result, bool* success);
+        static std::string success(JSONObject result, bool* success);
 
         static void stop();
 

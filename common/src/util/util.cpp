@@ -33,6 +33,30 @@ namespace plan9
         std::string trim(std::string str){
             return ltrim(rtrim(str));
         }
+        std::string trim2(std::string str){
+            std::string::size_type b_count = 0, e_count = 0;
+            for (std::string::size_type i = 0; i < str.length(); ++ i) {
+                char c = str.at(i);
+                if (std::isspace(c)) {
+                    b_count ++ ;
+                } else {
+                    break;
+                }
+            }
+
+            for (std::string::size_type i = str.length()- 1; i >= 0; -- i) {
+                char c = str.at(i);
+                if (std::isspace(c)) {
+                    e_count ++ ;
+                } else {
+                    break;
+                }
+            }
+            if (b_count == 0 && e_count == 0) {
+                return str;
+            }
+            return str.substr(b_count, str.length() - b_count - e_count);
+        }
 
         std::string char_to_string(const char* data, int len) {
             std::stringstream ss;
@@ -101,6 +125,9 @@ namespace plan9
 
     std::string util::trim(std::string str) {
         return impl->trim(str);
+    }
+    std::string util::trim2(std::string str) {
+        return impl->trim2(str);
     }
 
     std::string util::char_to_string(const char *data, int len) {

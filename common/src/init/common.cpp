@@ -35,7 +35,7 @@ namespace plan9
         init_log();
         init_lua();
         init_function();
-        init_network();
+//        init_network();
         init_config();
     }
 
@@ -43,13 +43,46 @@ namespace plan9
         common::notify_function = notify;
     }
 
-    void common::call_(std::string method, Json::Value param, std::function<void(Json::Value result)> callback) {
+//    void common::call_(std::string method, Json::Value param, std::function<void(Json::Value result)> callback) {
+//        thread_wrap::post_background([=](){
+//            if ("log" == method) {
+//                cmd_factory::instance().execute(method, param);
+//                return;
+//            }
+//            lua_bind::instance().call(method, param, [=](Json::Value result){
+//                bool succ;
+//                std::string error = success(result, &succ);
+//                if (succ) {
+//                    if (callback != nullptr) {
+//                        callback(result);
+//                    }
+//                } else {
+//                    //调用失败,则查询失败原因
+//                    if (error == LUA_FUNCTION_NOT_EXSIT) {
+//                        if (callback != nullptr) {
+//                            log_wrap::io().i("execute function , method : ", method, ", param : ",
+//                                             json_wrap::to_string(param), ", callback : yes");
+//                            cmd_factory::instance().execute(method, param, callback);
+//                        } else {
+//                            log_wrap::io().i("execute function , method : ", method, ", param : ",
+//                                             json_wrap::to_string(param), ", callback : no");
+//                            cmd_factory::instance().execute(method, param);
+//                        }
+//                    } else {
+//                        callback(result);
+//                    }
+//                }
+//            });
+//        });
+//    }
+
+    void common::call_(std::string method, JSONObject param, std::function<void(JSONObject)> callback) {
         thread_wrap::post_background([=](){
             if ("log" == method) {
                 cmd_factory::instance().execute(method, param);
                 return;
             }
-            lua_bind::instance().call(method, param, [=](Json::Value result){
+            lua_bind::instance().call(method, param, [=](JSONObject result) mutable {
                 bool succ;
                 std::string error = success(result, &succ);
                 if (succ) {
@@ -61,11 +94,11 @@ namespace plan9
                     if (error == LUA_FUNCTION_NOT_EXSIT) {
                         if (callback != nullptr) {
                             log_wrap::io().i("execute function , method : ", method, ", param : ",
-                                             json_wrap::to_string(param), ", callback : yes");
+                                             param.to_string(), ", callback : yes");
                             cmd_factory::instance().execute(method, param, callback);
                         } else {
                             log_wrap::io().i("execute function , method : ", method, ", param : ",
-                                             json_wrap::to_string(param), ", callback : no");
+                                             param.to_string(), ", callback : no");
                             cmd_factory::instance().execute(method, param);
                         }
                     } else {
@@ -76,30 +109,26 @@ namespace plan9
         });
     }
 
-    void common::call_(std::string method, std::string param, std::function<void(Json::Value result)> callback) {
+    void common::call_(std::string method, std::string param, std::function<void(JSONObject result)> callback) {
         if (param == "") {
             call_(method, callback);
             return;
         }
 
         bool error = false;
-        Json::Value p = json_wrap::parse(param, &error);
-        if (error) {
-            log_wrap::io().e("the method : ", method, " param : ", param, " is not json format");
-        } else {
-            call_(method, p, callback);
-        }
+        JSONObject p = JSONObject(param);
+        call_(method, p, callback);
     }
 
     void common::call(std::string method, std::string param, std::function<void(std::string result)> callback) {
         if (callback != nullptr) {
             if ("" == param) {
-                call_(method, [=](Json::Value result){
-                    callback(json_wrap::to_string(result));
+                call_(method, [=](JSONObject result){
+                    callback(result.to_string());
                 });
             } else {
-                call_(method, param, [=](Json::Value result){
-                    callback(json_wrap::to_string(result));
+                call_(method, param, [=](JSONObject result){
+                    callback(result.to_string());
                 });
             }
         } else {
@@ -107,7 +136,7 @@ namespace plan9
         }
     }
 
-    void common::call(std::string method, Json::Value param) {
+    void common::call(std::string method, JSONObject param) {
         call_(method, param, nullptr);
     }
 
@@ -119,22 +148,22 @@ namespace plan9
         }
     }
 
-    void common::call_(std::string method, std::function<void(Json::Value result)> callback) {
-        call_(method, Json::Value(), callback);
+    void common::call_(std::string method, std::function<void(JSONObject result)> callback) {
+        call_(method, JSONObject(), callback);
     }
 
     void common::call(std::string method) {
-        call(method, Json::Value());
+        call(method, JSONObject());
     }
 
-    std::string common::success(Json::Value result, bool* success) {
-        if (result.isMember("result") && result["result"].isMember("success") && result["result"]["success"].isBool()) {
-            *success = result["result"]["success"].asBool();
+    std::string common::success(JSONObject result, bool* success) {
+        if (result.has("result") && result["result"].has("success") && result["result"]["success"].is_bool()) {
+            *success = result["result"]["success"].get_bool();
             if (*success) {
                 return "";
             } else {
-                if (result["result"].isMember("error")) {
-                    return result["result"]["error"].asString();
+                if (result["result"].has("error")) {
+                    return result["result"]["error"].get_string();
                 } else {
                     return "";
                 }
@@ -150,25 +179,25 @@ namespace plan9
     }
 
     void common::set_ios_platform() {
-        Json::Value p;
+        JSONObject p;
         p["platform"] = "ios";
         call("native.set_platform", p);
     }
 
     void common::set_android_platform() {
-        Json::Value p;
+        JSONObject p;
         p["platform"] = "android";
         call("native.set_platform", p);
     }
 
     void common::set_win_platform() {
-        Json::Value p;
+        JSONObject p;
         p["platform"] = "win";
         call("native.set_platform", p);
     }
 
     void common::set_macosx_platform() {
-        Json::Value p;
+        JSONObject p;
         p["platform"] = "macosx";
         call("native.set_platform", p);
     }
@@ -215,11 +244,11 @@ namespace plan9
          * target : ui/net/io/lua/other 日志分类,使用其一
          * msg : 日志内容
          **/
-        cmd_factory::instance().register_cmd("log", [=](Json::Value param){
-            if (param.isMember("args")) {
-                std::string level = param["args"]["level"].asString();
-                std::string target = param["args"]["target"].asString();
-                std::string msg = json_wrap::to_string(param["args"]["msg"]);
+        cmd_factory::instance().register_cmd("log", [=](JSONObject param){
+            if (param.has("args")) {
+                std::string level = param["args"]["level"].get_string();
+                std::string target = param["args"]["target"].get_string();
+                std::string msg = param["args"]["msg"].to_string();
                 if ("ui" == target) {
                     if (level == "info") {
                         log_wrap::ui().i(msg);
@@ -295,16 +324,16 @@ namespace plan9
          * 返回结果为:
          * 成功返回true,失败返回false和原因
          */
-        cmd_factory::instance().register_cmd("connect", [=](Json::Value param){
-            if (param.isMember("args")) {
-                Json::Value args = param["args"];
-                if (args.isMember("ip") && args.isMember("port")) {
-                    std::string ip = args["ip"].asString();
-                    int port = args["port"].asInt();
-                    tcp_wrap_default::instance().connect(ip, port);
-                }
-            }
-        });
+//        cmd_factory::instance().register_cmd("connect", [=](Json::Value param){
+//            if (param.isMember("args")) {
+//                Json::Value args = param["args"];
+//                if (args.isMember("ip") && args.isMember("port")) {
+//                    std::string ip = args["ip"].asString();
+//                    int port = args["port"].asInt();
+//                    tcp_wrap_default::instance().connect(ip, port);
+//                }
+//            }
+//        });
 
         /**
          * 向服务器发送数据,用于测试
@@ -316,30 +345,30 @@ namespace plan9
          *      msg : 返回的字符串
          * }
          */
-        cmd_factory::instance().register_cmd("send", [=](Json::Value param){
-            log_wrap::net().i("call send : ", json_wrap::to_string(param));
-            if (param.isMember("args")) {
-                Json::Value args = param["args"];
-                char type = 0;
-                if (args.isMember("server")) {
-                    type = (char)args["server"].asInt();
-                }
-                int cid = 0;
-                if (args.isMember("client_id")) {
-                    cid = args["client_id"].asInt();
-                }
-                int timeout = 0;
-                if (args.isMember("timeout")) {
-                    timeout = args["timeout"].asInt();
-                }
-                param["aux"]["to"] = param["args"]["to"];
-                param["args"].removeMember("to");
-
-                tcp_wrap_default::instance().send(cid, type, param, [=](Json::Value data){
-                    cmd_factory::instance().callback(data);
-                }, timeout);
-            }
-        });
+//        cmd_factory::instance().register_cmd("send", [=](Json::Value param){
+//            log_wrap::net().i("call send : ", json_wrap::to_string(param));
+//            if (param.isMember("args")) {
+//                Json::Value args = param["args"];
+//                char type = 0;
+//                if (args.isMember("server")) {
+//                    type = (char)args["server"].asInt();
+//                }
+//                int cid = 0;
+//                if (args.isMember("client_id")) {
+//                    cid = args["client_id"].asInt();
+//                }
+//                int timeout = 0;
+//                if (args.isMember("timeout")) {
+//                    timeout = args["timeout"].asInt();
+//                }
+//                param["aux"]["to"] = param["args"]["to"];
+//                param["args"].removeMember("to");
+//
+//                tcp_wrap_default::instance().send(cid, type, param, [=](Json::Value data){
+//                    cmd_factory::instance().callback(data);
+//                }, timeout);
+//            }
+//        });
     }
 
     void common::init_lua() {
@@ -385,16 +414,16 @@ namespace plan9
 
     void common::init_config() {
         log_wrap::io().i("init config");
-        call_("config.get_config", Json::Value(), [=](Json::Value result){
+        call_("config.get_config", JSONObject(), [=](JSONObject result){
             bool succ;
             success(result, &succ);
             if (succ) {
-                Json::Value result_json = result["result"];
-                if (result_json.isMember("data")) {
-                    Json::Value data = result_json["data"];
+                JSONObject result_json = result["result"];
+                if (result_json.has("data")) {
+                    JSONObject data = result_json["data"];
 
-                    if (data.isMember("log_level")) {
-                        std::string lel = data["log_level"].asString();
+                    if (data.has("log_level")) {
+                        std::string lel = data["log_level"].get_string();
                         if ("debug" == lel) {
                             log_wrap::set_all_level(log_wrap::log_level::L_DEBUG);
                         } else if ("info" == lel) {
@@ -406,19 +435,19 @@ namespace plan9
                         }
                     }
 
-                    if (data.isMember("compress")) {
-                        bool compress = data["compress"].asBool();
+                    if (data.has("compress")) {
+                        bool compress = data["compress"].get_bool();
                         tcp_wrap_default::instance().set_compress(compress);
                     }
 
-                    if (data.isMember("encrypt")) {
-                        bool encrypt = data["encrypt"].asBool();
+                    if (data.has("encrypt")) {
+                        bool encrypt = data["encrypt"].get_bool();
                         tcp_wrap_default::instance().set_encrypt(encrypt);
                     }
 
                 }
             }
-            log_wrap::io().d("read config : ", json_wrap::to_string(result));
+            log_wrap::io().d("read config : ", result.to_string());
         });
     }
 }

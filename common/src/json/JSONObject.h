@@ -190,6 +190,7 @@ namespace plan9 {
         std::string to_format_string();
 
         //重载运算符
+        JSONObject operator=(JSONObject);
         JSONObject operator[](std::string&);
         JSONObject operator[](const char*);
         JSONObject& operator=(std::string);
@@ -199,7 +200,6 @@ namespace plan9 {
         JSONObject& operator=(float);
         JSONObject& operator=(double);
         JSONObject& operator=(bool);
-        JSONObject& operator=(JSONObject&);
         operator bool () { return !is_undefined();}
 
     private:

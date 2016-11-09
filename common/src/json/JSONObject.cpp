@@ -20,7 +20,7 @@ namespace plan9 {
     static const char STRING_FLAG = '"';
     static const char TRANSFER_FLAG = '\\';
 
-    std::string double_to_string(double value) {
+    static std::string double_to_string(double value) {
         std::stringstream ss;
         ss.setf(std::ios::fixed);
         ss.precision(15);
@@ -40,7 +40,7 @@ namespace plan9 {
         return ret.substr(0, ret.length() - count);
     }
 
-    std::string chars_to_string(const char* chars, unsigned long begin, unsigned long end) {
+    static std::string chars_to_string(const char* chars, unsigned long begin, unsigned long end) {
         if (begin <= end) {
             char* buf = (char*)malloc(end - begin + 1);
 
@@ -92,7 +92,7 @@ namespace plan9 {
         *new_end_index = b;
     }
 
-    bool char_is_number(char c) {
+    static bool char_is_number(char c) {
         return std::isdigit(c) || '-' == c || '+' == c || 'e' == c || 'E' == c;
     }
 
@@ -222,8 +222,8 @@ namespace plan9 {
         JSONObject_impl(std::string& key, std::shared_ptr<JSONObject_impl> value) {
             put(key, value);
         }
-        ~JSONObject_impl() {
-        }
+//        ~JSONObject_impl() {
+//        }
 
         std::string get_next_key(const char* json_string, unsigned long begin_index, unsigned long end_index, unsigned long* new_begin_index) {
             unsigned long begin = begin_index;
@@ -1567,18 +1567,27 @@ namespace plan9 {
     }
 
     JSONObject JSONObject::operator[](std::string &key) {
-        if (check_undefined()) return JSONObject();
+        JSONObject ret;
+        if (check_undefined()) return ret;
         impl_->set_object_type();
         auto im = impl_->get_or_create(key);
-        JSONObject ret;
         ret.impl_ = im;
         return ret;
     }
 
     JSONObject JSONObject::operator[](const char *key) {
-        if (check_undefined()) return JSONObject();
+        JSONObject ret;
+        if (check_undefined()) return ret;
+        impl_->set_object_type();
         std::string k(key);
-        return (*this)[k];
+        auto im = impl_->get_or_create(k);
+        ret.impl_ = im;
+        return ret;
+    }
+
+    JSONObject JSONObject::operator=(JSONObject value) {
+        this->impl_->set(value.impl_);
+        return *this;
     }
 
     JSONObject &JSONObject::operator=(std::string value) {
@@ -1630,10 +1639,6 @@ namespace plan9 {
         return *this;
     }
 
-    JSONObject &JSONObject::operator=(JSONObject& value) {
-        this->impl_->set(value.impl_);
-        return *this;
-    }
 
 
 }

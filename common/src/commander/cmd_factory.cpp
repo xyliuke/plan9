@@ -18,6 +18,7 @@ namespace plan9
 
         }
 
+
         void register_cmd(std::string cmd, std::function<void(JSONObject)> function) {
             cmd_map_[cmd] = function;
         }
@@ -115,43 +116,38 @@ namespace plan9
         return cmd;
     }
 
-    void cmd_factory::register_cmd(std::string cmd, std::function<void(Json::Value)> function) {
+//    void cmd_factory::register_cmd(std::string cmd, std::function<void(Json::Value)> function) {
 //        log_wrap::io().i("register function , method : ", cmd);
 //        impl_->register_cmd(cmd, function);
-    }
+//    }
 
     void cmd_factory::register_cmd(std::string cmd, std::function<void(JSONObject)> function) {
         log_wrap::io().i("register function , method : ", cmd);
         impl_->register_cmd(cmd, function);
     }
 
-    void cmd_factory::execute(std::string cmd, Json::Value param, std::function<void(Json::Value)> callback) {
+//    void cmd_factory::execute(std::string cmd, Json::Value param, std::function<void(Json::Value)> callback) {
 //        impl_->call(cmd, param, callback);
-    }
+//    }
 
     void cmd_factory::execute(std::string cmd, JSONObject param, std::function<void(JSONObject)> callback) {
         impl_->call(cmd, param, callback);
     }
 
-    void cmd_factory::execute(Json::Value param, std::function<void(Json::Value)> callback) {
+//    void cmd_factory::execute(Json::Value param, std::function<void(Json::Value)> callback) {
 //        impl_->call(param, callback);
-    }
+//    }
 
     void cmd_factory::execute(JSONObject param, std::function<void(JSONObject)> callback) {
         impl_->call(param, callback);
     }
 
-    void cmd_factory::callback(Json::Value json) {
+//    void cmd_factory::callback(Json::Value json) {
 //        impl_->callback(json);
-    }
+//    }
 
     void cmd_factory::callback(JSONObject json) {
         impl_->callback(json);
-    }
-
-    void cmd_factory::callback(Json::Value param, bool result, Json::Value data) {
-//        Json::Value ret = impl_->wrap_callback(param, result, data);
-//        callback(ret);
     }
 
     void cmd_factory::callback(JSONObject param, bool result, JSONObject data) {
@@ -159,31 +155,17 @@ namespace plan9
         callback(ret);
     }
 
-    void cmd_factory::callback(Json::Value param, bool result) {
-//        callback(param, result, Json::Value());
-    }
-
     void cmd_factory::callback(JSONObject param, bool result) {
         callback(param, result, JSONObject());
-    }
-
-    void cmd_factory::execute(std::string cmd, Json::Value param) {
-//        impl_->call(cmd, param, nullptr);
     }
 
     void cmd_factory::execute(std::string cmd, JSONObject param) {
         impl_->call(cmd, param, nullptr);
     }
 
-    void cmd_factory::execute(Json::Value param) {
-//        impl_->call(param, nullptr);
-    }
 
     void cmd_factory::execute(JSONObject param) {
         impl_->call(param, nullptr);
     }
 
-//    Json::Value cmd_factory::wrap_callback_data(Json::Value json, bool result, Json::Value data) {
-//        return impl_->wrap_callback(json, result, data);
-//    }
 }

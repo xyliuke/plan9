@@ -59,7 +59,6 @@ namespace plan9
          * @param cmd 命令名
          * @param function 注册的执行函数,参数为json对象
          */
-        void register_cmd(std::string cmd, std::function<void(Json::Value)> function);
         void register_cmd(std::string cmd, std::function<void(JSONObject)> function);
         /**
          * 执行一个命令,并传递一个JSON参数,执行完成后结果可以callback返回,但这取决于被调用函数是否在结尾调用了callback(json)函数
@@ -67,13 +66,11 @@ namespace plan9
          * @param param json格式参数
          * @param callback 回调
          */
-        void execute(std::string cmd, Json::Value param, std::function<void(Json::Value)> callback);
         void execute(std::string cmd, JSONObject param, std::function<void(JSONObject)> callback);
         /**
          * 函数功能同void execute(std::string cmd, Json::Value param, std::function<void(Json::Value)> callback);
          * 只是函数名保存在param["aux"]["to"]中
          */
-        void execute(Json::Value param, std::function<void(Json::Value)> callback);
         void execute(JSONObject param, std::function<void(JSONObject)> callback);
 
         /**
@@ -81,13 +78,11 @@ namespace plan9
          * @param cmd 命令名
          * @param param json格式参数
          */
-        void execute(std::string cmd, Json::Value param);
         void execute(std::string cmd, JSONObject param);
         /**
          * 函数功能同void execute(std::string cmd, Json::Value param);
          * 只是函数名保存在param["aux"]["to"]中
          */
-        void execute(Json::Value param);
         void execute(JSONObject param);
 
         /**
@@ -102,14 +97,13 @@ namespace plan9
          * @param data 调用函数的结果数据
          * @return 返回封装好的数据
          */
-        Json::Value wrap_callback_data(Json::Value json, bool result, Json::Value data);
+//        Json::Value wrap_callback_data(Json::Value json, bool result, Json::Value data);
 
         /**
          * 这个函数用于注册函数内部使用,如果需要callback,则调用.
          * 但是需要按照指定结构来传递值,不清楚情况下不要直接使用,而是调用其他两个重载的函数
          * @param json 参数,包括了指定返回值结构
          */
-        void callback(Json::Value json);
         void callback(JSONObject json);
 
         /**
@@ -118,12 +112,10 @@ namespace plan9
          * @param result 操作成功或失败
          * @param data 需要返回的数据
          */
-        void callback(Json::Value param, bool result, Json::Value data);
         void callback(JSONObject param, bool result, JSONObject data);
         /**
          * 同void callback(Json::Value param, bool result, Json::Value data);区别在于是否需要传递数据
          */
-        void callback(Json::Value param, bool result);
         void callback(JSONObject param, bool result);
 
     private:

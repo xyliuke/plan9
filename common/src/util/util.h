@@ -43,6 +43,7 @@ namespace plan9 {
          * 去掉字符串前后的空格,回车,\r字符
          */
         std::string trim(std::string str);
+        std::string trim2(std::string str);
 
         /**
          * 将char数据转变成string打印

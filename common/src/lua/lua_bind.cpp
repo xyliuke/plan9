@@ -107,7 +107,8 @@ namespace plan9 {
                 }
                 JSONObject param;
                 if (lua_type(L, -1) == LUA_TTABLE) {
-                    param = table2json(L);
+                    JSONObject tmp = table2json(L);
+                    param = tmp;
                 }
                 std::string method;
                 if (lua_type(L, -2) == LUA_TSTRING) {
@@ -262,7 +263,7 @@ namespace plan9 {
                             ret[key] = value;
                         } else if (type == LUA_TTABLE) {
                             //数组和对象都是TABLE
-                            ret[key] = table2json(L);
+                            ret.put(key, table2json(L));
                         }
                     } else if (key_type == LUA_TNUMBER){
                         //为数据对象
@@ -310,8 +311,7 @@ namespace plan9 {
             JSONObject aux;
             JSONObject args;
             if (param.has("aux")) {
-                aux = param["aux"];
-                ret["aux"] = aux;
+                ret.put("aux", param["aux"]);
                 param.remove("aux");
             } else {
                 ret["aux"] = JSONObject::createObject();
@@ -322,14 +322,13 @@ namespace plan9 {
             }
 
             if (param.has("args")) {
-                args = param["args"];
-                ret["args"] = args;
+                ret.put("args", param["args"]);
             } else {
-                ret["args"] = param;
+                ret.put("args", param);
             }
 
             if (param.has("result")) {
-                ret["result"] = param["result"];
+                ret.put("result", param["result"]);
             }
 
             return ret;
@@ -353,14 +352,13 @@ namespace plan9 {
             }
             bool ret = false;
 
-            param = register_callback(param, callback);
-
+            JSONObject new_param = register_callback(param, callback);
             unsigned long pos = method.find(".");
             if (pos == std::string::npos) {
                 //不包含 . 运算
                 int type = lua_getglobal(L, method.c_str());//返回6表示函数,5表示table
                 if (type == LUA_TFUNCTION) {
-                    json2table(param);
+                    json2table(new_param);
                     ret = true;
                 } else if (type == LUA_TNIL) {
                     ret = false;
@@ -379,7 +377,7 @@ namespace plan9 {
                     }
 
                     if (type == LUA_TFUNCTION) {
-                        json2table(param);
+                        json2table(new_param);
                         ret = true;
                         break;
                     } else if (type == LUA_TNIL) {
