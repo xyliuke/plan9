@@ -17,7 +17,7 @@
  *    {
  *         id:id                    (一个JSON对象调用的唯一标识)
  *         action:callback/direct   (callback,表示需要执行完成后最终执行要回到最初调用者的callback中,而direct则执行完成后不再回到之前的callback中)
- *         once:true/false          (true表示这个函数的callback会执行多次,false表示一次)
+ *         once:true/false          (false表示这个函数的callback会执行多次,true表示一次;没有该字段，则默认为true), 暂时不可用
  *         from:[]                  (from是个数组,表示执行来源,最后根据这个来源再callback回去)
  *         to:cmd_name              (执行的命令名)
  *    }
@@ -117,6 +117,10 @@ namespace plan9
          * 同void callback(Json::Value param, bool result, Json::Value data);区别在于是否需要传递数据
          */
         void callback(JSONObject param, bool result);
+
+        void callback(JSONObject param, int error, std::string reason);
+
+        void callback_multi(JSONObject param, bool result, int error, std::string reason, JSONObject data);
 
     private:
         cmd_factory();

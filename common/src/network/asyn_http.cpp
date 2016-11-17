@@ -13,7 +13,7 @@
 
 namespace plan9
 {
-
+    static float download_interval = 1;
     static boost::asio::io_service service;
     struct socket_info {
         socket_info(boost::asio::io_service &io) : socket(io), mask(0){
@@ -134,9 +134,9 @@ namespace plan9
 
         double current_time = 0;
         curl_easy_getinfo(ho->curl, CURLINFO_TOTAL_TIME, &current_time);
-        ho->time = current_time;
 
-        if (ho->downloaded != dlnow && dltotal != 0) {
+        if (ho->downloaded != dlnow && dltotal != 0 && (((int)current_time - (int)ho->time) >= download_interval || dltotal == dlnow)) {
+            ho->time = current_time;
             ho->downloaded = dlnow;
             ho->download_total = dltotal;
             if (ho->download_progress_callback != nullptr) {
@@ -316,7 +316,7 @@ namespace plan9
         ~asyn_http_impl() {
         }
 
-        void get(std::string url, long timeout_second, std::map<std::string, std::string>* header, std::function<void(int curl_code, std::string debug_trace, long http_state, char *data, size_t len)> callback) {
+        void get(std::string url, long timeout_second, std::shared_ptr<std::map<std::string, std::string>> header, std::function<void(int curl_code, std::string debug_trace, long http_state, char *data, size_t len)> callback) {
             init();
 
             CURL *curl = create_get_easy_curl(url, timeout_second, header, callback);
@@ -326,10 +326,10 @@ namespace plan9
             }
         }
 
-        void download(std::string url, std::string path, long timeout_second, std::function<void(int curl_code, std::string debug_trace, long http_state)> callback, std::function<void(double time, long downloaded, long total)> process_callback) {
+        void download(std::string url, std::string path, long timeout_second, std::shared_ptr<std::map<std::string, std::string>> header, std::function<void(int curl_code, std::string debug_trace, long http_state)> callback, std::function<void(double time, long downloaded, long total)> process_callback) {
             init();
 
-            CURL *curl = create_download_easy_curl(url, path, timeout_second, callback, process_callback);
+            CURL *curl = create_download_easy_curl(url, path, timeout_second, header, callback, process_callback);
             if (curl) {
                 CURLMcode code = curl_multi_add_handle(multi_curl, curl);
 
@@ -337,7 +337,7 @@ namespace plan9
             }
         }
 
-        void post(std::string url, long timeout_second, std::map<std::string, std::string>* header, std::map<std::string, std::string>* form_params,
+        void post(std::string url, long timeout_second, std::shared_ptr<std::map<std::string, std::string>> header, std::shared_ptr<std::map<std::string, std::string>> form_params,
                   std::function<void(int curl_code, std::string debug_trace, long http_state, char *data, size_t len)> callback) {
             init();
 
@@ -349,7 +349,7 @@ namespace plan9
             }
         }
 
-        CURL* create_post_easy_crul(std::string url, long timeout_second, std::map<std::string, std::string>* header, std::map<std::string, std::string>* form_params,
+        CURL* create_post_easy_crul(std::string url, long timeout_second, std::shared_ptr<std::map<std::string, std::string>> header, std::shared_ptr<std::map<std::string, std::string>> form_params,
                   std::function<void(int curl_code, std::string debug_trace, long http_state, char *data, size_t len)> callback) {
             http_object* ho = new http_object;
 
@@ -414,7 +414,7 @@ namespace plan9
             return curl;
         }
 
-        CURL* create_download_easy_curl(std::string url, std::string path, long timeout_second,
+        CURL* create_download_easy_curl(std::string url, std::string path, long timeout_second, std::shared_ptr<std::map<std::string, std::string>> header,
                                         std::function<void(int curl_code, std::string debug_trace,
                                                            long http_state)> callback,
                                         std::function<void(double time, long downloaded, long total)> process_callback) {
@@ -450,10 +450,20 @@ namespace plan9
             curl_easy_setopt(curl, CURLOPT_OPENSOCKETFUNCTION, open_socket);
             curl_easy_setopt(curl, CURLOPT_CLOSESOCKETFUNCTION, close_socket);
 
+            struct curl_slist* list = NULL;
+            if (header != nullptr) {
+                std::map<std::string, std::string>::const_iterator iterator = header->begin();
+                while (iterator != header->end()) {
+                    list = curl_slist_append(list, (iterator->first + ":" + iterator->second).c_str());
+                    iterator ++;
+                }
+                curl_easy_setopt(curl, CURLOPT_HTTPHEADER, list);
+            }
+
             return curl;
         }
 
-        CURL *create_get_easy_curl(std::string url, long timeout_second, std::map<std::string, std::string>* header, std::function<void(int curl_code, std::string debug_trace, long http_state, char *data, size_t len)> callback) {
+        CURL *create_get_easy_curl(std::string url, long timeout_second, std::shared_ptr<std::map<std::string, std::string>> header, std::function<void(int curl_code, std::string debug_trace, long http_state, char *data, size_t len)> callback) {
             CURL *curl = curl_easy_init();
             if (!curl) {
                 log_wrap::net().e("can not create easy curl");
@@ -536,23 +546,24 @@ namespace plan9
 
     }
 
-    void asyn_http::download(std::string url, std::string path, long timeout_second,
+    void asyn_http::download(std::string url, std::string path, long timeout_second, std::shared_ptr<std::map<std::string, std::string>> header,
                              std::function<void(int curl_code, std::string debug_trace, long http_state)> callback,
                              std::function<void(double time, long downloaded, long total)> process_callback) {
-        impl_->download(url, path, timeout_second, callback, process_callback);
+        impl_->download(url, path, timeout_second, header, callback, process_callback);
     }
 
-    void asyn_http::post(std::string url, long timeout_second, std::map<std::string, std::string> *header,
-                         std::map<std::string, std::string> *form_params,
+    void asyn_http::post(std::string url, long timeout_second, std::shared_ptr<std::map<std::string, std::string>> header,
+                         std::shared_ptr<std::map<std::string, std::string>> form_params,
                          std::function<void(int curl_code, std::string debug_trace, long http_state, char *data,
                                             size_t len)> callback) {
         impl_->post(url, timeout_second, header, form_params, callback);
     }
 
-    void asyn_http::get(std::string url, long timeout_second, std::map<std::string, std::string> *header,
+    void asyn_http::get(std::string url, long timeout_second,
+                        std::shared_ptr<std::map<std::string, std::string>> header,
                         std::function<void(int curl_code, std::string debug_trace, long http_state, char *data,
                                            size_t len)> callback) {
-        impl_->get(url, timeout_second, header, callback);
+
     }
 
     void asyn_http::get(std::string url, long timeout_second,

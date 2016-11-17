@@ -12,6 +12,7 @@
 #include <thread/timer.h>
 #include <thread/thread_wrap.h>
 #include "algorithm/compress.h"
+#include "http_init.h"
 
 namespace plan9
 {
@@ -37,6 +38,11 @@ namespace plan9
         init_function();
 //        init_network();
         init_config();
+
+
+
+        //加载其他库
+        http_init::init();
     }
 
     void common::set_notify_function(std::function<void(std::string)> notify) {

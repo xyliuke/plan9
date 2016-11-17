@@ -22,11 +22,11 @@ namespace plan9 {
         static asyn_http instance();
 
         void get(std::string url, long timeout_second, std::function<void(int curl_code, std::string debug_trace, long http_state, char *data, size_t len)> callback);
-        void get(std::string url, long timeout_second, std::map<std::string, std::string>* header, std::function<void(int curl_code, std::string debug_trace, long http_state, char *data, size_t len)> callback);
-        void download(std::string url, std::string path, long timeout_second, std::function<void(int curl_code, std::string debug_trace, long http_state)> callback,
+        void get(std::string url, long timeout_second, std::shared_ptr<std::map<std::string, std::string>> header, std::function<void(int curl_code, std::string debug_trace, long http_state, char *data, size_t len)> callback);
+        void download(std::string url, std::string path, long timeout_second, std::shared_ptr<std::map<std::string, std::string>> header, std::function<void(int curl_code, std::string debug_trace, long http_state)> callback,
                       std::function<void(double time, long downloaded, long total)> process_callback);
 
-        void post(std::string url, long timeout_second, std::map<std::string, std::string>* header, std::map<std::string, std::string>* form_params,
+        void post(std::string url, long timeout_second, std::shared_ptr<std::map<std::string, std::string>> header, std::shared_ptr<std::map<std::string, std::string>> form_params,
                   std::function<void(int curl_code, std::string debug_trace, long http_state, char* data, size_t len)> callback);
 
         static bool is_timeout(int curl_code);

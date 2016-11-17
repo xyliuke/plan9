@@ -609,6 +609,9 @@ namespace plan9 {
                         }
                         trim(json_string, new_begin_index, new_end_index, &new_begin_index, &new_end_index);
                     }
+                } else {
+                    std::string s(json_string, e_index + 1);
+                    ret->set(s);
                 }
             }
             return ret;
