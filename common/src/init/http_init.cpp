@@ -8,6 +8,7 @@
 #include <network/easy_http.h>
 #include "http_init.h"
 
+//TODO 添加上传功能；断点上传功能
 namespace plan9 {
     void http_init::init() {
         log_wrap::io().d("register http plugin");
@@ -134,7 +135,8 @@ namespace plan9 {
          *   header 字典 header中设置值,可以为空
          *   timeout 超时
          *   path 本地路径，包括文件名
-         *     model asyn/sync,异步或者同步，默认为异步
+         *   override bool 是否覆盖原有文件，不填写默认为true
+         *   model asyn/sync,异步或者同步，默认为异步
          */
         cmd_factory::instance().register_cmd("download", [=](JSONObject param){
             using namespace std;
@@ -157,11 +159,17 @@ namespace plan9 {
                 if (args.has("path")) {
                     path = args["path"].get_string();
                 }
+                bool override = true;
+                if (param["aux"].has("override") && !(param["aux.override"].get_bool())) {
+                    override = false;
+                }
+                param["aux.once"] = false;//可以重复返回下载进度
                 string id = param["aux"]["id"].get_string();
                 log_wrap::net().d("http request ", id, " begin, the parameter : ", param.to_string());
                 if (args.has("model") && "sync" == args["model"].get_string()) {
                     shared_ptr<long> file_size(new long);
-                    easy_http::instance().download(url, path, header,[=](int curl_code, std::string debug_trace, long http_state) mutable {
+                    easy_http::instance().download(url, path, header, override, [=](int curl_code, std::string debug_trace, long http_state) mutable {
+                        param["aux.once"] = true;
                         log_wrap::net().d("http request ", id, " end, the result : ", debug_trace);
                         if (asyn_http::instance().is_ok(curl_code)) {
                             JSONObject ret;
@@ -184,11 +192,12 @@ namespace plan9 {
                         ret["time"] = time;
                         ret["download"] = downloaded;
                         ret["total"] = total;
-                        cmd_factory::instance().callback_multi(param, true, 0, "", ret);
+                        cmd_factory::instance().callback(param, true, ret);
                     });
                 } else {
                     shared_ptr<long> file_size(new long);
-                    asyn_http::instance().download(url, path, timeout, header, [=](int curl_code, std::string debug_trace, long http_state) mutable {
+                    asyn_http::instance().download(url, path, timeout, header, override, [=](int curl_code, std::string debug_trace, long http_state) mutable {
+                        param["aux.once"] = true;
                         log_wrap::net().d("http request ", id, " end, the result : ", debug_trace);
                         if (asyn_http::instance().is_ok(curl_code)) {
                             JSONObject ret;
@@ -211,7 +220,7 @@ namespace plan9 {
                         ret["time"] = time;
                         ret["download"] = downloaded;
                         ret["total"] = total;
-                        cmd_factory::instance().callback_multi(param, true, 0, "", ret);
+                        cmd_factory::instance().callback(param, true, ret);
                     });
                 }
             } else {

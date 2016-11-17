@@ -73,7 +73,7 @@ namespace plan9
                 if ("callback" == action) {
                     JSONObject from = json["aux.from"];
                     if (from.is_array() && from.size() > 0) {
-                        if (!once) {
+                        if (!once || (json["aux"].has("once") && !(json["aux.once"].get_bool()))) {
                             //执行多次
                             bool find = false;
                             JSONObject fv = from.get(from.size() - 1, &find);
@@ -114,6 +114,10 @@ namespace plan9
             json["result"]["success"] = result;
             json["result"]["data"] = data;
             return json;
+        }
+
+        bool is_register(std::string cmd) {
+            return cmd_map_.find(cmd) != cmd_map_.end();
         }
 
     private:
@@ -180,6 +184,10 @@ namespace plan9
         param["result.reason"] = reason;
         param["result.data"] = data;
         impl_->callback(param, false);
+    }
+
+    bool cmd_factory::is_register(std::string cmd) {
+        return impl_->is_register(cmd);
     }
 
 }

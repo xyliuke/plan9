@@ -9,6 +9,8 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <boost/filesystem/path.hpp>
+#include <boost/filesystem.hpp>
 #include "log/log_wrap.h"
 
 namespace plan9
@@ -326,10 +328,10 @@ namespace plan9
             }
         }
 
-        void download(std::string url, std::string path, long timeout_second, std::shared_ptr<std::map<std::string, std::string>> header, std::function<void(int curl_code, std::string debug_trace, long http_state)> callback, std::function<void(double time, long downloaded, long total)> process_callback) {
+        void download(std::string url, std::string path, long timeout_second, std::shared_ptr<std::map<std::string, std::string>> header, bool override, std::function<void(int curl_code, std::string debug_trace, long http_state)> callback, std::function<void(double time, long downloaded, long total)> process_callback) {
             init();
 
-            CURL *curl = create_download_easy_curl(url, path, timeout_second, header, callback, process_callback);
+            CURL *curl = create_download_easy_curl(url, path, timeout_second, header, override, callback, process_callback);
             if (curl) {
                 CURLMcode code = curl_multi_add_handle(multi_curl, curl);
 
@@ -415,13 +417,12 @@ namespace plan9
         }
 
         CURL* create_download_easy_curl(std::string url, std::string path, long timeout_second, std::shared_ptr<std::map<std::string, std::string>> header,
-                                        std::function<void(int curl_code, std::string debug_trace,
+                                        bool override, std::function<void(int curl_code, std::string debug_trace,
                                                            long http_state)> callback,
                                         std::function<void(double time, long downloaded, long total)> process_callback) {
             http_object* ho = new http_object;
             ho->download_progress_callback = process_callback;
             ho->ofstream.reset(new std::ofstream);
-            ho->ofstream->open(path, std::ios::trunc);
 
             CURL *curl = curl_easy_init();
             if (!curl) {
@@ -449,6 +450,22 @@ namespace plan9
             curl_easy_setopt(curl, CURLOPT_PRIVATE, ho);
             curl_easy_setopt(curl, CURLOPT_OPENSOCKETFUNCTION, open_socket);
             curl_easy_setopt(curl, CURLOPT_CLOSESOCKETFUNCTION, close_socket);
+
+            if (override) {
+                ho->ofstream->open(path, std::ios::trunc);
+            } else {
+                ho->ofstream->open(path, std::ios::app);
+                boost::filesystem::path p(path);
+                if (boost::filesystem::exists(p) && boost::filesystem::is_regular_file(p)) {
+                    boost::uintmax_t size = boost::filesystem::file_size(p);
+                    if (size > 0) {
+                        std::stringstream ss;
+                        ss << size;
+                        ss << "-";
+                        curl_easy_setopt(curl, CURLOPT_RANGE, ss.str().c_str());
+                    }
+                }
+            }
 
             struct curl_slist* list = NULL;
             if (header != nullptr) {
@@ -547,9 +564,9 @@ namespace plan9
     }
 
     void asyn_http::download(std::string url, std::string path, long timeout_second, std::shared_ptr<std::map<std::string, std::string>> header,
-                             std::function<void(int curl_code, std::string debug_trace, long http_state)> callback,
+                             bool override, std::function<void(int curl_code, std::string debug_trace, long http_state)> callback,
                              std::function<void(double time, long downloaded, long total)> process_callback) {
-        impl_->download(url, path, timeout_second, header, callback, process_callback);
+        impl_->download(url, path, timeout_second, header, override, callback, process_callback);
     }
 
     void asyn_http::post(std::string url, long timeout_second, std::shared_ptr<std::map<std::string, std::string>> header,

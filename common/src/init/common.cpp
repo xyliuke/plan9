@@ -49,69 +49,31 @@ namespace plan9
         common::notify_function = notify;
     }
 
-//    void common::call_(std::string method, Json::Value param, std::function<void(Json::Value result)> callback) {
-//        thread_wrap::post_background([=](){
-//            if ("log" == method) {
-//                cmd_factory::instance().execute(method, param);
-//                return;
-//            }
-//            lua_bind::instance().call(method, param, [=](Json::Value result){
-//                bool succ;
-//                std::string error = success(result, &succ);
-//                if (succ) {
-//                    if (callback != nullptr) {
-//                        callback(result);
-//                    }
-//                } else {
-//                    //调用失败,则查询失败原因
-//                    if (error == LUA_FUNCTION_NOT_EXSIT) {
-//                        if (callback != nullptr) {
-//                            log_wrap::io().i("execute function , method : ", method, ", param : ",
-//                                             json_wrap::to_string(param), ", callback : yes");
-//                            cmd_factory::instance().execute(method, param, callback);
-//                        } else {
-//                            log_wrap::io().i("execute function , method : ", method, ", param : ",
-//                                             json_wrap::to_string(param), ", callback : no");
-//                            cmd_factory::instance().execute(method, param);
-//                        }
-//                    } else {
-//                        callback(result);
-//                    }
-//                }
-//            });
-//        });
-//    }
-
     void common::call_(std::string method, JSONObject param, std::function<void(JSONObject)> callback) {
         thread_wrap::post_background([=](){
             if ("log" == method) {
                 cmd_factory::instance().execute(method, param);
                 return;
             }
-            lua_bind::instance().call(method, param, [=](JSONObject result) mutable {
-                bool succ;
-                std::string error = success(result, &succ);
-                if (succ) {
-                    if (callback != nullptr) {
-                        callback(result);
-                    }
-                } else {
-                    //调用失败,则查询失败原因
-                    if (error == LUA_FUNCTION_NOT_EXSIT) {
+            if (cmd_factory::instance().is_register(method)) {
+                cmd_factory::instance().execute(method, param, callback);
+            } else {
+                lua_bind::instance().call(method, param, [=](JSONObject result) mutable {
+                    bool succ;
+                    std::string error = success(result, &succ);
+                    if (succ) {
                         if (callback != nullptr) {
-                            log_wrap::io().i("execute function , method : ", method, ", param : ",
-                                             param.to_string(), ", callback : yes");
-                            cmd_factory::instance().execute(method, param, callback);
-                        } else {
-                            log_wrap::io().i("execute function , method : ", method, ", param : ",
-                                             param.to_string(), ", callback : no");
-                            cmd_factory::instance().execute(method, param);
+                            callback(result);
                         }
                     } else {
+                        //调用失败,则查询失败原因
+                        if (error == LUA_FUNCTION_NOT_EXSIT) {
+                            log_wrap::io().e(method, " is not register");
+                        }
                         callback(result);
                     }
-                }
-            });
+                });
+            }
         });
     }
 
@@ -121,7 +83,6 @@ namespace plan9
             return;
         }
 
-        bool error = false;
         JSONObject p = JSONObject(param);
         call_(method, p, callback);
     }

@@ -31,7 +31,7 @@ namespace plan9 {
          * @param path 本地文件路径
          * @param callback 下载进度回调
          */
-        void download(std::string url, std::string path, std::shared_ptr<std::map<std::string, std::string>> header, std::function<void(int curl_code, std::string debug_trace, long http_state)> callback,
+        void download(std::string url, std::string path, std::shared_ptr<std::map<std::string, std::string>> header, bool override, std::function<void(int curl_code, std::string debug_trace, long http_state)> callback,
                       std::function<void(double time, long downloaded, long total)> process_callback);
 
         void post(std::string url, std::shared_ptr<std::map<std::string, std::string>> header, std::shared_ptr<std::map<std::string, std::string>> form_params,
