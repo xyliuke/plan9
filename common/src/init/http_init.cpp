@@ -4,7 +4,7 @@
 
 #include <log/log_wrap.h>
 #include <commander/cmd_factory.h>
-#include <network/asyn_http.h>
+#include <network/async_http.h>
 #include <network/easy_http.h>
 #include "http_init.h"
 
@@ -54,12 +54,12 @@ namespace plan9 {
                     if ("get" == type) {
                         easy_http::instance().get(url, header, [=](int curl_code, std::string debug_trace, long http_state, char *data, size_t len){
                             log_wrap::net().d("http request ", id, " end, the result : ", debug_trace);
-                            if (asyn_http::instance().is_ok(curl_code)) {
+                            if (async_http::is_ok(curl_code)) {
                                 string s(data, len);
                                 JSONObject ret(s);
                                 cmd_factory::instance().callback(param, true, ret);
                             } else {
-                                if (asyn_http::instance().is_timeout(curl_code)) {
+                                if (async_http::is_timeout(curl_code)) {
                                     cmd_factory::instance().callback(param, (int)http_state, "timeout");
                                 } else {
                                     cmd_factory::instance().callback(param, (int)http_state, debug_trace);
@@ -69,12 +69,12 @@ namespace plan9 {
                     } else if ("post" == type) {
                         easy_http::instance().post(url, header, form, [=](int curl_code, std::string debug_trace, long http_state, char* data, size_t len){
                             log_wrap::net().d("http request ", id, " end, the result : ", debug_trace);
-                            if (asyn_http::instance().is_ok(curl_code)) {
+                            if (async_http::is_ok(curl_code)) {
                                 string s(data, len);
                                 JSONObject ret(s);
                                 cmd_factory::instance().callback(param, true, ret);
                             } else {
-                                if (asyn_http::instance().is_timeout(curl_code)) {
+                                if (async_http::is_timeout(curl_code)) {
                                     cmd_factory::instance().callback(param, (int)http_state, "timeout");
                                 } else {
                                     cmd_factory::instance().callback(param, (int)http_state, debug_trace);
@@ -88,14 +88,14 @@ namespace plan9 {
 
                 } else {
                     if ("get" == type) {
-                        asyn_http::instance().get(url, timeout, header, [=](int curl_code, std::string debug_trace, long http_state, char *data, size_t len){
+                        async_http::instance().get(url, timeout, header, [=](int curl_code, std::string debug_trace, long http_state, char *data, size_t len){
                             log_wrap::net().d("http request ", id, " end, the result : ", debug_trace);
-                            if (asyn_http::instance().is_ok(curl_code)) {
+                            if (async_http::is_ok(curl_code)) {
                                 string s(data, len);
                                 JSONObject ret(s);
                                 cmd_factory::instance().callback(param, true, ret);
                             } else {
-                                if (asyn_http::instance().is_timeout(curl_code)) {
+                                if (async_http::is_timeout(curl_code)) {
                                     cmd_factory::instance().callback(param, (int)http_state, "timeout");
                                 } else {
                                     cmd_factory::instance().callback(param, (int)http_state, debug_trace);
@@ -103,14 +103,14 @@ namespace plan9 {
                             }
                         });
                     } else if ("post" == type) {
-                        asyn_http::instance().post(url, timeout, header, form, [=](int curl_code, std::string debug_trace, long http_state, char* data, size_t len){
+                        async_http::instance().post(url, timeout, header, form, [=](int curl_code, std::string debug_trace, long http_state, char* data, size_t len){
                             log_wrap::net().d("http request ", id, " end, the result : ", debug_trace);
-                            if (asyn_http::instance().is_ok(curl_code)) {
+                            if (async_http::is_ok(curl_code)) {
                                 string s(data, len);
                                 JSONObject ret(s);
                                 cmd_factory::instance().callback(param, true, ret);
                             } else {
-                                if (asyn_http::instance().is_timeout(curl_code)) {
+                                if (async_http::is_timeout(curl_code)) {
                                     cmd_factory::instance().callback(param, (int)http_state, "timeout");
                                 } else {
                                     cmd_factory::instance().callback(param, (int)http_state, debug_trace);
@@ -171,14 +171,14 @@ namespace plan9 {
                     easy_http::instance().download(url, path, header, override, [=](int curl_code, std::string debug_trace, long http_state) mutable {
                         param["aux.once"] = true;
                         log_wrap::net().d("http request ", id, " end, the result : ", debug_trace);
-                        if (asyn_http::instance().is_ok(curl_code)) {
+                        if (async_http::is_ok(curl_code)) {
                             JSONObject ret;
                             ret["file_path"] = path;
                             ret["file_size"] = (*file_size);
                             ret["state"] = "finish";
                             cmd_factory::instance().callback(param, true, ret);
                         } else {
-                            if (asyn_http::instance().is_timeout(curl_code)) {
+                            if (async_http::is_timeout(curl_code)) {
                                 cmd_factory::instance().callback(param, (int)http_state, "timeout");
                             } else {
                                 cmd_factory::instance().callback(param, (int)http_state, debug_trace);
@@ -196,17 +196,17 @@ namespace plan9 {
                     });
                 } else {
                     shared_ptr<long> file_size(new long);
-                    asyn_http::instance().download(url, path, timeout, header, override, [=](int curl_code, std::string debug_trace, long http_state) mutable {
+                    async_http::instance().download(url, path, timeout, header, override, [=](int curl_code, std::string debug_trace, long http_state) mutable {
                         param["aux.once"] = true;
                         log_wrap::net().d("http request ", id, " end, the result : ", debug_trace);
-                        if (asyn_http::instance().is_ok(curl_code)) {
+                        if (async_http::is_ok(curl_code)) {
                             JSONObject ret;
                             ret["file_path"] = path;
                             ret["file_size"] = (*file_size);
                             ret["state"] = "finish";
                             cmd_factory::instance().callback(param, true, ret);
                         } else {
-                            if (asyn_http::instance().is_timeout(curl_code)) {
+                            if (async_http::is_timeout(curl_code)) {
                                 cmd_factory::instance().callback(param, (int)http_state, "timeout");
                             } else {
                                 cmd_factory::instance().callback(param, (int)http_state, debug_trace);

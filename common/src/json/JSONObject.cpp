@@ -162,12 +162,10 @@ namespace plan9 {
         JSONObject_impl(double value) {this->value.d = value; this->type = _DOUBLE;}
         JSONObject_impl(bool value) {this->value.b = value; this->type = _BOOL;}
         JSONObject_impl(const char* value) {
-            //TODO 解析JSON格式字符串
             value_string = std::string(value);
             this->type = _STRING;
         }
         JSONObject_impl(std::string value) {
-            //TODO 解析JSON格式字符串
             value_string = value;
             this->type = _STRING;
         }

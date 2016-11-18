@@ -17,9 +17,9 @@ namespace plan9 {
      * 支持常用的get/post请求和下载文件请求
      */
     //TODO 后续添加断点续传和断点下载功能,并可暂停、重传
-    class asyn_http {
+    class async_http {
     public:
-        static asyn_http instance();
+        static async_http instance();
 
         void get(std::string url, long timeout_second, std::function<void(int curl_code, std::string debug_trace, long http_state, char *data, size_t len)> callback);
         void get(std::string url, long timeout_second, std::shared_ptr<std::map<std::string, std::string>> header, std::function<void(int curl_code, std::string debug_trace, long http_state, char *data, size_t len)> callback);
@@ -32,7 +32,7 @@ namespace plan9 {
         static bool is_timeout(int curl_code);
         static bool is_ok(int curl_code);
     private:
-        asyn_http();
+        async_http();
         class asyn_http_impl;
         std::shared_ptr<asyn_http_impl> impl_;
     };

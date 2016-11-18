@@ -13,6 +13,7 @@
 #include <thread/thread_wrap.h>
 #include "algorithm/compress.h"
 #include "http_init.h"
+#include "algo_init.h"
 
 namespace plan9
 {
@@ -43,6 +44,7 @@ namespace plan9
 
         //加载其他库
         http_init::init();
+        algo_init::init();
     }
 
     void common::set_notify_function(std::function<void(std::string)> notify) {

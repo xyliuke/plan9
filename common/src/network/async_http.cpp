@@ -2,7 +2,7 @@
 // Created by liuke on 8/23/16.
 //
 
-#include "asyn_http.h"
+#include "async_http.h"
 #include <boost/asio.hpp>
 #include <curl/multi.h>
 #include <boost/bind.hpp>
@@ -309,7 +309,7 @@ namespace plan9
         return 0;
     }
 
-    class asyn_http::asyn_http_impl {
+    class async_http::asyn_http_impl {
 
     public:
 
@@ -554,46 +554,46 @@ namespace plan9
         asyn_http_object aho;
     };
 
-    asyn_http asyn_http::instance() {
-        static asyn_http ah;
+    async_http async_http::instance() {
+        static async_http ah;
         return ah;
     }
 
-    asyn_http::asyn_http() : impl_ (new asyn_http_impl){
+    async_http::async_http() : impl_ (new asyn_http_impl){
 
     }
 
-    void asyn_http::download(std::string url, std::string path, long timeout_second, std::shared_ptr<std::map<std::string, std::string>> header,
+    void async_http::download(std::string url, std::string path, long timeout_second, std::shared_ptr<std::map<std::string, std::string>> header,
                              bool override, std::function<void(int curl_code, std::string debug_trace, long http_state)> callback,
                              std::function<void(double time, long downloaded, long total)> process_callback) {
         impl_->download(url, path, timeout_second, header, override, callback, process_callback);
     }
 
-    void asyn_http::post(std::string url, long timeout_second, std::shared_ptr<std::map<std::string, std::string>> header,
+    void async_http::post(std::string url, long timeout_second, std::shared_ptr<std::map<std::string, std::string>> header,
                          std::shared_ptr<std::map<std::string, std::string>> form_params,
                          std::function<void(int curl_code, std::string debug_trace, long http_state, char *data,
                                             size_t len)> callback) {
         impl_->post(url, timeout_second, header, form_params, callback);
     }
 
-    void asyn_http::get(std::string url, long timeout_second,
+    void async_http::get(std::string url, long timeout_second,
                         std::shared_ptr<std::map<std::string, std::string>> header,
                         std::function<void(int curl_code, std::string debug_trace, long http_state, char *data,
                                            size_t len)> callback) {
 
     }
 
-    void asyn_http::get(std::string url, long timeout_second,
+    void async_http::get(std::string url, long timeout_second,
                         std::function<void(int curl_code, std::string debug_trace, long http_state, char *data,
                                            size_t len)> callback) {
         get(url, timeout_second, nullptr, callback);
     }
 
-    bool asyn_http::is_timeout(int curl_code) {
+    bool async_http::is_timeout(int curl_code) {
         return curl_code == CURLE_OPERATION_TIMEDOUT;
     }
 
-    bool asyn_http::is_ok(int curl_code) {
+    bool async_http::is_ok(int curl_code) {
         return curl_code == CURLE_OK;
     }
 

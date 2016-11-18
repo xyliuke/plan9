@@ -11,7 +11,6 @@
 #include <memory>
 #include <json/JSONObject.h>
 
-//TODO 替换所有的json类
 namespace plan9
 {
     class common {
