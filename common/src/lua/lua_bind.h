@@ -29,7 +29,6 @@ namespace plan9
          * @param param lua参数的支持,为Json对象
          * @return 如果函数存在,则返回true,否则返回false
          */
-        bool call_lua(std::string method, Json::Value param);
         bool call_lua(std::string method, JSONObject param);
 
         /**
@@ -39,7 +38,6 @@ namespace plan9
          * @param callback 调用Lua后的回调
          * @return 如果函数存在,则返回true,否则返回false
          */
-        bool call_lua(std::string method, Json::Value param, std::function<void(Json::Value result)> callback);
         bool call_lua(std::string method, JSONObject param, std::function<void(JSONObject result)> callback);
 
         /**
@@ -47,7 +45,6 @@ namespace plan9
          * @param method 函数名,支持a.b调用方式
          * @param param  参数 lua参数的支持,为Json对象
          */
-        bool call(std::string method, Json::Value param);
         bool call(std::string method, JSONObject param);
 
         /**
@@ -56,13 +53,11 @@ namespace plan9
          * @param param  参数 lua参数的支持,为Json对象
          * @param callback 回调函数
          */
-        bool call(std::string method, Json::Value param, std::function<void(Json::Value result)> callback);
         bool call(std::string method, JSONObject param, std::function<void(JSONObject result)> callback);
 
         /**
          * 函数功能同上,只是不需要传递参数
          */
-        bool call(std::string method, std::function<void(Json::Value result)> callback);
         bool call(std::string method, std::function<void(JSONObject result)> callback);
 
         /**

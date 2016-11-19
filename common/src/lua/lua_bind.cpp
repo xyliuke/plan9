@@ -39,6 +39,24 @@ namespace plan9 {
         return 1;
     }
 
+    static int pcall_error_function(lua_State *L) {
+        lua_Debug debug= {};
+        int ret = lua_getstack(L, 2, &debug); // 0是pcall_callback_err_fun自己, 1是error函数, 2是真正出错的函数
+        lua_getinfo(L, "Sln", &debug);
+
+        std::string err = lua_tostring(L, -1);
+        lua_pop(L, 1);
+        std::stringstream msg;
+        msg << debug.short_src << ":line " << debug.currentline;
+        if (debug.name != 0) {
+            msg << "(" << debug.namewhat << " " << debug.name << ")";
+        }
+
+        msg << " [" << err << "]";
+        log_wrap::lua().e("lua runtime error,", msg.str());
+        return 1;
+    }
+
     class lua_bind::lua_bind_impl {
     public:
         lua_bind_impl() : is_load_(false) {
@@ -62,6 +80,7 @@ namespace plan9 {
             lua_setfield( L, -2, "path" ); // set the field "path" in table at -2 with value at top of stack
             lua_pop( L, 1 ); // get rid of package table from top of stack
 
+            lua_pushcfunction(L, pcall_error_function);
             register_callback();
             is_load_ = true;
             return true;
@@ -200,7 +219,10 @@ namespace plan9 {
                     int index = 1;
                     value.enumerate([=](std::string k, JSONObject v, bool o_value) mutable {
                         lua_pushnumber(L, index);
-                        if (v.is_int()) {
+                        if (v.is_object()) {
+                            json2table(v);
+                            lua_settable(L, -3);
+                        } else if (v.is_int()) {
                             lua_pushinteger(L, v.get_int());
                             lua_settable(L, -3);
                         } else if (v.is_long()) {
@@ -278,6 +300,8 @@ namespace plan9 {
                         } else if (type == LUA_TBOOLEAN) {
                             bool value = (bool)lua_toboolean(L, -1);
                             ret.append(value);
+                        } else if (type == LUA_TTABLE) {
+                            ret.append(table2json(L));
                         }
                     }
                     lua_pop(L, 1);
@@ -386,18 +410,15 @@ namespace plan9 {
                 }
             }
             if (ret) {
-                int lua_ret = lua_pcall(L, 1, 0, 0);
+                int lua_ret = lua_pcall(L, 1, 0, 1);
                 if (lua_ret == LUA_OK) {
                     ret = true;
                     lua_pop(L, 1);
                 } else if (lua_ret == LUA_ERRRUN) {
-                    //运行时出错
-                    std::string err = lua_tostring(L, -1);
-                    lua_pop(L, 2);
-                    log_wrap::lua().e("lua runtime error,", err);
+                    //运行时出错，在pcall_error_function中处理
                     ret = false;
                 } else if (lua_ret == LUA_ERRERR){
-                    log_wrap::lua().e("lua errerr type");
+                    log_wrap::lua().e("lua error type");
                     ret = false;
                     lua_pop(L, 1);
                 } else {
@@ -426,43 +447,25 @@ namespace plan9 {
         return impl->lua_loadfile(lua_file);
     }
 
-    bool lua_bind::call_lua(std::string method, Json::Value param) {
-//        return impl->call(method, param, nullptr);
-    }
-
     bool lua_bind::call_lua(std::string method, JSONObject param) {
         return impl->call(method, param, nullptr);
     }
 
-    bool lua_bind::call(std::string method, Json::Value param) {
-//        Json::Value p = wrap(method, param);
-//        return call_lua("lua_c_bridge.call_lua", p);
-    }
     bool lua_bind::call(std::string method, JSONObject param) {
         JSONObject p = wrap(method, param);
         return call_lua("lua_c_bridge.call_lua", p);
     }
 
-    bool lua_bind::call_lua(std::string method, Json::Value param, std::function<void(Json::Value result)> callback) {
-//        return impl->call(method, param, callback);
-    }
     bool lua_bind::call_lua(std::string method, JSONObject param, std::function<void(JSONObject)> callback) {
         return impl->call(method, param, callback);
     }
 
-    bool lua_bind::call(std::string method, Json::Value param, std::function<void(Json::Value result)> callback) {
-//        Json::Value p = wrap(method, param);
-//        return call_lua("lua_c_bridge.call_lua", p, callback);
-    }
 
     bool lua_bind::call(std::string method, JSONObject param, std::function<void(JSONObject)> callback) {
         JSONObject p = wrap(method, param);
         return call_lua("lua_c_bridge.call_lua", p, callback);
     }
 
-    bool lua_bind::call(std::string method, std::function<void(Json::Value result)> callback) {
-//        return call(method, Json::Value(), callback);
-    }
 
     bool lua_bind::call(std::string method, std::function<void(JSONObject result)> callback) {
         return call(method, JSONObject(), callback);

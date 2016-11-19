@@ -30,7 +30,7 @@
  *        success : true/false      (函数调用成功或者失败)
  *        error   :  error_code     这个错误码定义在lua的error_code文件中
  *        reason  :  失败原因        错误原因的文字说明,主要是UI使用
- *        data    : {}              (函数返回的结果数据封装在这个字段中)
+ *        data    : {}              (函数返回的结果数据封装在这个字段中,这个字段的值一定要是JSON对象)
  *    }
  *
  * }

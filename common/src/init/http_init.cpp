@@ -40,7 +40,9 @@ namespace plan9 {
                     });
                 }
                 shared_ptr<map<string, string>> form;
+                bool has_form = false;
                 if (args.has("form")) {
+                    has_form = true;
                     form.reset(new map<string, string>);
                     JSONObject form_json = args["form"];
                     form_json.enumerate([=](string key, JSONObject value, bool onlyValue){
@@ -51,22 +53,7 @@ namespace plan9 {
                 string id = param["aux"]["id"].get_string();
                 log_wrap::net().d("http request ", id, " begin, the parameter : ", param.to_string());
                 if (args.has("model") && "sync" == args["model"].get_string()) {
-                    if ("get" == type) {
-                        easy_http::instance().get(url, header, [=](int curl_code, std::string debug_trace, long http_state, char *data, size_t len){
-                            log_wrap::net().d("http request ", id, " end, the result : ", debug_trace);
-                            if (async_http::is_ok(curl_code)) {
-                                string s(data, len);
-                                JSONObject ret(s);
-                                cmd_factory::instance().callback(param, true, ret);
-                            } else {
-                                if (async_http::is_timeout(curl_code)) {
-                                    cmd_factory::instance().callback(param, (int)http_state, "timeout");
-                                } else {
-                                    cmd_factory::instance().callback(param, (int)http_state, debug_trace);
-                                }
-                            }
-                        });
-                    } else if ("post" == type) {
+                    if ("post" == type || has_form) {
                         easy_http::instance().post(url, header, form, [=](int curl_code, std::string debug_trace, long http_state, char* data, size_t len){
                             log_wrap::net().d("http request ", id, " end, the result : ", debug_trace);
                             if (async_http::is_ok(curl_code)) {
@@ -82,19 +69,20 @@ namespace plan9 {
                             }
                         });
                     } else {
-                        log_wrap::net().w("http not support the request, the param : ", param.to_string());
-                        cmd_factory::instance().callback(param, -1, "http only support get or post");
-                    }
-
-                } else {
-                    if ("get" == type) {
-                        async_http::instance().get(url, timeout, header, [=](int curl_code, std::string debug_trace, long http_state, char *data, size_t len){
-                            log_wrap::net().d("http request ", id, " end, the result : ", debug_trace);
+                        easy_http::instance().get(url, header, [=](int curl_code, std::string debug_trace, long http_state, char *data, size_t len){
                             if (async_http::is_ok(curl_code)) {
                                 string s(data, len);
+                                log_wrap::net().d("http request ", id, " end, the result : ", s);
                                 JSONObject ret(s);
-                                cmd_factory::instance().callback(param, true, ret);
+                                JSONObject new_ret;
+                                if (ret.is_object()) {
+                                    new_ret = ret;
+                                } else {
+                                    new_ret["data"] = ret;
+                                }
+                                cmd_factory::instance().callback(param, true, new_ret);
                             } else {
+                                log_wrap::net().d("http request ", id, " end, the result : ", debug_trace);
                                 if (async_http::is_timeout(curl_code)) {
                                     cmd_factory::instance().callback(param, (int)http_state, "timeout");
                                 } else {
@@ -102,7 +90,9 @@ namespace plan9 {
                                 }
                             }
                         });
-                    } else if ("post" == type) {
+                    }
+                } else {
+                    if ("post" == type || has_form) {
                         async_http::instance().post(url, timeout, header, form, [=](int curl_code, std::string debug_trace, long http_state, char* data, size_t len){
                             log_wrap::net().d("http request ", id, " end, the result : ", debug_trace);
                             if (async_http::is_ok(curl_code)) {
@@ -118,8 +108,20 @@ namespace plan9 {
                             }
                         });
                     } else {
-                        log_wrap::net().w("http not support the request, the param : ", param.to_string());
-                        cmd_factory::instance().callback(param, -1, "http only support get or post");
+                        async_http::instance().get(url, timeout, header, [=](int curl_code, std::string debug_trace, long http_state, char *data, size_t len){
+                            log_wrap::net().d("http request ", id, " end, the result : ", debug_trace);
+                            if (async_http::is_ok(curl_code)) {
+                                string s(data, len);
+                                JSONObject ret(s);
+                                cmd_factory::instance().callback(param, true, ret);
+                            } else {
+                                if (async_http::is_timeout(curl_code)) {
+                                    cmd_factory::instance().callback(param, (int)http_state, "timeout");
+                                } else {
+                                    cmd_factory::instance().callback(param, (int)http_state, debug_trace);
+                                }
+                            }
+                        });
                     }
                 }
             } else {
