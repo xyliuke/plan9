@@ -209,7 +209,7 @@ namespace plan9
         /*
          * 注册日志函数
          * 参数有三个,分别为
-         * level : info/warn/error  日志级别,使用三个值其一
+         * level : debug/info/warn/error  日志级别,使用四个值其一，默认为debug
          * target : ui/net/io/lua/other 日志分类,使用其一
          * msg : 日志内容
          **/
@@ -226,7 +226,7 @@ namespace plan9
                     } else if (level == "error") {
                         log_wrap::ui().e(msg);
                     } else {
-                        log_wrap::ui().i(msg);
+                        log_wrap::ui().d(msg);
                     }
                 } else if ("io" == target) {
                     if (level == "info") {
@@ -236,7 +236,7 @@ namespace plan9
                     } else if (level == "error") {
                         log_wrap::io().e(msg);
                     } else {
-                        log_wrap::io().i(msg);
+                        log_wrap::io().d(msg);
                     }
                 } else if ("net" == target) {
                     if (level == "info") {
@@ -246,7 +246,7 @@ namespace plan9
                     } else if (level == "error") {
                         log_wrap::net().e(msg);
                     } else {
-                        log_wrap::net().i(msg);
+                        log_wrap::net().d(msg);
                     }
                 } else if ("lua" == target) {
                     if (level == "info") {
@@ -256,7 +256,7 @@ namespace plan9
                     } else if (level == "error") {
                         log_wrap::lua().e(msg);
                     } else {
-                        log_wrap::lua().i(msg);
+                        log_wrap::lua().d(msg);
                     }
                 } else if ("other" == target) {
                     if (level == "info") {
@@ -266,7 +266,7 @@ namespace plan9
                     } else if (level == "error") {
                         log_wrap::other().e(msg);
                     } else {
-                        log_wrap::other().i(msg);
+                        log_wrap::other().d(msg);
                     }
                 } else {
                     if (level == "info") {
@@ -276,7 +276,7 @@ namespace plan9
                     } else if (level == "error") {
                         log_wrap::other().e(msg);
                     } else {
-                        log_wrap::other().i(msg);
+                        log_wrap::other().d(msg);
                     }
                 }
             }

@@ -41,6 +41,11 @@ function lua_c_bridge:call_native(method, param, callback)
 end
 --- lua中写log函数,INFO级别
 -- @param msg 日志内容
+function lua_c_bridge:log_d(msg)
+    lua_c_bridge:call_native("log", {level = "debug", msg = msg, target = "lua"})
+end
+--- lua中写log函数,INFO级别
+-- @param msg 日志内容
 function lua_c_bridge:log_i(msg)
     lua_c_bridge:call_native("log", {level = "info", msg = msg, target = "lua"})
 end
@@ -58,14 +63,17 @@ end
 --- 这个函数是供c++调用的, 以此来达到lua调用c++函数的而callback的结果
 -- @param param c++传递的json格式数据
 function lua_c_bridge.callback_from_c(param)
-    lua_c_bridge:log_i("callback from c++ : " .. lua_c_bridge:tostring(param))
+    lua_c_bridge:log_d("callback from c++ : " .. lua_c_bridge:tostring(param))
     local id = param.aux.callback_id;
     local callback = lua_c_bridge.callback_map[id]
     if callback then
         param.aux.action = "callback"
-        param.aux.callback_id = nil
         callback(param)
-        lua_c_bridge.callback_map[id] = nil
+        if param == nil or param.aux == nil or param.aux.once == nil or param.aux.once then
+            param.aux.callback_id = nil
+            lua_c_bridge.callback_map[id] = nil
+        end
+
     end
 end
 
@@ -73,7 +81,7 @@ end
 -- @param result 将回调的值整合成一个table后传递给C++
 function lua_c_bridge:callback_direct(result)
     if result and result.aux and result.aux.action == "callback" then
-        lua_c_bridge:log_i("callback from lua : " .. lua_c_bridge:tostring(result))
+        lua_c_bridge:log_d("callback from lua : " .. lua_c_bridge:tostring(result))
         __callback__(result);
     end
 end

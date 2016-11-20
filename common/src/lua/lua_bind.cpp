@@ -110,7 +110,11 @@ namespace plan9 {
             auto callback = callback_map[id];
             if (callback != nullptr) {
                 callback(result);
-                callback_map.erase(id);
+                if (result["aux"].has("once") && !(result["aux.once"].get_bool())) {
+
+                } else {
+                    callback_map.erase(id);
+                }
             }
         }
 
@@ -336,7 +340,6 @@ namespace plan9 {
             JSONObject args;
             if (param.has("aux")) {
                 ret.put("aux", param["aux"]);
-                param.remove("aux");
             } else {
                 ret["aux"] = JSONObject::createObject();
             }
@@ -365,7 +368,9 @@ namespace plan9 {
                 std::string id = ret["aux"]["id"].get_string();
                 callback_map[id] = callback;
             } else {
-                ret["aux"]["action"] = "direct";
+                if (!(ret["aux"].has("once")) || ret["aux.once"].get_bool()) {
+                    ret["aux"]["action"] = "direct";
+                }
             }
             return ret;
         }
