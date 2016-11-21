@@ -444,6 +444,12 @@ namespace plan9 {
         return lb;
     }
 
+    std::string lua_bind::version() {
+        std::stringstream ss;
+        ss << *lua_version(L);
+        return ss.str();
+    }
+
     bool lua_bind::lua_bind_init(std::string lua_path) {
         return impl->lua_init(lua_path);
     }

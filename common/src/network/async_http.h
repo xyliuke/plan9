@@ -21,6 +21,8 @@ namespace plan9 {
     public:
         static async_http instance();
 
+        std::string version();
+
         void get(std::string url, long timeout_second, std::function<void(int curl_code, std::string debug_trace, long http_state, char *data, size_t len)> callback);
         void get(std::string url, long timeout_second, std::shared_ptr<std::map<std::string, std::string>> header, std::function<void(int curl_code, std::string debug_trace, long http_state, char *data, size_t len)> callback);
         void download(std::string url, std::string path, long timeout_second, std::shared_ptr<std::map<std::string, std::string>> header, bool override, std::function<void(int curl_code, std::string debug_trace, long http_state)> callback,

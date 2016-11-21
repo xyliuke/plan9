@@ -88,9 +88,9 @@ end
 --- 这个函数供lua调用,用来将值回调给c++
 -- @param param 由c++传递来的参数
 -- @param result 回调的成功或失败,值必须为boolean值或者nil值,如果为nil则为false
--- @param data 回调给C++的数据圣贤,必须为table值或nil值
+-- @param data 回调给C++的数据,必须为table值或nil值
 -- @param data_style 检测data是否符合data_style定义的格式,可以为nil
-function lua_c_bridge:callback(param, result, data, data_style)
+function lua_c_bridge:callback(param, result, data, error, reason, data_style)
     if param then
         if param.result == nil then
             param.result = {}
@@ -104,6 +104,10 @@ function lua_c_bridge:callback(param, result, data, data_style)
                 lua_c_bridge:log_e("callback from lua param error, result must be boolean")
                 return
             end
+        end
+        if not param.result.success then
+            param.result.error = error
+            param.result.reason = reason
         end
         if data then
             if type(data) == "table" then
@@ -236,8 +240,8 @@ function lua_c_bridge.call_lua(param)
     local last = func
     func = func[methods[#methods]]
     if func ~= nil and type(func) == "function" then
-        func(last, param, function(param, result, data, data_style)
-            lua_c_bridge:callback(param, result, data, data_style);
+        func(last, param, function(param, result, data, error, reason, data_style)
+            lua_c_bridge:callback(param, result, data, error, reason, data_style);
         end)
     else
         lua_c_bridge:log_e("can not find lua function, param:\n " .. lua_c_bridge:tostring(param))

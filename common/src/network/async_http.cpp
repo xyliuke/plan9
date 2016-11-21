@@ -563,6 +563,10 @@ namespace plan9
 
     }
 
+    std::string async_http::version() {
+        return std::string(curl_version());
+    }
+
     void async_http::download(std::string url, std::string path, long timeout_second, std::shared_ptr<std::map<std::string, std::string>> header,
                              bool override, std::function<void(int curl_code, std::string debug_trace, long http_state)> callback,
                              std::function<void(double time, long downloaded, long total)> process_callback) {

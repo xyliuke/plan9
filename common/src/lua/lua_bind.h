@@ -17,6 +17,8 @@ namespace plan9
     class lua_bind {
     public:
         static lua_bind instance();
+
+        std::string version();
         /**
          * 初始化lua文件,指定lua文件根路径
          */

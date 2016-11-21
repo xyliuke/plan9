@@ -341,7 +341,6 @@ namespace plan9
     }
 
     void common::init_lua() {
-        log_wrap::io().i("init lua");
         namespace bfs = boost::filesystem;
         if (!bfs::exists(lua_path)) {
             log_wrap::io().e("init lua error, lua path : ", lua_path, " is not exist");
@@ -359,6 +358,8 @@ namespace plan9
         }
 
         lua_bind::instance().lua_bind_init(lua_path);
+        //为了获取版本，需要在init之后调用
+        log_wrap::io().i("init lua, lua version ", lua_bind::instance().version());
 
         bfs::path p(lua_path);
 

@@ -11,7 +11,7 @@
 //TODO 添加上传功能；断点上传功能
 namespace plan9 {
     void http_init::init() {
-        log_wrap::io().d("register http plugin");
+        log_wrap::io().d("register http plugin, libcurl version ", async_http::instance().version());
         /**
          * http命令的参数格式
          * args
