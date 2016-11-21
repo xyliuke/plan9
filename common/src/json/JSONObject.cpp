@@ -1226,6 +1226,36 @@ namespace plan9 {
             }
             return ss.str();
         }
+
+        std::shared_ptr<JSONObject_impl> copy() {
+            std::shared_ptr<JSONObject_impl> ret(new JSONObject_impl);
+            if (this->is_object()) {
+                this->enumerate([=](std::string key, std::shared_ptr<JSONObject_impl> value, bool only_value) {
+                    std::shared_ptr<JSONObject_impl> object = value->copy();
+                    ret->put(key, object);
+                });
+
+            } else if (this->is_array()) {
+                this->enumerate([=](std::string key, std::shared_ptr<JSONObject_impl> value, bool only_value) {
+                    std::shared_ptr<JSONObject_impl> array = value->copy();
+                    ret->append(array);
+                });
+            } else if (this->is_string()) {
+                std::string s = this->get_string();
+                ret->set(s);
+            } else if (this->is_bool()) {
+                ret->set(this->get_bool());
+            } else if (this->is_double()) {
+                ret->set(this->get_double());
+            } else if (this->is_float()) {
+                ret->set(this->get_float());
+            } else if (this->is_int()) {
+                ret->set(this->get_int());
+            } else if (this->is_long()) {
+                ret->set(this->get_long());
+            }
+            return ret;
+        }
     };
 
     JSONObject::JSONObject() : impl_(new JSONObject_impl){
@@ -1640,6 +1670,10 @@ namespace plan9 {
         return *this;
     }
 
-
+    JSONObject JSONObject::copy() {
+        JSONObject jsonObject;
+        jsonObject.impl_ = impl_->copy();
+        return jsonObject;
+    }
 
 }

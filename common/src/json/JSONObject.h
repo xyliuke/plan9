@@ -189,6 +189,12 @@ namespace plan9 {
          */
         std::string to_format_string();
 
+        /**
+         * 返回一个对象的copy值
+         * @return
+         */
+        JSONObject copy();
+
         //重载运算符
         JSONObject operator=(JSONObject);
         JSONObject operator[](std::string&);
