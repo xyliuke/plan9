@@ -28,7 +28,7 @@ namespace plan9 {
         std::string ret = ss.str();
         int count = 0;
         for (int i = ret.length() - 1; i >= 0; --i) {
-            if (ret.at(i) == '0') {
+            if (ret.at(i) == '0' || ret.at(i) == '.') {
                 count ++;
             } else {
                 break;

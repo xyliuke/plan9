@@ -201,11 +201,6 @@ namespace plan9
         }
         log_wrap::set_log_dir(p.string());
         log_wrap::io().i("init log");
-        log_wrap::io().set_duration(7);
-        log_wrap::ui().set_duration(7);
-        log_wrap::net().set_duration(7);
-        log_wrap::lua().set_duration(7);
-        log_wrap::other().set_duration(7);
         /*
          * 注册日志函数
          * 参数有三个,分别为
@@ -283,25 +278,38 @@ namespace plan9
             cmd_factory::instance().callback(param, true);
         });
 
+
+        cmd_factory::instance().register_cmd("common", [=](JSONObject param){
+            JSONObject ret;
+
+            JSONObject dir;
+            dir["path"] = path_;
+            dir["cache"] = cache_path_;
+            dir["tmp"] = tmp_path_;
+            ret["dir"] = dir;
+
+            cmd_factory::instance().callback(param, true, ret);
+        });
+
     }
 
-    void common::init_network() {
-        log_wrap::io().i("init network");
-        common::connect_function = [=] (bool connect) {
-            Json::Value tmp;
-            tmp["aux"]["to"] = "network";
-            tmp["result"]["success"] = connect;
-            std::string msg = json_wrap::to_string(tmp);
-            send_notify_msg(msg);
-        };
-
-        common::read_function = [=] (std::string msg) {
-            send_notify_msg(msg);
-        };
-
-        tcp_wrap_default::instance().set_connect_handler(common::connect_function);
-        tcp_wrap_default::instance().set_read_handler(common::read_function);
-    }
+//    void common::init_network() {
+//        log_wrap::io().i("init network");
+//        common::connect_function = [=] (bool connect) {
+//            Json::Value tmp;
+//            tmp["aux"]["to"] = "network";
+//            tmp["result"]["success"] = connect;
+//            std::string msg = json_wrap::to_string(tmp);
+//            send_notify_msg(msg);
+//        };
+//
+//        common::read_function = [=] (std::string msg) {
+//            send_notify_msg(msg);
+//        };
+//
+//        tcp_wrap_default::instance().set_connect_handler(common::connect_function);
+//        tcp_wrap_default::instance().set_read_handler(common::read_function);
+//    }
 
     void common::init_function() {
         log_wrap::io().i("register function");
@@ -439,6 +447,16 @@ namespace plan9
                             }
                         });
                     }
+
+                    int days = 7;
+                    if (data.has("log_days")) {
+                        days = data["log_days"].get_int();
+                    }
+                    log_wrap::io().set_duration(days);
+                    log_wrap::ui().set_duration(days);
+                    log_wrap::net().set_duration(days);
+                    log_wrap::lua().set_duration(days);
+                    log_wrap::other().set_duration(days);
 
 //                    if (data.has("compress")) {
 //                        bool compress = data["compress"].get_bool();

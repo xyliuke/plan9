@@ -162,7 +162,6 @@ end
 --- 将lua中的table数据转换成json格式的字符串
 -- @param obj 数据
 -- @return 返回字符串表示
--- TODO 数据为空时，字符串有问题
 function lua_c_bridge:tostring(obj)
     if obj == nil then
         return ""
@@ -184,7 +183,9 @@ function lua_c_bridge:tostring(obj)
                 tmp[#tmp + 1] = lua_c_bridge:tostring(v)
                 tmp[#tmp + 1] = ","
             end
-            tmp[#tmp] = nil
+            if tmp[#tmp] == "," then
+                tmp[#tmp] = nil
+            end
             tmp[#tmp + 1] = "]"
         else
             tmp[#tmp + 1] = "{"
@@ -194,7 +195,9 @@ function lua_c_bridge:tostring(obj)
                 tmp[#tmp + 1] = lua_c_bridge:tostring(v)
                 tmp[#tmp + 1] = ","
             end
-            tmp[#tmp] = nil
+            if tmp[#tmp] == "," then
+                tmp[#tmp] = nil
+            end
             tmp[#tmp + 1] = "}"
         end
 

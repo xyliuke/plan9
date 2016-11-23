@@ -20,8 +20,9 @@ config.server = {ip = "127.0.0.1", port = 9099, timeout = 5000}
 function config:get_config(param, callback)
     callback(param, true, {
         log_level = config.log_level,
-        compress = true, -- tcp包是否压缩
-        encrypt = false,  -- tcp包是否加密,如果需要加密,则必须要压缩
+        log_days = 14, -- 日志保存天数
+--        compress = true, -- tcp包是否压缩
+--        encrypt = false,  -- tcp包是否加密,如果需要加密,则必须要压缩
         lib = {"http", "algo"}  --加载的库名
     }, nil)
 end
