@@ -19,8 +19,11 @@ namespace plan9
 {
 #define LUA_FUNCTION_NOT_EXSIT "LUA_FUNCTION_NOT_EXSIT" //lua函数不存在
 
-    std::string common::path = ".";
-    std::string common::lua_path = ".";
+    static std::string path_ = ".";
+    static std::string lua_path_ = ".";
+    static std::string tmp_path_ = "";
+    static std::string cache_path_ = "";
+
     std::function<void(std::string)> common::notify_function = nullptr;
     std::function<void(std::string)> common::read_function = nullptr;
     std::function<void(bool)> common::connect_function = nullptr;
@@ -29,22 +32,29 @@ namespace plan9
     static const char* password = "soapy88Pict";
 
     void common::init(std::string path, std::string lua_path) {
-        common::path = path;
-        common::lua_path = lua_path;
+        path_ = path;
+        cache_path_ = path_ + "/cache";
+        lua_path_ = lua_path;
         if (!boost::filesystem::exists(path)) {
             boost::filesystem::create_directories(path);
         }
+        if (!boost::filesystem::exists(cache_path_)) {
+            boost::filesystem::create_directories(cache_path_);
+        }
+        if (tmp_path_ == "") {
+            tmp_path_ = path_ + "/tmp";
+        }
+        if (!boost::filesystem::exists(tmp_path_)) {
+            boost::filesystem::create_directories(tmp_path_);
+        }
         init_log();
         init_lua();
-        init_function();
-//        init_network();
         init_config();
+    }
 
-
-
-        //加载其他库
-        http_init::init();
-        algo_init::init();
+    void common::init(std::string path, std::string lua_path, std::string tmp_path) {
+        tmp_path_ = tmp_path;
+        common::init(path, lua_path);
     }
 
     void common::set_notify_function(std::function<void(std::string)> notify) {
@@ -171,8 +181,20 @@ namespace plan9
         call("native.set_platform", p);
     }
 
+    std::string common::get_data_path() {
+        return path_;
+    }
+
+    std::string common::get_cache_path() {
+        return cache_path_;
+    }
+
+    std::string common::get_tmp_path() {
+        return tmp_path_;
+    }
+
     void common::init_log() {
-        boost::filesystem::path p(path);
+        boost::filesystem::path p(path_);
         p /= "log";
         if (!boost::filesystem::exists(p)) {
             boost::filesystem::create_directories(p);
@@ -184,28 +206,6 @@ namespace plan9
         log_wrap::net().set_duration(7);
         log_wrap::lua().set_duration(7);
         log_wrap::other().set_duration(7);
-    }
-
-    void common::init_network() {
-        log_wrap::io().i("init network");
-        common::connect_function = [=] (bool connect) {
-            Json::Value tmp;
-            tmp["aux"]["to"] = "network";
-            tmp["result"]["success"] = connect;
-            std::string msg = json_wrap::to_string(tmp);
-            send_notify_msg(msg);
-        };
-
-        common::read_function = [=] (std::string msg) {
-            send_notify_msg(msg);
-        };
-
-        tcp_wrap_default::instance().set_connect_handler(common::connect_function);
-        tcp_wrap_default::instance().set_read_handler(common::read_function);
-    }
-
-    void common::init_function() {
-        log_wrap::io().i("register function");
         /*
          * 注册日志函数
          * 参数有三个,分别为
@@ -283,6 +283,28 @@ namespace plan9
             cmd_factory::instance().callback(param, true);
         });
 
+    }
+
+    void common::init_network() {
+        log_wrap::io().i("init network");
+        common::connect_function = [=] (bool connect) {
+            Json::Value tmp;
+            tmp["aux"]["to"] = "network";
+            tmp["result"]["success"] = connect;
+            std::string msg = json_wrap::to_string(tmp);
+            send_notify_msg(msg);
+        };
+
+        common::read_function = [=] (std::string msg) {
+            send_notify_msg(msg);
+        };
+
+        tcp_wrap_default::instance().set_connect_handler(common::connect_function);
+        tcp_wrap_default::instance().set_read_handler(common::read_function);
+    }
+
+    void common::init_function() {
+        log_wrap::io().i("register function");
 
         /**
          * 连接服务器
@@ -342,26 +364,26 @@ namespace plan9
 
     void common::init_lua() {
         namespace bfs = boost::filesystem;
-        if (!bfs::exists(lua_path)) {
-            log_wrap::io().e("init lua error, lua path : ", lua_path, " is not exist");
+        if (!bfs::exists(lua_path_)) {
+            log_wrap::io().e("init lua error, lua path : ", lua_path_, " is not exist");
             return;
         }
 
         bool is_zip = false;
 
-        if (bfs::is_regular_file(lua_path)) {
+        if (bfs::is_regular_file(lua_path_)) {
             //是压缩包,则需要解压
-            bfs::path p = bfs::path(lua_path).parent_path() / "lua_tmp";
-            compress_wrap::decompress_zip(lua_path, password, p.string());
-            lua_path = p.string();
+            bfs::path p = bfs::path(lua_path_).parent_path() / "lua_tmp";
+            compress_wrap::decompress_zip(lua_path_, password, p.string());
+            lua_path_ = p.string();
             is_zip = true;
         }
 
-        lua_bind::instance().lua_bind_init(lua_path);
+        lua_bind::instance().lua_bind_init(lua_path_);
         //为了获取版本，需要在init之后调用
         log_wrap::io().i("init lua, lua version ", lua_bind::instance().version());
 
-        bfs::path p(lua_path);
+        bfs::path p(lua_path_);
 
         bfs::path bridge = p / "bridge.lua";
         bfs::path common = p / "common.lua";
@@ -369,7 +391,7 @@ namespace plan9
         lua_bind::instance().lua_bind_loadfile(common.string());
 
         if (is_zip) {
-            bfs::remove_all(lua_path);
+            bfs::remove_all(lua_path_);
         }
     }
 
@@ -385,6 +407,7 @@ namespace plan9
     void common::init_config() {
         log_wrap::io().i("init config");
         call_("config.get_config", JSONObject(), [=](JSONObject result){
+            log_wrap::io().d("read config : ", result.to_string());
             bool succ;
             success(result, &succ);
             if (succ) {
@@ -405,19 +428,30 @@ namespace plan9
                         }
                     }
 
-                    if (data.has("compress")) {
-                        bool compress = data["compress"].get_bool();
-                        tcp_wrap_default::instance().set_compress(compress);
+                    if (data.has("lib") && data["lib"].is_array()) {
+                        JSONObject lib = data["lib"];
+                        lib.enumerate([=](std::string key, JSONObject value, bool onlyValue){
+                            std::string v = value.get_string();
+                            if ("http" == v) {
+                                http_init::init();
+                            } else if ("algo" == v) {
+                                algo_init::init();
+                            }
+                        });
                     }
 
-                    if (data.has("encrypt")) {
-                        bool encrypt = data["encrypt"].get_bool();
-                        tcp_wrap_default::instance().set_encrypt(encrypt);
-                    }
+//                    if (data.has("compress")) {
+//                        bool compress = data["compress"].get_bool();
+//                        tcp_wrap_default::instance().set_compress(compress);
+//                    }
+//
+//                    if (data.has("encrypt")) {
+//                        bool encrypt = data["encrypt"].get_bool();
+//                        tcp_wrap_default::instance().set_encrypt(encrypt);
+//                    }
 
                 }
             }
-            log_wrap::io().d("read config : ", result.to_string());
         });
     }
 }

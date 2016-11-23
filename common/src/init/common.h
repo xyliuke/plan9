@@ -21,6 +21,13 @@ namespace plan9
          * @param lua_path lua文件的目录,库函数会在这个目录寻找可以执行的lua文件
          */
         static void init(std::string path, std::string lua_path);
+        /**
+         * 初始化库,
+         * @param path
+         * @param lua_path
+         * @param tmp_path 临时文件的目录，common会将一些临时文件在这个文件下生成
+         */
+        static void init(std::string path, std::string lua_path, std::string tmp_path);
 
         /**
          * 调用库函数的统一接口,这个函数可以是c++中注册的函数,也可以是lua中的函数.但会优先查找lua中的函数来执行,如果找不到再去查找c++中
@@ -90,6 +97,22 @@ namespace plan9
          */
         static void set_macosx_platform();
 
+        /**
+         * 数据目录
+         * @return
+         */
+        static std::string get_data_path();
+        /**
+         * 临时文件目录
+         * @return
+         */
+        static std::string get_tmp_path();
+        /**
+         * 缓存目录
+         * @return
+         */
+        static std::string get_cache_path();
+
     private:
         static void init_function();
         static void init_log();
@@ -99,8 +122,6 @@ namespace plan9
         static void init_config();
 
     private:
-        static std::string path;
-        static std::string lua_path;
         static std::function<void(std::string)> notify_function;
         static std::function<void(bool)> connect_function;
         static std::function<void(std::string)> read_function;

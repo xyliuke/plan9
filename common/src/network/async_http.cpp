@@ -372,8 +372,11 @@ namespace plan9
             curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
             curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_callback);
             curl_easy_setopt(curl, CURLOPT_WRITEDATA, ho);
-
-            curl_easy_setopt(curl, CURLOPT_TIMEOUT, timeout_second);
+            if (timeout_second > 0) {
+                curl_easy_setopt(curl, CURLOPT_TIMEOUT, timeout_second);
+            } else {
+                curl_easy_setopt(curl, CURLOPT_TIMEOUT, 0L);
+            }
             curl_easy_setopt(curl, CURLOPT_PRIVATE, ho);
             curl_easy_setopt(curl, CURLOPT_OPENSOCKETFUNCTION, open_socket);
             curl_easy_setopt(curl, CURLOPT_CLOSESOCKETFUNCTION, close_socket);
@@ -445,7 +448,11 @@ namespace plan9
 
             curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
             curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
-            curl_easy_setopt(curl, CURLOPT_TIMEOUT, timeout_second);
+            if (timeout_second > 0) {
+                curl_easy_setopt(curl, CURLOPT_TIMEOUT, timeout_second);
+            } else {
+                curl_easy_setopt(curl, CURLOPT_TIMEOUT, 0L);
+            }
 
             curl_easy_setopt(curl, CURLOPT_PRIVATE, ho);
             curl_easy_setopt(curl, CURLOPT_OPENSOCKETFUNCTION, open_socket);
@@ -504,7 +511,11 @@ namespace plan9
 
             curl_easy_setopt(curl, CURLOPT_DEBUGFUNCTION, &debug_callback);
             curl_easy_setopt(curl, CURLOPT_DEBUGDATA, ho);
-            curl_easy_setopt(curl, CURLOPT_TIMEOUT, timeout_second);
+            if (timeout_second <= 0) {
+                curl_easy_setopt(curl, CURLOPT_TIMEOUT, 0);
+            } else {
+                curl_easy_setopt(curl, CURLOPT_TIMEOUT, timeout_second);
+            }
 
             struct curl_slist* list = NULL;
             if (header != nullptr) {
@@ -584,7 +595,7 @@ namespace plan9
                         std::shared_ptr<std::map<std::string, std::string>> header,
                         std::function<void(int curl_code, std::string debug_trace, long http_state, char *data,
                                            size_t len)> callback) {
-
+        impl_->get(url, timeout_second, header, callback);
     }
 
     void async_http::get(std::string url, long timeout_second,

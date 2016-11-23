@@ -21,6 +21,7 @@ function config:get_config(param, callback)
     callback(param, true, {
         log_level = config.log_level,
         compress = true, -- tcp包是否压缩
-        encrypt = false  -- tcp包是否加密,如果需要加密,则必须要压缩
+        encrypt = false,  -- tcp包是否加密,如果需要加密,则必须要压缩
+        lib = {"http", "algo"}  --加载的库名
     }, nil)
 end

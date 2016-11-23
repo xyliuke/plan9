@@ -9,6 +9,9 @@
 #include "http_init.h"
 
 //TODO 添加上传功能；断点上传功能
+//TODO 暂停下载功能；恢复下载功能
+//TODO 解决下载https问题
+
 namespace plan9 {
     void http_init::init() {
         log_wrap::io().d("register http plugin, libcurl version ", async_http::instance().version());
@@ -18,7 +21,8 @@ namespace plan9 {
          *     type 请求种类 get/post
          *     url 网址
          *     header 字典 header中设置值,可以为空
-         *     timeout 超时时间 默认为60s
+         *     form   字典  post请求时，表单值
+         *     timeout 超时时间 默认为60s, 如果参数值为<=0,则表示不超时
          *     model asyn/sync,异步或者同步，默认为异步
          */
         cmd_factory::instance().register_cmd("http", [=](JSONObject param) {
@@ -135,6 +139,7 @@ namespace plan9 {
          *  下载文件操作
          *   url 文件路径
          *   header 字典 header中设置值,可以为空
+         *   process true/false 是否回调进度，默认为false,不回调
          *   timeout 超时
          *   path 本地路径，包括文件名
          *   override bool 是否覆盖原有文件，不填写默认为true
@@ -165,6 +170,10 @@ namespace plan9 {
                 if (param["aux"].has("override") && !(param["aux.override"].get_bool())) {
                     override = false;
                 }
+                bool process = false;
+                if (param["aux"].has("process")) {
+                    process = param["aux.process"].get_bool();
+                }
                 param["aux.once"] = false;//可以重复返回下载进度
                 string id = param["aux"]["id"].get_string();
                 log_wrap::net().d("http request ", id, " begin, the parameter : ", param.to_string());
@@ -189,12 +198,14 @@ namespace plan9 {
                     }, [=](double time, long downloaded, long total) mutable {
                         log_wrap::net().d("http request ", id, " time ", time, " process ", downloaded, "/", total);
                         (*file_size) = total;
-                        JSONObject ret;
-                        ret["state"] = "process";
-                        ret["time"] = time;
-                        ret["download"] = downloaded;
-                        ret["total"] = total;
-                        cmd_factory::instance().callback(param, true, ret);
+                        if (process) {
+                            JSONObject ret;
+                            ret["state"] = "process";
+                            ret["time"] = time;
+                            ret["download"] = downloaded;
+                            ret["total"] = total;
+                            cmd_factory::instance().callback(param, true, ret);
+                        }
                     });
                 } else {
                     shared_ptr<long> file_size(new long);
@@ -217,12 +228,14 @@ namespace plan9 {
                     }, [=](double time, long downloaded, long total) mutable {
                         log_wrap::net().d("http request ", id, " time ", time, " process ", downloaded, "/", total);
                         (*file_size) = total;
-                        JSONObject ret;
-                        ret["state"] = "process";
-                        ret["time"] = time;
-                        ret["download"] = downloaded;
-                        ret["total"] = total;
-                        cmd_factory::instance().callback(param, true, ret);
+                        if (process) {
+                            JSONObject ret;
+                            ret["state"] = "process";
+                            ret["time"] = time;
+                            ret["download"] = downloaded;
+                            ret["total"] = total;
+                            cmd_factory::instance().callback(param, true, ret);
+                        }
                     });
                 }
             } else {
