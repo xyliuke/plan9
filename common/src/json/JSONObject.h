@@ -50,6 +50,8 @@ namespace plan9 {
          */
         void set_object_type();
 
+        void set_comment(std::string comment);
+
         /**
          * 对象是否为bool类型
          * @return
@@ -121,6 +123,14 @@ namespace plan9 {
         void append(const char* value);
         void append(std::string value);
         void append(JSONObject value);
+        void append(int value, std::string comment);
+        void append(long value, std::string comment);
+        void append(float value, std::string comment);
+        void append(double value, std::string comment);
+        void append(bool value, std::string comment);
+        void append(const char* value, std::string comment);
+        void append(std::string value, std::string comment);
+        void append(JSONObject value, std::string comment);
 
         /**
          * 删除array类型中元素
@@ -155,6 +165,14 @@ namespace plan9 {
         void put(std::string key, const char* value);
         void put(std::string key, std::string value);
         void put(std::string key, JSONObject value);
+        void put(std::string key, int value, std::string comment);
+        void put(std::string key, long value, std::string comment);
+        void put(std::string key, float value, std::string comment);
+        void put(std::string key, double value, std::string comment);
+        void put(std::string key, bool value, std::string comment);
+        void put(std::string key, const char* value, std::string comment);
+        void put(std::string key, std::string value, std::string comment);
+        void put(std::string key, JSONObject value, std::string comment);
 
         /**
          * 当前json对象中是否包含key值。支持a.b的操作方式

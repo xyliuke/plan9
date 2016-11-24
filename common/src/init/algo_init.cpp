@@ -5,8 +5,9 @@
 #include <log/log_wrap.h>
 #include <commander/cmd_factory.h>
 #include <algorithm/compress.h>
+#include <algorithm/crypto_wrap.h>
 #include "algo_init.h"
-
+#include "error/error_num.h"
 namespace plan9
 {
     void algo_init::init() {
@@ -59,10 +60,85 @@ namespace plan9
                     data["dest_path"] = dest;
                     cmd_factory::instance().callback(param, ret, data);
                 } else {
-                    cmd_factory::instance().callback(param, -1, "operation error");
+                    cmd_factory::instance().callback(param, ERROR_OPERATION, ERROR_STRING(ERROR_OPERATION));
                 }
             } else {
-                cmd_factory::instance().callback(param, -1, "parameter error");
+                cmd_factory::instance().callback(param, ERROR_PARAMETER, ERROR_STRING(ERROR_PARAMETER));
+            }
+        });
+
+        JSONObject md5_args;
+        md5_args.put("text", "hello world", "the string parameter，optional");
+        md5_args.put("file", "./a.txt", "the file parameter，optional");
+        cmd_factory::instance().register_cmd("md5", [=](JSONObject param){
+            if (param.has("args")) {
+                JSONObject args = param["args"];
+                using namespace std;
+
+                JSONObject result;
+
+                if (args.has("text")) {
+                    string text = args["text"].get_string();
+                    string ret = crypto_wrap::MD5(text);
+                    result["text_md5"] = ret;
+                }
+                if (args.has("file")) {
+                    string file = args["file"].get_string();
+                    string ret = crypto_wrap::MD5_file(file);
+                    result["file_md5"] = ret;
+                }
+
+                cmd_factory::instance().callback(param, true, result);
+
+            } else {
+                cmd_factory::instance().callback(param, ERROR_PARAMETER, ERROR_STRING(ERROR_PARAMETER));
+            }
+        });
+
+        JSONObject base64_args;
+        base64_args.put("type", "encode/decode", "encode or decode, default encode");
+        base64_args.put("text", "hello world", "encode or decode string, required");
+        cmd_factory::instance().register_cmd("base64", [=](JSONObject param) mutable {
+            if (param.has("args")) {
+                JSONObject args = param["args"];
+                if (args.has("text")) {
+                    bool encode = true;
+                    if (args.has("type") && args["type"].get_string() == "decode") {
+                        encode = false;
+                    }
+                    JSONObject ret;
+                    if (encode) {
+                        ret["data"] = crypto_wrap::base64(args["text"].get_string());
+                    } else {
+                        ret["data"] = crypto_wrap::base64(args["text"].get_string());
+                    }
+                    cmd_factory::instance().callback(param, true, ret);
+                } else {
+                    cmd_factory::instance().callback(param, ERROR_PARAMETER, util::instance().cat(ERROR_STRING(ERROR_PARAMETER), " , refer to ", base64_args.to_format_string()));
+                }
+            } else {
+                cmd_factory::instance().callback(param, ERROR_PARAMETER, ERROR_STRING(ERROR_PARAMETER));
+            }
+        });
+
+        JSONObject sha1_args;
+        sha1_args.put("text", "hello world", "sha1 input string");
+        sha1_args.put("file", "./a.txt", "sha1 input file");
+        cmd_factory::instance().register_cmd("sha1", [=](JSONObject param){
+            if (param.has("args")) {
+                JSONObject args = param["args"];
+                JSONObject ret;
+                if (args.has("text")) {
+                    ret["text_sha1"] = crypto_wrap::SHA1(args["text"].get_string());
+                }
+
+                if (args.has("file")) {
+                    ret["file_sha1"] = crypto_wrap::SHA1_file(args["file"].get_string());
+                }
+
+                cmd_factory::instance().callback(param, true, ret);
+            } else {
+                cmd_factory::instance().callback(param, ERROR_PARAMETER, ERROR_STRING(ERROR_PARAMETER));
             }
         });
     }

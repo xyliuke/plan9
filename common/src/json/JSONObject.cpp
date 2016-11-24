@@ -28,9 +28,12 @@ namespace plan9 {
         std::string ret = ss.str();
         int count = 0;
         for (int i = ret.length() - 1; i >= 0; --i) {
-            if (ret.at(i) == '0' || ret.at(i) == '.') {
+            if (ret.at(i) == '0') {
                 count ++;
             } else {
+                if (ret.at(i) == '.') {
+                    count ++;
+                }
                 break;
             }
         }
@@ -153,14 +156,20 @@ namespace plan9 {
         std::shared_ptr<std::map<std::string, std::shared_ptr<JSONObject_impl>>> value_object;
         std::shared_ptr<std::vector<std::shared_ptr<JSONObject_impl>>> value_array;
         std::string value_string;
+        std::string comment_;//注释
 
     public:
         JSONObject_impl() {type = _NULL;}
         JSONObject_impl(int value) {this->value.i = value; this->type = _INT;}
+        JSONObject_impl(int value, std::string comment) {this->value.i = value; this->type = _INT; comment_ = comment;}
         JSONObject_impl(long value) {this->value.l = value; this->type = _LONG;}
+        JSONObject_impl(long value, std::string comment) {this->value.l = value; this->type = _LONG; comment_ = comment;}
         JSONObject_impl(float value) {this->value.f = value; this->type = _FLOAT;}
+        JSONObject_impl(float value, std::string comment) {this->value.f = value; this->type = _FLOAT; comment_ = comment;}
         JSONObject_impl(double value) {this->value.d = value; this->type = _DOUBLE;}
+        JSONObject_impl(double value, std::string comment) {this->value.d = value; this->type = _DOUBLE; comment_ = comment;}
         JSONObject_impl(bool value) {this->value.b = value; this->type = _BOOL;}
+        JSONObject_impl(bool value, std::string comment) {this->value.b = value; this->type = _BOOL; comment_ = comment;}
         JSONObject_impl(const char* value) {
             value_string = std::string(value);
             this->type = _STRING;
@@ -220,8 +229,10 @@ namespace plan9 {
         JSONObject_impl(std::string& key, std::shared_ptr<JSONObject_impl> value) {
             put(key, value);
         }
-//        ~JSONObject_impl() {
-//        }
+
+        void set_comment(std::string comment) {
+            comment_ = comment;
+        }
 
         std::string get_next_key(const char* json_string, unsigned long begin_index, unsigned long end_index, unsigned long* new_begin_index) {
             unsigned long begin = begin_index;
@@ -743,32 +754,64 @@ namespace plan9 {
                 }
             }
         }
+        void append(std::shared_ptr<JSONObject_impl> value, std::string comment) {
+            value->set_comment(comment);
+            append(value);
+        }
         void append(int value) {
+            append(value, "");
+        }
+        void append(int value, std::string comment) {
             std::shared_ptr<JSONObject_impl> v(new JSONObject_impl(value));
+            v->set_comment(comment);
             append(v);
         }
         void append(long value) {
+            append(value, "");
+        }
+        void append(long value, std::string comment) {
             std::shared_ptr<JSONObject_impl> v(new JSONObject_impl(value));
+            v->set_comment(comment);
             append(v);
         }
         void append(float value) {
+            append(value, "");
+        }
+        void append(float value, std::string comment) {
             std::shared_ptr<JSONObject_impl> v(new JSONObject_impl(value));
+            v->set_comment(comment);
             append(v);
         }
         void append(double value) {
+            append(value, "");
+        }
+        void append(double value, std::string comment) {
             std::shared_ptr<JSONObject_impl> v(new JSONObject_impl(value));
+            v->set_comment(comment);
             append(v);
         }
         void append(bool value) {
+            append(value, "");
+        }
+        void append(bool value, std::string comment) {
             std::shared_ptr<JSONObject_impl> v(new JSONObject_impl(value));
+            v->set_comment(comment);
             append(v);
         }
         void append(const char* value) {
+            append(value, "");
+        }
+        void append(const char* value, std::string comment) {
             std::shared_ptr<JSONObject_impl> v(new JSONObject_impl(value));
+            v->set_comment(comment);
             append(v);
         }
         void append(std::string& value) {
+            append(value, "");
+        }
+        void append(std::string& value, std::string comment) {
             std::shared_ptr<JSONObject_impl> v(new JSONObject_impl(value));
+            v->set_comment(comment);
             append(v);
         }
 
@@ -949,51 +992,107 @@ namespace plan9 {
         void put(std::string& key, int value) {
             put(key, std::shared_ptr<JSONObject_impl>(new JSONObject_impl(value)));
         }
+        void put(std::string& key, int value, std::string comment) {
+            put(key, value);
+            comment_ = comment;
+        }
         void put(std::string& key, long value) {
             put(key, std::shared_ptr<JSONObject_impl>(new JSONObject_impl(value)));
+        }
+        void put(std::string& key, long value, std::string comment) {
+            put(key, value);
+            comment_ = comment;
         }
         void put(std::string& key, float value) {
             put(key, std::shared_ptr<JSONObject_impl>(new JSONObject_impl(value)));
         }
+        void put(std::string& key, float value, std::string comment) {
+            put(key, value);
+            comment_ = comment;
+        }
         void put(std::string& key, double value) {
             put(key, std::shared_ptr<JSONObject_impl>(new JSONObject_impl(value)));
+        }
+        void put(std::string& key, double value, std::string comment) {
+            put(key, value);
+            comment_ = comment;
         }
         void put(std::string& key, bool value) {
             put(key, std::shared_ptr<JSONObject_impl>(new JSONObject_impl(value)));
         }
+        void put(std::string& key, bool value, std::string comment) {
+            put(key, value);
+            comment_ = comment;
+        }
         void put(std::string& key, std::string& value) {
             put(key, std::shared_ptr<JSONObject_impl>(new JSONObject_impl(value)));
         }
+        void put(std::string& key, std::string& value, std::string comment) {
+            put(key, value);
+            comment_ = comment;
+        }
         void put(std::string& key, const char* value) {
             put(key, std::shared_ptr<JSONObject_impl>(new JSONObject_impl(value)));
+        }
+        void put(std::string& key, const char* value, std::string comment) {
+            put(key, value);
+            comment_ = comment;
         }
         void put(const char* key, int value) {
             std::string k(key);
             put(k, std::shared_ptr<JSONObject_impl>(new JSONObject_impl(value)));
         }
+        void put(const char* key, int value, std::string comment) {
+            put(key, value);
+            comment_ = comment;
+        }
         void put(const char* key, long value) {
             std::string k(key);
             put(k, std::shared_ptr<JSONObject_impl>(new JSONObject_impl(value)));
+        }
+        void put(const char* key, long value, std::string comment) {
+            put(key, value);
+            comment_ = comment;
         }
         void put(const char* key, float value) {
             std::string k(key);
             put(k, std::shared_ptr<JSONObject_impl>(new JSONObject_impl(value)));
         }
+        void put(const char* key, float value, std::string comment) {
+            put(key, value);
+            comment_ = comment;
+        }
         void put(const char* key, double value) {
             std::string k(key);
             put(k, std::shared_ptr<JSONObject_impl>(new JSONObject_impl(value)));
+        }
+        void put(const char* key, double value, std::string comment) {
+            put(key, value);
+            comment_ = comment;
         }
         void put(const char* key, bool value) {
             std::string k(key);
             put(k, std::shared_ptr<JSONObject_impl>(new JSONObject_impl(value)));
         }
+        void put(const char* key, bool value, std::string comment) {
+            put(key, value);
+            comment_ = comment;
+        }
         void put(const char* key, const char* value) {
             std::string k(key);
             put(k, std::shared_ptr<JSONObject_impl>(new JSONObject_impl(value)));
         }
+        void put(const char* key, const char* value, std::string comment) {
+            put(key, value);
+            comment_ = comment;
+        }
         void put(const char* key, std::string& value) {
             std::string k(key);
             put(k, std::shared_ptr<JSONObject_impl>(new JSONObject_impl(value)));
+        }
+        void put(const char* key, std::string& value, std::string comment) {
+            put(key, value);
+            comment_ = comment;
         }
 
         bool has(const char* key) {
@@ -1065,35 +1164,63 @@ namespace plan9 {
             std::string v(value);
             set(v);
         }
+        void set(const char* value, std::string comment) {
+            set(value);
+            comment_ = comment;
+        }
 
         void set(std::string& value) {
             value_string = value;
             type = _STRING;
+        }
+        void set(std::string& value, std::string comment) {
+            set(value);
+            comment_ = comment;
         }
 
         void set(int value) {
             this->value.i = value;
             type = _INT;
         }
+        void set(int value, std::string comment) {
+            set(value);
+            comment_ = comment;
+        }
 
         void set(long value) {
             this->value.l = value;
             type = _LONG;
+        }
+        void set(long value, std::string comment) {
+            set(value);
+            comment_ = comment;
         }
 
         void set(float value) {
             this->value.f = value;
             type = _FLOAT;
         }
+        void set(float value, std::string comment) {
+            set(value);
+            comment_ = comment;
+        }
 
         void set(double value) {
             this->value.d = value;
             type = _DOUBLE;
         }
+        void set(double value, std::string comment) {
+            set(value);
+            comment_ = comment;
+        }
 
         void set(bool value) {
             this->value.b = value;
             type = _BOOL;
+        }
+        void set(bool value, std::string comment) {
+            set(value);
+            comment_ = comment;
         }
 
         void set(std::shared_ptr<JSONObject_impl> value) {
@@ -1123,7 +1250,11 @@ namespace plan9 {
         std::string to_format_string(int tab_number) {
             std::stringstream ss;
             if (is_array()) {
-                ss << "[\n";
+                if (comment_ != "") {
+                    ss << "[\t/*" << comment_ << "*/\n";
+                } else {
+                    ss << "[\n";
+                }
                 for (int i = 0; i < value_array->size(); ++i) {
                     add_format_tab(ss, tab_number);
                     ss << (*value_array)[i]->to_format_string(tab_number + 1);
@@ -1135,7 +1266,11 @@ namespace plan9 {
                 add_format_tab(ss, tab_number - 1);
                 ss << "]";
             } else if (is_object()) {
-                ss << "{\n";
+                if (comment_ != "") {
+                    ss << "{\t/*" << comment_ << "*/\n";
+                } else {
+                    ss << "{\n";
+                }
                 unsigned long size = value_object->size();
                 unsigned long index = 0;
                 auto it = value_object->begin();
@@ -1171,6 +1306,9 @@ namespace plan9 {
                     }
                 } else if (is_null()) {
                     ss << "null";
+                }
+                if (comment_ != "") {
+                    ss << "\t/*" << comment_ << "*/";
                 }
             }
             return ss.str();
@@ -1352,6 +1490,10 @@ namespace plan9 {
         impl_->set_object_type();
     }
 
+    void JSONObject::set_comment(std::string comment) {
+        impl_->set_comment(comment);
+    }
+
     bool JSONObject::is_bool() {if (check_undefined()) return false; return impl_->is_bool();}
     bool JSONObject::is_int() {if (check_undefined()) return false; return impl_->is_int();}
     bool JSONObject::is_long() {if (check_undefined()) return false; return impl_->is_long();}
@@ -1399,40 +1541,67 @@ namespace plan9 {
     }
 
     void JSONObject::append(int value) {
+        append(value, "");
+    }
+    void JSONObject::append(int value, std::string comment) {
         if (check_undefined()) return;
-        impl_->append(value);
+        impl_->append(value, comment);
     }
 
     void JSONObject::append(long value) {
+        append(value, "");
+    }
+    void JSONObject::append(long value, std::string comment) {
         if (check_undefined()) return;
-        impl_->append(value);
+        impl_->append(value, comment);
     }
 
     void JSONObject::append(float value) {
+        append(value, "");
+    }
+    void JSONObject::append(float value, std::string comment) {
         if (check_undefined()) return;
-        impl_->append(value);
+        impl_->append(value, comment);
     }
 
     void JSONObject::append(double value) {
+        append(value, "");
+    }
+    void JSONObject::append(double value, std::string comment) {
         if (check_undefined()) return;
-        impl_->append(value);
+        impl_->append(value, comment);
     }
 
     void JSONObject::append(bool value) {
-        if (check_undefined()) return;
-        impl_->append(value);
+        append(value, "");
     }
+    void JSONObject::append(bool value, std::string comment) {
+        if (check_undefined()) return;
+        impl_->append(value, comment);
+    }
+
     void JSONObject::append(const char* value) {
-        if (check_undefined()) return;
-        impl_->append(value);
+        append(value, "");
     }
-    void JSONObject::append(std::string value) {
+    void JSONObject::append(const char* value, std::string comment) {
         if (check_undefined()) return;
-        impl_->append(value);
+        impl_->append(value, comment);
+    }
+
+    void JSONObject::append(std::string value) {
+        append(value, "");
+    }
+    void JSONObject::append(std::string value, std::string comment) {
+        if (check_undefined()) return;
+        impl_->append(value, comment);
     }
     void JSONObject::append(JSONObject value) {
         if (check_undefined()) return;
         impl_->append(value.impl_);
+    }
+    void JSONObject::append(JSONObject value, std::string comment) {
+        value.set_comment(comment);
+        append(value);
     }
 
     JSONObject JSONObject::remove(int index) {
@@ -1511,14 +1680,23 @@ namespace plan9 {
     }
 
     void JSONObject::put(std::string key, const char *value) {
+        put(key, value, "");
+    }
+
+    void JSONObject::put(std::string key, const char *value, std::string comment) {
         if (check_undefined()) return;
         std::shared_ptr<JSONObject_impl> object(new JSONObject_impl(value));
+        object->set_comment(comment);
         impl_->put(key, object);
     }
 
     void JSONObject::put(std::string key, std::string value) {
+        put(key, value, "");
+    }
+    void JSONObject::put(std::string key, std::string value, std::string comment) {
         if (check_undefined()) return;
         std::shared_ptr<JSONObject_impl> object(new JSONObject_impl(value));
+        object->set_comment(comment);
         impl_->put(key, object);
     }
 
@@ -1526,36 +1704,61 @@ namespace plan9 {
         if (check_undefined()) return;
         impl_->put(key, value.impl_);
     }
+    void JSONObject::put(std::string key, JSONObject value, std::string comment) {
+        value.set_comment(comment);
+        put(key, value);
+    }
 
     void JSONObject::put(std::string key, int value) {
+        put(key, value, "");
+    }
+    void JSONObject::put(std::string key, int value, std::string comment) {
         if (check_undefined()) return;
         std::shared_ptr<JSONObject_impl> object(new JSONObject_impl(value));
+        object->set_comment(comment);
         impl_->put(key, object);
     }
 
     void JSONObject::put(std::string key, float value) {
+        put(key, value, "");
+    }
+    void JSONObject::put(std::string key, float value, std::string comment) {
         if (check_undefined()) return;
         std::shared_ptr<JSONObject_impl> object(new JSONObject_impl(value));
+        object->set_comment(comment);
         impl_->put(key, object);
     }
 
     void JSONObject::put(std::string key, double value) {
+        put(key, value, "");
+    }
+    void JSONObject::put(std::string key, double value, std::string comment) {
         if (check_undefined()) return;
         std::shared_ptr<JSONObject_impl> object(new JSONObject_impl(value));
+        object->set_comment(comment);
         impl_->put(key, object);
     }
 
     void JSONObject::put(std::string key, long value) {
+        put(key, value, "");
+    }
+    void JSONObject::put(std::string key, long value, std::string comment) {
         if (check_undefined()) return;
         std::shared_ptr<JSONObject_impl> object(new JSONObject_impl(value));
+        object->set_comment(comment);
         impl_->put(key, object);
     }
 
     void JSONObject::put(std::string key, bool value) {
+        put(key, value, "");
+    }
+    void JSONObject::put(std::string key, bool value, std::string comment) {
         if (check_undefined()) return;
         std::shared_ptr<JSONObject_impl> object(new JSONObject_impl(value));
+        object->set_comment(comment);
         impl_->put(key, object);
     }
+
 
     bool JSONObject::has(const char *key) {
         if (check_undefined()) return false;
