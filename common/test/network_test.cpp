@@ -8,12 +8,14 @@
 
 #ifdef NETWORK_TEST
 
-#include "network/tcp.h"
-#include <network/tcp_wrap_default.h>
-#include <list>
-#include <json/json_wrap.h>
-#include <network/protocol.h>
-#include <fstream>
+//#include "network/tcp.h"
+//#include <network/tcp_wrap_default.h>
+//#include <list>
+//#include <json/json_wrap.h>
+//#include <network/protocol.h>
+//#include <fstream>
+#include <network/async_http.h>
+#include <network/easy_http.h>
 
 TEST(network_test, tcp) {
 
@@ -82,6 +84,14 @@ TEST(network_test, http) {
 //    http.get_string("https://www.microsoft.com/zh-cn", [=](std::string ret){
 //        std::cout << ret << std::endl;
 //    });
+
+
+    plan9::easy_http::instance().download("http://dlsw.baidu.com/sw-search-sp/soft/4c/27608/wallpaper_2.0.2.35_setup.1446003787.exe"
+    ,"./test.exe", nullptr, [=](int curl_code, std::string debug_trace, long http_state){
+                std::cout << "result ok" << std::endl;
+            }, [=](double time, long downloaded, long total){
+                std::cout << "process " << time << "," << downloaded <<"," << total << std::endl;
+    });
 }
 
 #endif
