@@ -75,9 +75,36 @@ common库为pc/mac/ios/android提供基础的功能,主要完成网络请求,资
 ###3. 命令名 upload
 功能：上传文件，并有上传进度回调
 参数：
-
+    
+     url 文件路径
+     header 字典 header中设置值,可以为空
+     form 字典 form表单的值
+     file_key   上传文件的key值，
+     process true/false 是否回调进度，默认为false,不回调
+     timeout 超时
+     path 本地文件完整路径
+     model asyn/sync,异步或者同步，默认为异步
 回调：
 
+    上传结果回调
+    success : true/false      (函数调用成功或者失败)
+    error   :  error_code     这个错误码定义在lua的error_code文件中
+    reason  :  失败原因        错误原因的文字说明
+    
+    上传中进度回调
+    data {
+        state = "process";
+        time = time; 上传时间
+        upload = uploaded; 上传数据总数
+        total = total; 文件大小总数
+    }
+    上传结束后回调
+    data {
+        upload_time = 10; 上传总时间
+        upload_size = 1024; 上传大小
+        data = "";       上传结束后返回的数据，没有的可以忽略 
+        state = "finish";  标识上传完成
+    }
 
 
 
@@ -100,6 +127,57 @@ common库为pc/mac/ios/android提供基础的功能,主要完成网络请求,资
         dest_path   目标路径
     }
     
+###2.命令名 md5
+功能：对文件或者字符串计算md5值
+参数：
+    
+    text    需要计算的字符串
+    file    需要计算的文件路径，如文件不存在，则返回空字符串
+    
+回调：
+    
+    success : true/false      (函数调用成功或者失败)
+    error   :  error_code     这个错误码定义在lua的error_code文件中
+    reason  :  失败原因        错误原因的文字说明
+    data {
+        text_md5    字符串的md5值
+        file_md5    文件的md5值
+    }
+    
+###3.命令名 base64
+功能：base64编码或者解码
+参数：
+    
+     type    encode/decode   编码或者解码，默认为编码
+     text    需要编码或者解码的字符串
+     
+回调：
+     
+    success : true/false      (函数调用成功或者失败)
+    error   :  error_code     这个错误码定义在lua的error_code文件中
+    reason  :  失败原因        错误原因的文字说明
+    data {
+         data    编码或者解码后的字符串
+    }
+     
+     
+###4.命令名 sha1
+功能：计算sha1的值
+参数：
+
+    text     输入字符串
+    file     输入的文件路径
+回调：     
+
+    success : true/false      (函数调用成功或者失败)
+    error   :  error_code     这个错误码定义在lua的error_code文件中
+    reason  :  失败原因        错误原因的文字说明
+    data {
+         text_sha1    计算字符串后的sha1值
+         file_sha1    计算文件后的sha1值
+    }
+
+
     
     
 #lua使用规则

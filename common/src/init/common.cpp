@@ -395,8 +395,8 @@ namespace plan9
 
         bfs::path bridge = p / "bridge.lua";
         bfs::path common = p / "common.lua";
-        lua_bind::instance().lua_bind_loadfile(bridge.string());
-        lua_bind::instance().lua_bind_loadfile(common.string());
+        assert(lua_bind::instance().lua_bind_loadfile(bridge.string()));
+        assert(lua_bind::instance().lua_bind_loadfile(common.string()));
 
         if (is_zip) {
             bfs::remove_all(lua_path_);

@@ -91,11 +91,14 @@ namespace plan9 {
                 log_wrap::lua().e("lua is not init");
                 return false;
             }
-            if (luaL_loadfile(L, lua_file.c_str()) || lua_pcall(L, 0, 0, 0)) {
+            int is = luaL_loadfile(L, lua_file.c_str());
+            if (is == 0) {
+                is = lua_pcall(L, 0, 0, 1);
+                if (is == 0)
+                    return true;
                 return false;
             }
             return false;
-
         }
 
         void register_callback() {

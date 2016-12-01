@@ -37,8 +37,10 @@ namespace plan9 {
         void post(std::string url, std::shared_ptr<std::map<std::string, std::string>> header, std::shared_ptr<std::map<std::string, std::string>> form_params,
                   std::function<void(int curl_code, std::string debug_trace, long http_state, char* data, size_t len)> callback);
 
-        void upload(std::string url, std::string path, std::map<std::string, std::string>* header, std::map<std::string, std::string>* form_params,
-                    std::function<void(int curl_code, std::string debug_trace, long http_state)> callback, std::function<void(double time, long uploaded, long total)> progress_callback);
+        void upload(std::string url, std::string path, std::string file_key, std::shared_ptr<std::map<std::string, std::string>> header,
+                    std::shared_ptr<std::map<std::string, std::string>> form_params,
+                    std::function<void(int curl_code, std::string debug_trace, long http_state, char* data, size_t data_len)> callback,
+                    std::function<void(double time, long uploaded, long total)> progress_callback);
 
         void set_download_notify_interval(float second);
 

@@ -67,6 +67,15 @@ namespace plan9
             }
         });
 
+        /**
+         *  计算一段字符串或者文件的MD5值
+         *  参数：
+         *  text    需要计算的字符串
+         *  file    需要计算的文件路径，如文件不存在，则返回空字符串
+         *  callback:
+         *  text_md5    字符串的md5值
+         *  file_md5    文件的md5值
+         */
         JSONObject md5_args;
         md5_args.put("text", "hello world", "the string parameter，optional");
         md5_args.put("file", "./a.txt", "the file parameter，optional");
@@ -95,6 +104,14 @@ namespace plan9
             }
         });
 
+        /**
+         *  base64编码
+         *  参数：
+         *  type    encode/decode   编码或者解码，默认为编码
+         *  text    需要编码或者解码的字符串
+         *  callback:
+         *  data    编码或者解码后的字符串
+         */
         JSONObject base64_args;
         base64_args.put("type", "encode/decode", "encode or decode, default encode");
         base64_args.put("text", "hello world", "encode or decode string, required");
@@ -121,6 +138,15 @@ namespace plan9
             }
         });
 
+        /**
+         * sha1计算值
+         * 参数：
+         * text     输入字符串
+         * file     输入的文件路径
+         * callback:
+         * text_sha1    计算字符串后的sha1值
+         * file_sha1    计算文件后的sha1值
+         */
         JSONObject sha1_args;
         sha1_args.put("text", "hello world", "sha1 input string");
         sha1_args.put("file", "./a.txt", "sha1 input file");
