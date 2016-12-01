@@ -30,6 +30,10 @@ namespace plan9 {
 
         void post(std::string url, long timeout_second, std::shared_ptr<std::map<std::string, std::string>> header, std::shared_ptr<std::map<std::string, std::string>> form_params,
                   std::function<void(int curl_code, std::string debug_trace, long http_state, char* data, size_t len)> callback);
+        void upload(std::string url, std::string path, int timeout, std::string file_key, std::shared_ptr<std::map<std::string, std::string>> header,
+                    std::shared_ptr<std::map<std::string, std::string>> form_params,
+                    std::function<void(int curl_code, std::string debug_trace, long http_state, char* data, size_t data_len)> callback,
+                    std::function<void(double time, long uploaded, long total)> progress_callback);
 
         static bool is_timeout(int curl_code);
         static bool is_ok(int curl_code);

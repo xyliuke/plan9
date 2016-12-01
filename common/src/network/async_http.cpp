@@ -61,6 +61,9 @@ namespace plan9
         std::function<void(double, long, long)> download_progress_callback;
         curl_off_t downloaded;
         curl_off_t download_total;
+        curl_off_t uploaded;
+        curl_off_t upload_total;
+        bool is_download;
         std::shared_ptr<std::ofstream> ofstream;
 
         std::stringstream debug_stream;
@@ -133,16 +136,27 @@ namespace plan9
 
     static size_t progress_callback(void *p, curl_off_t dltotal, curl_off_t dlnow, curl_off_t ultotal, curl_off_t ulnow) {
         http_object *ho = (http_object *) p;
+        if (ho->download_progress_callback != nullptr) {
 
-        double current_time = 0;
-        curl_easy_getinfo(ho->curl, CURLINFO_TOTAL_TIME, &current_time);
+            double current_time = 0;
+            curl_easy_getinfo(ho->curl, CURLINFO_TOTAL_TIME, &current_time);
 
-        if (ho->downloaded != dlnow && dltotal != 0 && (((int)current_time - (int)ho->time) >= download_interval || dltotal == dlnow)) {
-            ho->time = current_time;
-            ho->downloaded = dlnow;
-            ho->download_total = dltotal;
-            if (ho->download_progress_callback != nullptr) {
-                ho->download_progress_callback(current_time, dlnow, dltotal);
+            if (ho->is_download) {
+                if (ho->downloaded != dlnow && dltotal != 0 &&
+                    (((int) current_time - (int) ho->time) >= download_interval || dltotal == dlnow)) {
+                    ho->time = current_time;
+                    ho->downloaded = dlnow;
+                    ho->download_total = dltotal;
+                    ho->download_progress_callback(current_time, dlnow, dltotal);
+                }
+            } else {
+                if (ho->uploaded != ulnow && ultotal != 0 &&
+                    (((int) current_time - (int) ho->time) >= download_interval || ultotal == ulnow)) {
+                    ho->time = current_time;
+                    ho->uploaded = ulnow;
+                    ho->upload_total = ultotal;
+                    ho->download_progress_callback(current_time, ulnow, ultotal);
+                }
             }
         }
 
@@ -339,6 +353,20 @@ namespace plan9
             }
         }
 
+
+        void upload(std::string url, std::string path, int timeout, std::string file_key, std::shared_ptr<std::map<std::string, std::string>> header,
+                    std::shared_ptr<std::map<std::string, std::string>> form_params,
+                    std::function<void(int curl_code, std::string debug_trace, long http_state, char* data, size_t data_len)> callback,
+                    std::function<void(double time, long uploaded, long total)> progress_callback) {
+            init();
+            CURL *curl = create_upload_easy_url(url, path, timeout, file_key, header, form_params, callback, progress_callback);
+            if (curl) {
+                CURLMcode code = curl_multi_add_handle(multi_curl, curl);
+
+                run();
+            }
+        }
+
         void post(std::string url, long timeout_second, std::shared_ptr<std::map<std::string, std::string>> header, std::shared_ptr<std::map<std::string, std::string>> form_params,
                   std::function<void(int curl_code, std::string debug_trace, long http_state, char *data, size_t len)> callback) {
             init();
@@ -424,6 +452,7 @@ namespace plan9
                                                            long http_state)> callback,
                                         std::function<void(double time, long downloaded, long total)> process_callback) {
             http_object* ho = new http_object;
+            ho->is_download = true;
             ho->download_progress_callback = process_callback;
             ho->ofstream.reset(new std::ofstream);
 
@@ -483,6 +512,70 @@ namespace plan9
                 }
                 curl_easy_setopt(curl, CURLOPT_HTTPHEADER, list);
             }
+
+            return curl;
+        }
+        CURL *create_upload_easy_url(std::string url, std::string path, int timeout, std::string file_key, std::shared_ptr<std::map<std::string, std::string>> header,
+                    std::shared_ptr<std::map<std::string, std::string>> form_params,
+                    std::function<void(int curl_code, std::string debug_trace, long http_state, char* data, size_t data_len)> callback,
+                    std::function<void(double time, long uploaded, long total)> process_callback) {
+
+            http_object* ho = new http_object;
+            ho->is_download = false;
+            ho->download_progress_callback = process_callback;
+            ho->callback = callback;
+
+            CURL *curl = curl_easy_init();
+            ho->curl = curl;
+
+            curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
+            curl_easy_setopt(curl, CURLOPT_POST, 1);
+            curl_easy_setopt(curl, CURLOPT_VERBOSE, 1);
+            curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
+            curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
+            curl_easy_setopt(curl, CURLOPT_DEBUGFUNCTION, &debug_callback);
+            curl_easy_setopt(curl, CURLOPT_DEBUGDATA, ho);
+            curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
+            curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_callback);
+            curl_easy_setopt(curl, CURLOPT_WRITEDATA, ho);
+            curl_easy_setopt(curl, CURLOPT_XFERINFOFUNCTION, progress_callback);
+            curl_easy_setopt(curl, CURLOPT_XFERINFODATA, ho);
+            curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 0L);
+            if (timeout > 0) {
+                curl_easy_setopt(curl, CURLOPT_TIMEOUT, timeout);
+            }
+
+            struct curl_slist *list = NULL;
+
+            if (header != nullptr) {
+                std::map<std::string, std::string>::const_iterator iterator = header->begin();
+                while (iterator != header->end()) {
+                    list = curl_slist_append(list, (iterator->first + ":" + iterator->second).c_str());
+                    iterator++;
+                }
+                curl_easy_setopt(curl, CURLOPT_HTTPHEADER, list);
+            }
+
+            struct curl_httppost *form_post = NULL;
+            struct curl_httppost *last_ptr = NULL;
+            curl_formadd(&form_post,
+                         &last_ptr,
+                         CURLFORM_COPYNAME, "reqformat",
+                         CURLFORM_COPYCONTENTS, "plain",
+                         CURLFORM_END);
+            curl_formadd(&form_post, &last_ptr, CURLFORM_COPYNAME, file_key.c_str(), CURLFORM_FILE, path.c_str(), CURLFORM_END);
+            if (form_params != nullptr) {
+                std::map<std::string, std::string>::const_iterator iterator = form_params->begin();
+                while (iterator != form_params->end()) {
+                    curl_formadd(&form_post,
+                                 &last_ptr,
+                                 CURLFORM_COPYNAME, iterator->first.c_str(),
+                                 CURLFORM_COPYCONTENTS, iterator->second.c_str(),
+                                 CURLFORM_END);
+                    iterator++;
+                }
+            }
+            curl_easy_setopt(curl, CURLOPT_HTTPPOST, form_post);
 
             return curl;
         }
@@ -589,6 +682,15 @@ namespace plan9
                          std::function<void(int curl_code, std::string debug_trace, long http_state, char *data,
                                             size_t len)> callback) {
         impl_->post(url, timeout_second, header, form_params, callback);
+    }
+
+    void async_http::upload(std::string url, std::string path, int timeout, std::string file_key,
+                            std::shared_ptr<std::map<std::string, std::string>> header,
+                            std::shared_ptr<std::map<std::string, std::string>> form_params,
+                            std::function<void(int curl_code, std::string debug_trace, long http_state, char *data,
+                                               size_t data_len)> callback,
+                            std::function<void(double time, long uploaded, long total)> progress_callback) {
+        impl_->upload(url, path, timeout, file_key, header, form_params, callback, progress_callback);
     }
 
     void async_http::get(std::string url, long timeout_second,
