@@ -19,6 +19,10 @@ function lua_c_bridge:get_id()
     return __native_get_id__()
 end
 
+function lua_c_bridge:notify(data)
+    __notify__(data)
+end
+
 --- lua调用c++函数的封装
 -- @param method c++中注册的函数名
 -- @param param 参数,为table值

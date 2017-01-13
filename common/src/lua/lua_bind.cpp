@@ -38,6 +38,10 @@ namespace plan9 {
         lua_pushstring(L, UUID::id().c_str());
         return 1;
     }
+    static int g_notify(lua_State *L) {
+        lua_bind::instance().notify(L);
+        return 0;
+    }
 
     static int pcall_error_function(lua_State *L) {
         lua_Debug debug= {};
@@ -105,6 +109,7 @@ namespace plan9 {
             lua_register(L, "__callback__", callback);
             lua_register(L, "__native_call__", nativecall);//注意:这里的第三个参数使用native_call名字的函数则编译错误
             lua_register(L, "__native_get_id__", getid);
+            lua_register(L, "__notify__", g_notify);
         }
 
         void lua_callback(lua_State* L) {
@@ -180,6 +185,13 @@ namespace plan9 {
                 }
             }
             return ret;
+        }
+
+        void notify(lua_State* L) {
+            JSONObject result = table2json(L);
+            if (notify_handler != nullptr) {
+                notify_handler(result.to_string());
+            }
         }
 
         /**
@@ -436,10 +448,14 @@ namespace plan9 {
             return ret;
         }
 
+        void set_notify_handler(std::function<void(std::string)> h) {
+            notify_handler = h;
+        }
 
     private:
         bool is_load_;
         std::map<std::string, std::function<void(JSONObject)>> callback_map;
+        std::function<void(std::string)> notify_handler;
     };
 
     lua_bind lua_bind::instance() {
@@ -498,6 +514,14 @@ namespace plan9 {
 
     void lua_bind::native_call(lua_State *L) {
         impl->native_call(L);
+    }
+
+    void lua_bind::notify(lua_State *L) {
+        impl->notify(L);
+    }
+
+    void lua_bind::set_notify_function(std::function<void(std::string)> notify) {
+        impl->set_notify_handler(notify);
     }
 
     JSONObject lua_bind::wrap(std::string method, JSONObject param) {

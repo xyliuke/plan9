@@ -46,9 +46,13 @@ TEST(common_test, init) {
 //    std::wcout << ws;
 //    plan9::common::init("./data", "./abc.zip");
     plan9::common::init("./data", "../lua");
+    plan9::common::set_notify_function([=](std::string data){
+        std::cout << "notify data " << data << std::endl;
+    });
     plan9::common::set_macosx_platform();
 
 //    JSONObject p;
+//    p["file"] = "./1.jpg";
 //    p["text"] = "abc12312312312312323123232312312312321312312312312312312312312312312";
 //    plan9::common::call_("base64", p, [=](JSONObject result){
 //        std::cout << "http result " << result.to_string();
@@ -58,6 +62,9 @@ TEST(common_test, init) {
 //        std::cout << "http result " << data.to_string();
 //    });
 //    plan9::common::call_("http.test_download", JSONObject(), [=](JSONObject data){
+//        std::cout << "http result " << data.to_string();
+//    });
+//    plan9::common::call_("http.test_upload", p, [=](JSONObject data){
 //        std::cout << "http result " << data.to_string();
 //    });
 

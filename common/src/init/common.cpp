@@ -59,6 +59,7 @@ namespace plan9
 
     void common::set_notify_function(std::function<void(std::string)> notify) {
         common::notify_function = notify;
+        lua_bind::instance().set_notify_function(notify);
     }
 
     void common::call_(std::string method, JSONObject param, std::function<void(JSONObject)> callback) {

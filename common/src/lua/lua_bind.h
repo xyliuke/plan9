@@ -77,7 +77,9 @@ namespace plan9
          */
         void native_call(lua_State* L);
 
+        void notify(lua_State* L);
 
+        void set_notify_function(std::function<void(std::string)> notify);
 
     private:
         lua_bind();
