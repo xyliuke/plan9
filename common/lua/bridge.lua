@@ -19,8 +19,16 @@ function lua_c_bridge:get_id()
     return __native_get_id__()
 end
 
-function lua_c_bridge:notify(data)
-    __notify__(data)
+function lua_c_bridge:notify(to_, type_, data_)
+    local n = {aux = {to = to_, type = type_}}
+    if type(data_) == "object" then
+        n.result = {data = data_}
+    else
+        n.result = {data = {data = data_}}
+    end
+
+    lua_c_bridge:log_i("lua notify data : " .. lua_c_bridge:tostring(n))
+    __notify__(n)
 end
 
 --- lua调用c++函数的封装
