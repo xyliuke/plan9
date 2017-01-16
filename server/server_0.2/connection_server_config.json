@@ -1,6 +1,0 @@
-{
-  "identity":"connection_server",
-  "port":9099,
-  "route_address":"127.0.0.1:9100",
-  "auth_address":"127.0.0.1:9130"
-}
