@@ -9,6 +9,7 @@
 #include <functional>
 #include <list>
 #include <json/JSONObject.h>
+#include <tuple>
 
 namespace plan9
 {
@@ -16,11 +17,11 @@ namespace plan9
     class sqlite_warp {
     public:
         static sqlite_warp instance();
-        bool open_database(std::string db);
-        void close_database();
-        bool exec(std::string sql);
-        bool exec(std::string sql, std::function<void(std::shared_ptr<result_set>)>);
-
+        std::tuple<bool, std::string> open_database(std::string db, int* handle);
+        void close_database(int handle);
+        std::tuple<bool, std::string> exec(int handle, std::string sql);
+        std::tuple<bool, std::string> exec(int handle, std::string sql, std::function<void(std::shared_ptr<result_set>)>);
+        std::string version();
 
     private:
         sqlite_warp();

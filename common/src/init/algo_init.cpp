@@ -11,7 +11,7 @@
 namespace plan9
 {
     void algo_init::init() {
-        log_wrap::io().i("init algo plugin");
+        log_wrap::io().i("register algo plugin");
 
         /**
          * 压缩或者解压一个文件或者文件夹
