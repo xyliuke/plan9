@@ -23,6 +23,6 @@ function config:get_config(param, callback)
         log_days = 14, -- 日志保存天数
 --        compress = true, -- tcp包是否压缩
 --        encrypt = false,  -- tcp包是否加密,如果需要加密,则必须要压缩
-        lib = {"http", "algo", "database"}  --加载的库名
+        lib = {"http", "algo", "database", "file"}  --加载的库名
     }, nil)
 end

@@ -14,7 +14,9 @@
 #include "algorithm/compress.h"
 #include "http_init.h"
 #include "algo_init.h"
-#import "init/database_init.h"
+#include "init/database_init.h"
+#include "init/file_init.h"
+
 
 namespace plan9
 {
@@ -448,6 +450,8 @@ namespace plan9
                                 algo_init::init();
                             } else if ("database" == v) {
                                 database_init::init();
+                            } else if ("file" == v) {
+                                file_init::init();
                             }
                         });
                     }

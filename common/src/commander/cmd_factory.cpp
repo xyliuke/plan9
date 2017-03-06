@@ -136,7 +136,7 @@ namespace plan9
     }
 
     void cmd_factory::register_cmd(std::string cmd, std::function<void(JSONObject)> function) {
-        log_wrap::io().i("register function , method : ", cmd);
+        log_wrap::io().i("register function , method : ", cmd, " finished");
         impl_->register_cmd(cmd, function);
     }
 

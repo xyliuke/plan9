@@ -53,6 +53,25 @@ namespace plan9 {
         std::string char_to_dex_string(const char* data, int len);
 
         std::string char_to_string(const char* data, int len);
+        /**
+         * 复制一个文件夹到另一个目录下，包括以下所有子文件夹和文件
+         * @param src_dir 源目录
+         * @param dest_dir 目标目录
+         * @param copy_file 是否复制文件
+         * @return
+         */
+        bool copy_dir(std::string src_dir, std::string dest_dir, bool copy_file = true);
+
+        void rename(std::string src, std::string dest);
+        /**
+         * 得到一个目录的容量，剩余空间和可用空间。
+         * @param path  路径，如果是文件，则使用文件所在路径
+         * @param capacity 输出容量
+         * @param free 输出剩余空间
+         * @param available 输出可用空间
+         * @return
+         */
+        bool get_dir_info(std::string path, long *capacity, long* free, long* available);
 
     private:
         util();

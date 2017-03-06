@@ -46,10 +46,11 @@ TEST(common_test, init) {
 //    std::wcout << ws;
 //    plan9::common::init("./data", "./abc.zip");
     plan9::common::init("./data", "../lua");
-    plan9::common::set_notify_function([=](std::string data){
-        std::cout << "notify data " << data << std::endl;
-    });
+//    plan9::common::set_notify_function([=](std::string data){
+//        std::cout << "notify data " << data << std::endl;
+//    });
     plan9::common::set_macosx_platform();
+
 
 //    JSONObject p;
 //    p["file"] = "./1.jpg";

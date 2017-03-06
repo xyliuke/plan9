@@ -4,6 +4,9 @@
 
 #include "util.h"
 #include <algorithm>
+#define BOOST_NO_CXX11_SCOPED_ENUMS
+#include <boost/filesystem.hpp>
+#undef BOOST_NO_CXX11_SCOPED_ENUMS
 
 
 namespace plan9
@@ -106,6 +109,60 @@ namespace plan9
             ss << "]";
             return ss.str();
         }
+
+
+        bool copy_dir(std::string src_dir, std::string dest_dir, bool copy_file = true) {
+            namespace fs = boost::filesystem;
+            if (!fs::exists(dest_dir)) {
+                fs::create_directories(dest_dir);
+            }
+
+            fs::path dest_path(dest_dir);
+            fs::directory_iterator iterator = fs::directory_iterator(src_dir);
+            fs::directory_iterator end;
+            while (iterator != end) {
+                fs::path sub_path = iterator->path().filename();
+                fs::path path = dest_path / sub_path;
+                fs::path p = fs::complete(*iterator).native();
+
+                if (fs::is_directory(p)) {
+                    if (!fs::exists(path)) {
+                        fs::create_directories(path);
+                    }
+                    copy_dir(p.string(), path.string(), copy_file);
+                } else {
+                    if (copy_file) {
+                        fs::copy_file(p, path, fs::copy_option::overwrite_if_exists);
+                    }
+                }
+
+                iterator ++;
+            }
+            return true;
+        }
+
+        void rename(std::string src, std::string dest) {
+            boost::system::error_code code;
+            boost::filesystem::rename(src, dest, code);
+        }
+
+
+        bool get_dir_info(std::string path, long *capacity, long* free, long* available) {
+            if (boost::filesystem::exists(path)) {
+                boost::filesystem::path p;
+                if (boost::filesystem::is_directory(path)) {
+                    p = boost::filesystem::path(path);
+                } else {
+                    p = boost::filesystem::path(path).parent_path();
+                }
+                boost::filesystem::space_info space = boost::filesystem::space(p);
+                *capacity = space.capacity;
+                *free = space.free;
+                *available = space.available;
+                return true;
+            }
+            return false;
+        }
     };
 
 
@@ -140,5 +197,17 @@ namespace plan9
 
     std::string util::char_to_char_string(const char *data, int len) {
         return impl->char_to_char_string(data, len);
+    }
+
+    bool util::copy_dir(std::string src_dir, std::string dest_dir, bool copy_file) {
+        return impl->copy_dir(src_dir, dest_dir, copy_file);
+    }
+
+    void util::rename(std::string src, std::string dest) {
+        impl->rename(src, dest);
+    }
+
+    bool util::get_dir_info(std::string path, long *capacity, long *free, long *available) {
+        impl->get_dir_info(path, capacity, free, available);
     }
 }

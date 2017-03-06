@@ -76,4 +76,12 @@ TEST(util_test, char_string) {
     std::cout << s1 << std::endl;
 }
 
+
+
+TEST(util_test, file) {
+//    plan9::util::instance().copy_dir("./dat", "../123", false);
+//    plan9::util::instance().rename("./b.html", "./abc/b.html");
+//    long cap, free, availiable;
+//    plan9::util::instance().get_dir_info("./", &cap, &free, &availiable);
+}
 #endif

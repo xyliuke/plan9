@@ -86,12 +86,21 @@ TEST(network_test, http) {
 //    });
 
 
-    plan9::easy_http::instance().download("http://dlsw.baidu.com/sw-search-sp/soft/4c/27608/wallpaper_2.0.2.35_setup.1446003787.exe"
-    ,"./test.exe", nullptr, [=](int curl_code, std::string debug_trace, long http_state){
-                std::cout << "result ok" << std::endl;
-            }, [=](double time, long downloaded, long total){
-                std::cout << "process " << time << "," << downloaded <<"," << total << std::endl;
-    });
+//    plan9::easy_http::instance().download("http://dlsw.baidu.com/sw-search-sp/soft/4c/27608/wallpaper_2.0.2.35_setup.1446003787.exe"
+//    ,"./test.exe", nullptr, [=](int curl_code, std::string debug_trace, long http_state){
+//                std::cout << "result ok" << std::endl;
+//            }, [=](double time, long downloaded, long total){
+//                std::cout << "process " << time << "," << downloaded <<"," << total << std::endl;
+//    });
+
+//    std::shared_ptr<std::map<std::string, std::string>> form(new std::map<std::string, std::string>);
+//    (*form)["token"] = "VykDspRznX2ik0NPRA__6GUWfktpGsIinDOoGHaZ:K9LBPvGXtnyKYq69mhTEkcNJDMU=:eyJzY29wZSI6Imd1YXppMDAxOnFuMTYxMTI5MTg1MTExNDFkNDljMjhmMzVhMjc1OWMzYzA2NjZmZGM5YjcwYjYuanBnIiwiZGVhZGxpbmUiOjE0ODA0MjAyNzF9";
+//    (*form)["key"] = "qn16112918511141d49c28f35a2759c3c0666fdc9b70b6.jpg";
+//    plan9::easy_http::instance().upload("http://up.qiniu.com", "./1.jpg", "file", nullptr, form, [=](int curl_code, std::string debug_trace, long http_state, char* data, size_t data_len){
+//        std::cout << "upload result " << std::string(data, data_len) << std::endl;
+//    }, [=](double time, long uploaded, long total){
+//        std::cout << "upload process " << time << " \t " << uploaded << "/" << total << std::endl;
+//    });
 }
 
 #endif
