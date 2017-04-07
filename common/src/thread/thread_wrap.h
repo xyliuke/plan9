@@ -18,7 +18,7 @@ namespace plan9 {
          */
         static void post_background(std::function<void(void)> func);
 
-        static int post_background(std::function<void(void)> function, long milliseconds);
+        static int post_background(std::function<void(void)> function, long milliseconds, bool repeat);
 
         static void cancel_background_function(int id);
 

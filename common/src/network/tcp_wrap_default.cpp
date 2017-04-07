@@ -38,7 +38,7 @@ namespace plan9
                     } else {
                         timer_->start([=]() {
                             tcp_->reconnect();
-                        }, next_connect_time);
+                        }, next_connect_time, false);
 
                         if (next_connect_time > 60000) {
                             next_connect_time = 1000;
@@ -182,7 +182,7 @@ namespace plan9
                             callback_(msg);
                         }
                         send_timer_map.erase(sid);
-                    }, timeout);
+                    }, timeout, false);
                     send_timer_map[sid] = timer_ptr;
                 }
 #endif
@@ -284,14 +284,14 @@ namespace plan9
                         tcp_->write(std::get<0>(p), len);
                     }
                 });
-            }, ping_interval);
+            }, ping_interval, false);
 
             check_network_timer_->cancel();
             check_network_timer_->start([=]() {
                 thread_wrap::post_background([=]() {
                     timer_->start([=]() {
                         tcp_->reconnect();
-                    }, next_connect_time);
+                    }, next_connect_time, false);
 
                     if (next_connect_time > 60000) {
                         next_connect_time = 1000;
@@ -300,7 +300,7 @@ namespace plan9
                     }
                     send_connect_handler(false);
                 });
-            }, network_disconnect_interval);
+            }, network_disconnect_interval, false);
         }
 
         void removeFinishProtocol() {

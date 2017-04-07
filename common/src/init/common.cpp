@@ -11,11 +11,14 @@
 #include <network/tcp_wrap_default.h>
 #include <thread/timer.h>
 #include <thread/thread_wrap.h>
+#include <error/error_num.h>
+#include <thread/timer_wrap.h>
 #include "algorithm/compress.h"
 #include "http_init.h"
 #include "algo_init.h"
 #include "init/database_init.h"
 #include "init/file_init.h"
+#include "tcp_init.h"
 
 
 namespace plan9
@@ -28,11 +31,8 @@ namespace plan9
     static std::string cache_path_ = "";
 
     std::function<void(std::string)> common::notify_function = nullptr;
-    std::function<void(std::string)> common::read_function = nullptr;
-    std::function<void(bool)> common::connect_function = nullptr;
-    std::function<void(std::string)> common::write_function = nullptr;
-
     static const char* password = "soapy88Pict";
+    static std::string tcp_notify_function = "";
 
     void common::init(std::string path, std::string lua_path) {
         path_ = path;
@@ -53,6 +53,7 @@ namespace plan9
         init_log();
         init_lua();
         init_config();
+        init_function();
     }
 
     void common::init(std::string path, std::string lua_path, std::string tmp_path) {
@@ -197,6 +198,10 @@ namespace plan9
         return tmp_path_;
     }
 
+    std::string common::get_tcp_notify_function() {
+        return tcp_notify_function;
+    }
+
     void common::init_log() {
         boost::filesystem::path p(path_);
         p /= "log";
@@ -317,6 +322,44 @@ namespace plan9
 
     void common::init_function() {
         log_wrap::io().i("register function");
+
+        JSONObject timer_json;
+        timer_json.put("interval", "timer interval， unit is millisecond, required");
+        timer_json.put("repeat_mode", "true or false, optional, default is false");
+        std::string timer_str = timer_json.get_string();
+        cmd_factory::instance().register_cmd("create_timer", [timer_str](JSONObject param){
+            if (param.has("args")) {
+                JSONObject args = param["args"];
+                if (args.has("interval")) {
+                    long interval = args["interval"].get_long();
+                    bool repeat = false;
+                    if (args.has("repeat_mode")) {
+                        repeat = args["repeat_mode"].get_bool();
+                    }
+                    std::shared_ptr<int> id(new int);
+                    auto callback = [=]()mutable{
+                        JSONObject ret;
+                        ret.put("timer_id", *id);
+                        ret.put("repeat", repeat);
+                        param["aux.once"] = (!repeat);
+                        cmd_factory::instance().callback(param, true, ret);
+                    };
+                    *id = thread_wrap::post_background(callback, interval, repeat);
+                } else {
+                    cmd_factory::instance().callback(param, ERROR_PARAMETER, util::instance().cat(ERROR_STRING(ERROR_PARAMETER), " refer to ", timer_str));
+                }
+            } else {
+                cmd_factory::instance().callback(param, ERROR_PARAMETER, util::instance().cat(ERROR_STRING(ERROR_PARAMETER), " refer to ", timer_str));
+            }
+        });
+
+        cmd_factory::instance().register_cmd("cancel_timer", [](JSONObject param){
+            if (param.has("args.timer_id")) {
+                thread_wrap::cancel_background_function(param["args.timer_id"].get_int());
+            } else {
+                cmd_factory::instance().callback(param, ERROR_PARAMETER, util::instance().cat(ERROR_STRING(ERROR_PARAMETER), " refer to timer_id required"));
+            }
+        });
 
         /**
          * 连接服务器
@@ -452,6 +495,8 @@ namespace plan9
                                 database_init::init();
                             } else if ("file" == v) {
                                 file_init::init();
+                            } else if ("tcp" == v) {
+                                tcp_init::init();
                             }
                         });
                     }
@@ -465,6 +510,10 @@ namespace plan9
                     log_wrap::net().set_duration(days);
                     log_wrap::lua().set_duration(days);
                     log_wrap::other().set_duration(days);
+
+                    if (data.has("tcp_notify_function")) {
+                        tcp_notify_function = data["tcp_notify_function"].get_string();
+                    }
 
 //                    if (data.has("compress")) {
 //                        bool compress = data["compress"].get_bool();

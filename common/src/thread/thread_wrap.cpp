@@ -22,11 +22,11 @@ namespace plan9{
 #endif
     }
 
-    int thread_wrap::post_background(std::function<void(void)> function, long milliseconds) {
+    int thread_wrap::post_background(std::function<void(void)> function, long milliseconds, bool repeat) {
         if (!background) {
             thread_dispatch::create(1);
         }
-        return thread_dispatch::post(1, function, milliseconds);
+        return thread_dispatch::post(1, function, milliseconds, repeat);
     }
 
     void thread_wrap::cancel_background_function(int id) {

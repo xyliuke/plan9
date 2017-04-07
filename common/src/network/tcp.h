@@ -23,13 +23,6 @@
 
 namespace plan9 {
 
-//    enum class network_server_type {
-//        SERVER_CONNECT = 0x00, //连接服务器
-//        SERVER_ROUTE   = 0x10, //路由服务器
-//        SERVER_SESSION = 0x20, //事务服务器
-//        SERVER_DATABASE = 0x30, //数据库服务器
-//    };
-
     class tcp {
     public:
         tcp();
@@ -39,12 +32,8 @@ namespace plan9 {
          * @param port 服务器的端口号
          */
         void connect(std::string ip, int port);
-        /**
-         * 连接服务器
-         * @param url 服务器的域名和端口  格式为: www.gocoding.cn:8080
-         */
-//        void connect(std::string url);
 
+        static void resolver(std::string url, int port, std::function<void(std::shared_ptr<std::vector<std::tuple<std::string, int>>>)> callback);
         /**
          * 重新连接服务器
          */

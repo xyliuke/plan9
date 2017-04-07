@@ -29,7 +29,6 @@
 		1FB1973E1C2CDE4300CFC44F /* bizlayer.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1FB1973D1C2CDE4300CFC44F /* bizlayer.mm */; };
 		1FB197581C2CE4FE00CFC44F /* JsonHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 1FB197551C2CE4FE00CFC44F /* JsonHelper.m */; };
 		1FB198001C2CF86500CFC44F /* cmd_factory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1FB197A81C2CF86500CFC44F /* cmd_factory.cpp */; };
-		1FB198011C2CF86500CFC44F /* sqlite_warp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1FB197AA1C2CF86500CFC44F /* sqlite_warp.cpp */; };
 		1FB198021C2CF86500CFC44F /* common.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1FB197AD1C2CF86500CFC44F /* common.cpp */; };
 		1FB198031C2CF86500CFC44F /* json_wrap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1FB197B01C2CF86500CFC44F /* json_wrap.cpp */; };
 		1FB198041C2CF86500CFC44F /* log.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1FB197B31C2CF86500CFC44F /* log.cpp */; };
@@ -76,6 +75,25 @@
 		1FB198351C2CFA7600CFC44F /* jsoncpp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1FB198341C2CFA7600CFC44F /* jsoncpp.cpp */; };
 		1FB71D121C45F48E00412128 /* tcp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1FB71D101C45F48E00412128 /* tcp.cpp */; };
 		1FB71D151C464BE000412128 /* tcp_wrap_default.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1FB71D131C464BE000412128 /* tcp_wrap_default.cpp */; };
+		1FDCF7BD1E95F3D800295D42 /* algo_init.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1FDCF7B31E95F3D800295D42 /* algo_init.cpp */; };
+		1FDCF7BE1E95F3D800295D42 /* database_init.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1FDCF7B51E95F3D800295D42 /* database_init.cpp */; };
+		1FDCF7BF1E95F3D800295D42 /* file_init.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1FDCF7B71E95F3D800295D42 /* file_init.cpp */; };
+		1FDCF7C01E95F3D800295D42 /* http_init.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1FDCF7B91E95F3D800295D42 /* http_init.cpp */; };
+		1FDCF7C11E95F3D800295D42 /* tcp_init.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1FDCF7BB1E95F3D800295D42 /* tcp_init.cpp */; };
+		1FDCF8051E95F71400295D42 /* sqlite3.c in Sources */ = {isa = PBXBuildFile; fileRef = 1FDCF8021E95F71400295D42 /* sqlite3.c */; };
+		1FDCFA3E1E95FC3C00295D42 /* crypto_wrap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1FDCFA3C1E95FC3C00295D42 /* crypto_wrap.cpp */; };
+		1FDCFCF81E962E4100295D42 /* libc++.1.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 1FDCFCF71E962E4100295D42 /* libc++.1.dylib */; };
+		1FFB0CDB1E8E6D4E00AC72E3 /* async_http.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1FFB0CD51E8E6D4E00AC72E3 /* async_http.cpp */; };
+		1FFB0CDC1E8E6D4E00AC72E3 /* easy_http.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1FFB0CD71E8E6D4E00AC72E3 /* easy_http.cpp */; };
+		1FFB0CDD1E8E6D4E00AC72E3 /* http.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1FFB0CD91E8E6D4E00AC72E3 /* http.cpp */; };
+		1FFB0CE01E8E6D6900AC72E3 /* JSONObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1FFB0CDE1E8E6D6900AC72E3 /* JSONObject.cpp */; };
+		1FFB0CEF1E8E6F4500AC72E3 /* ioapi.c in Sources */ = {isa = PBXBuildFile; fileRef = 1FFB0CE41E8E6F4500AC72E3 /* ioapi.c */; };
+		1FFB0CF01E8E6F4500AC72E3 /* iowin32.c in Sources */ = {isa = PBXBuildFile; fileRef = 1FFB0CE61E8E6F4500AC72E3 /* iowin32.c */; };
+		1FFB0CF11E8E6F4500AC72E3 /* Makefile in Sources */ = {isa = PBXBuildFile; fileRef = 1FFB0CE81E8E6F4500AC72E3 /* Makefile */; };
+		1FFB0CF21E8E6F4500AC72E3 /* mztools.c in Sources */ = {isa = PBXBuildFile; fileRef = 1FFB0CE91E8E6F4500AC72E3 /* mztools.c */; };
+		1FFB0CF31E8E6F4500AC72E3 /* unzip.c in Sources */ = {isa = PBXBuildFile; fileRef = 1FFB0CEB1E8E6F4500AC72E3 /* unzip.c */; };
+		1FFB0CF41E8E6F4500AC72E3 /* zip.c in Sources */ = {isa = PBXBuildFile; fileRef = 1FFB0CED1E8E6F4500AC72E3 /* zip.c */; };
+		1FFB0CF81E8E6FE400AC72E3 /* sqlite_warp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1FFB0CF61E8E6FE400AC72E3 /* sqlite_warp.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -133,8 +151,6 @@
 		1FB197541C2CE4FE00CFC44F /* JsonHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JsonHelper.h; sourceTree = "<group>"; };
 		1FB197551C2CE4FE00CFC44F /* JsonHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JsonHelper.m; sourceTree = "<group>"; };
 		1FB197A81C2CF86500CFC44F /* cmd_factory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cmd_factory.cpp; sourceTree = "<group>"; };
-		1FB197AA1C2CF86500CFC44F /* sqlite_warp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = sqlite_warp.cpp; sourceTree = "<group>"; };
-		1FB197AB1C2CF86500CFC44F /* sqlite_warp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = sqlite_warp.h; sourceTree = "<group>"; };
 		1FB197AD1C2CF86500CFC44F /* common.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = common.cpp; sourceTree = "<group>"; };
 		1FB197AE1C2CF86500CFC44F /* common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = common.h; sourceTree = "<group>"; };
 		1FB197B01C2CF86500CFC44F /* json_wrap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = json_wrap.cpp; sourceTree = "<group>"; };
@@ -218,6 +234,45 @@
 		1FB71D111C45F48E00412128 /* tcp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tcp.h; sourceTree = "<group>"; };
 		1FB71D131C464BE000412128 /* tcp_wrap_default.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tcp_wrap_default.cpp; sourceTree = "<group>"; };
 		1FB71D141C464BE000412128 /* tcp_wrap_default.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tcp_wrap_default.h; sourceTree = "<group>"; };
+		1FDCF7B31E95F3D800295D42 /* algo_init.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = algo_init.cpp; sourceTree = "<group>"; };
+		1FDCF7B41E95F3D800295D42 /* algo_init.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = algo_init.h; sourceTree = "<group>"; };
+		1FDCF7B51E95F3D800295D42 /* database_init.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = database_init.cpp; sourceTree = "<group>"; };
+		1FDCF7B61E95F3D800295D42 /* database_init.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = database_init.h; sourceTree = "<group>"; };
+		1FDCF7B71E95F3D800295D42 /* file_init.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = file_init.cpp; sourceTree = "<group>"; };
+		1FDCF7B81E95F3D800295D42 /* file_init.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = file_init.h; sourceTree = "<group>"; };
+		1FDCF7B91E95F3D800295D42 /* http_init.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = http_init.cpp; sourceTree = "<group>"; };
+		1FDCF7BA1E95F3D800295D42 /* http_init.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = http_init.h; sourceTree = "<group>"; };
+		1FDCF7BB1E95F3D800295D42 /* tcp_init.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tcp_init.cpp; sourceTree = "<group>"; };
+		1FDCF7BC1E95F3D800295D42 /* tcp_init.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tcp_init.h; sourceTree = "<group>"; };
+		1FDCF8021E95F71400295D42 /* sqlite3.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = sqlite3.c; sourceTree = "<group>"; };
+		1FDCF8031E95F71400295D42 /* sqlite3.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = sqlite3.h; sourceTree = "<group>"; };
+		1FDCF8041E95F71400295D42 /* sqlite3ext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = sqlite3ext.h; sourceTree = "<group>"; };
+		1FDCFA3C1E95FC3C00295D42 /* crypto_wrap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = crypto_wrap.cpp; path = ../../../common/src/algorithm/crypto_wrap.cpp; sourceTree = "<group>"; };
+		1FDCFA3D1E95FC3C00295D42 /* crypto_wrap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = crypto_wrap.h; path = ../../../common/src/algorithm/crypto_wrap.h; sourceTree = "<group>"; };
+		1FDCFCF71E962E4100295D42 /* libc++.1.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libc++.1.dylib"; path = "../../../../../../../usr/lib/libc++.1.dylib"; sourceTree = "<group>"; };
+		1FFB0CD51E8E6D4E00AC72E3 /* async_http.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = async_http.cpp; sourceTree = "<group>"; };
+		1FFB0CD61E8E6D4E00AC72E3 /* async_http.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = async_http.h; sourceTree = "<group>"; };
+		1FFB0CD71E8E6D4E00AC72E3 /* easy_http.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = easy_http.cpp; sourceTree = "<group>"; };
+		1FFB0CD81E8E6D4E00AC72E3 /* easy_http.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = easy_http.h; sourceTree = "<group>"; };
+		1FFB0CD91E8E6D4E00AC72E3 /* http.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = http.cpp; sourceTree = "<group>"; };
+		1FFB0CDA1E8E6D4E00AC72E3 /* http.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = http.h; sourceTree = "<group>"; };
+		1FFB0CDE1E8E6D6900AC72E3 /* JSONObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = JSONObject.cpp; sourceTree = "<group>"; };
+		1FFB0CDF1E8E6D6900AC72E3 /* JSONObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSONObject.h; sourceTree = "<group>"; };
+		1FFB0CE21E8E6F4500AC72E3 /* ChangeLogUnzip */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ChangeLogUnzip; sourceTree = "<group>"; };
+		1FFB0CE31E8E6F4500AC72E3 /* crypt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = crypt.h; sourceTree = "<group>"; };
+		1FFB0CE41E8E6F4500AC72E3 /* ioapi.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ioapi.c; sourceTree = "<group>"; };
+		1FFB0CE51E8E6F4500AC72E3 /* ioapi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ioapi.h; sourceTree = "<group>"; };
+		1FFB0CE61E8E6F4500AC72E3 /* iowin32.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = iowin32.c; sourceTree = "<group>"; };
+		1FFB0CE71E8E6F4500AC72E3 /* iowin32.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = iowin32.h; sourceTree = "<group>"; };
+		1FFB0CE81E8E6F4500AC72E3 /* Makefile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
+		1FFB0CE91E8E6F4500AC72E3 /* mztools.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = mztools.c; sourceTree = "<group>"; };
+		1FFB0CEA1E8E6F4500AC72E3 /* mztools.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mztools.h; sourceTree = "<group>"; };
+		1FFB0CEB1E8E6F4500AC72E3 /* unzip.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = unzip.c; sourceTree = "<group>"; };
+		1FFB0CEC1E8E6F4500AC72E3 /* unzip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = unzip.h; sourceTree = "<group>"; };
+		1FFB0CED1E8E6F4500AC72E3 /* zip.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = zip.c; sourceTree = "<group>"; };
+		1FFB0CEE1E8E6F4500AC72E3 /* zip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = zip.h; sourceTree = "<group>"; };
+		1FFB0CF61E8E6FE400AC72E3 /* sqlite_warp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = sqlite_warp.cpp; sourceTree = "<group>"; };
+		1FFB0CF71E8E6FE400AC72E3 /* sqlite_warp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = sqlite_warp.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -225,6 +280,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1FDCFCF81E962E4100295D42 /* libc++.1.dylib in Frameworks */,
 				1F3E93B91C2D3925000EF4FA /* boost.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -235,6 +291,8 @@
 		1F209A8F1CAB77BE0011D40B /* algorithm */ = {
 			isa = PBXGroup;
 			children = (
+				1FDCFA3C1E95FC3C00295D42 /* crypto_wrap.cpp */,
+				1FDCFA3D1E95FC3C00295D42 /* crypto_wrap.h */,
 				1F209ADB1CAB7A0A0011D40B /* compress.cpp */,
 				1F209ADC1CAB7A0A0011D40B /* compress.h */,
 			);
@@ -286,6 +344,14 @@
 			path = ../../../common/src/thread;
 			sourceTree = "<group>";
 		};
+		1F9DD7A91E94FC6F00B7E4E2 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				1FDCFCF71E962E4100295D42 /* libc++.1.dylib */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		1FB1972F1C2CDE4300CFC44F = {
 			isa = PBXGroup;
 			children = (
@@ -293,6 +359,7 @@
 				1FB197A61C2CF83800CFC44F /* other */,
 				1FB1973A1C2CDE4300CFC44F /* Common */,
 				1FB197391C2CDE4300CFC44F /* Products */,
+				1F9DD7A91E94FC6F00B7E4E2 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -318,13 +385,15 @@
 		1FB197A61C2CF83800CFC44F /* other */ = {
 			isa = PBXGroup;
 			children = (
+				1FDCF8011E95F71400295D42 /* sqlite */,
+				1FFB0CF51E8E6FE400AC72E3 /* database */,
+				1FFB0CE11E8E6F4500AC72E3 /* unzip */,
 				1F209A931CAB78320011D40B /* zlib */,
 				1F209A8F1CAB77BE0011D40B /* algorithm */,
 				1F40C34B1C473D27006EFE0A /* thread */,
 				1FB71D0F1C45F48E00412128 /* network */,
 				1FB198341C2CFA7600CFC44F /* jsoncpp.cpp */,
 				1FB197A71C2CF86500CFC44F /* commander */,
-				1FB197A91C2CF86500CFC44F /* datebase */,
 				1FB197AC1C2CF86500CFC44F /* init */,
 				1FB197AF1C2CF86500CFC44F /* json */,
 				1FB197B21C2CF86500CFC44F /* log */,
@@ -344,19 +413,19 @@
 			path = ../../../common/src/commander;
 			sourceTree = "<group>";
 		};
-		1FB197A91C2CF86500CFC44F /* datebase */ = {
-			isa = PBXGroup;
-			children = (
-				1FB197AA1C2CF86500CFC44F /* sqlite_warp.cpp */,
-				1FB197AB1C2CF86500CFC44F /* sqlite_warp.h */,
-			);
-			name = datebase;
-			path = ../../../common/src/datebase;
-			sourceTree = "<group>";
-		};
 		1FB197AC1C2CF86500CFC44F /* init */ = {
 			isa = PBXGroup;
 			children = (
+				1FDCF7B31E95F3D800295D42 /* algo_init.cpp */,
+				1FDCF7B41E95F3D800295D42 /* algo_init.h */,
+				1FDCF7B51E95F3D800295D42 /* database_init.cpp */,
+				1FDCF7B61E95F3D800295D42 /* database_init.h */,
+				1FDCF7B71E95F3D800295D42 /* file_init.cpp */,
+				1FDCF7B81E95F3D800295D42 /* file_init.h */,
+				1FDCF7B91E95F3D800295D42 /* http_init.cpp */,
+				1FDCF7BA1E95F3D800295D42 /* http_init.h */,
+				1FDCF7BB1E95F3D800295D42 /* tcp_init.cpp */,
+				1FDCF7BC1E95F3D800295D42 /* tcp_init.h */,
 				1FB197AD1C2CF86500CFC44F /* common.cpp */,
 				1FB197AE1C2CF86500CFC44F /* common.h */,
 			);
@@ -367,6 +436,8 @@
 		1FB197AF1C2CF86500CFC44F /* json */ = {
 			isa = PBXGroup;
 			children = (
+				1FFB0CDE1E8E6D6900AC72E3 /* JSONObject.cpp */,
+				1FFB0CDF1E8E6D6900AC72E3 /* JSONObject.h */,
 				1FB197B01C2CF86500CFC44F /* json_wrap.cpp */,
 				1FB197B11C2CF86500CFC44F /* json_wrap.h */,
 			);
@@ -483,6 +554,12 @@
 		1FB71D0F1C45F48E00412128 /* network */ = {
 			isa = PBXGroup;
 			children = (
+				1FFB0CD51E8E6D4E00AC72E3 /* async_http.cpp */,
+				1FFB0CD61E8E6D4E00AC72E3 /* async_http.h */,
+				1FFB0CD71E8E6D4E00AC72E3 /* easy_http.cpp */,
+				1FFB0CD81E8E6D4E00AC72E3 /* easy_http.h */,
+				1FFB0CD91E8E6D4E00AC72E3 /* http.cpp */,
+				1FFB0CDA1E8E6D4E00AC72E3 /* http.h */,
 				1F6D4A2E1CA3D74700F0FD0C /* protocol.cpp */,
 				1F6D4A2F1CA3D74700F0FD0C /* protocol.h */,
 				1FB71D131C464BE000412128 /* tcp_wrap_default.cpp */,
@@ -492,6 +569,48 @@
 			);
 			name = network;
 			path = ../../../common/src/network;
+			sourceTree = "<group>";
+		};
+		1FDCF8011E95F71400295D42 /* sqlite */ = {
+			isa = PBXGroup;
+			children = (
+				1FDCF8021E95F71400295D42 /* sqlite3.c */,
+				1FDCF8031E95F71400295D42 /* sqlite3.h */,
+				1FDCF8041E95F71400295D42 /* sqlite3ext.h */,
+			);
+			name = sqlite;
+			path = ../../../3rd/sqlite;
+			sourceTree = "<group>";
+		};
+		1FFB0CE11E8E6F4500AC72E3 /* unzip */ = {
+			isa = PBXGroup;
+			children = (
+				1FFB0CE21E8E6F4500AC72E3 /* ChangeLogUnzip */,
+				1FFB0CE31E8E6F4500AC72E3 /* crypt.h */,
+				1FFB0CE41E8E6F4500AC72E3 /* ioapi.c */,
+				1FFB0CE51E8E6F4500AC72E3 /* ioapi.h */,
+				1FFB0CE61E8E6F4500AC72E3 /* iowin32.c */,
+				1FFB0CE71E8E6F4500AC72E3 /* iowin32.h */,
+				1FFB0CE81E8E6F4500AC72E3 /* Makefile */,
+				1FFB0CE91E8E6F4500AC72E3 /* mztools.c */,
+				1FFB0CEA1E8E6F4500AC72E3 /* mztools.h */,
+				1FFB0CEB1E8E6F4500AC72E3 /* unzip.c */,
+				1FFB0CEC1E8E6F4500AC72E3 /* unzip.h */,
+				1FFB0CED1E8E6F4500AC72E3 /* zip.c */,
+				1FFB0CEE1E8E6F4500AC72E3 /* zip.h */,
+			);
+			name = unzip;
+			path = ../../../3rd/unzip;
+			sourceTree = "<group>";
+		};
+		1FFB0CF51E8E6FE400AC72E3 /* database */ = {
+			isa = PBXGroup;
+			children = (
+				1FFB0CF61E8E6FE400AC72E3 /* sqlite_warp.cpp */,
+				1FFB0CF71E8E6FE400AC72E3 /* sqlite_warp.h */,
+			);
+			name = database;
+			path = ../../../common/src/database;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -553,17 +672,24 @@
 				1FB71D121C45F48E00412128 /* tcp.cpp in Sources */,
 				1FB198171C2CF86500CFC44F /* lmem.c in Sources */,
 				1FB1981A1C2CF86500CFC44F /* lopcodes.c in Sources */,
+				1FFB0CDD1E8E6D4E00AC72E3 /* http.cpp in Sources */,
+				1FFB0CE01E8E6D6900AC72E3 /* JSONObject.cpp in Sources */,
 				1FB198191C2CF86500CFC44F /* lobject.c in Sources */,
+				1FFB0CF11E8E6F4500AC72E3 /* Makefile in Sources */,
 				1FB198111C2CF86500CFC44F /* lfunc.c in Sources */,
 				1F40C3511C473D27006EFE0A /* thread_wrap.cpp in Sources */,
 				1FB198211C2CF86500CFC44F /* ltablib.c in Sources */,
 				1F5823551C4B3EC7009B6802 /* timer_wrap.cpp in Sources */,
+				1FFB0CF41E8E6F4500AC72E3 /* zip.c in Sources */,
+				1FFB0CDB1E8E6D4E00AC72E3 /* async_http.cpp in Sources */,
 				1F209AD81CAB79D70011D40B /* trees.c in Sources */,
 				1FB1982B1C2CF86500CFC44F /* util.cpp in Sources */,
 				1FB198161C2CF86500CFC44F /* lmathlib.c in Sources */,
 				1FB198101C2CF86500CFC44F /* ldump.c in Sources */,
+				1FFB0CDC1E8E6D4E00AC72E3 /* easy_http.cpp in Sources */,
 				1FB1981D1C2CF86500CFC44F /* lstate.c in Sources */,
 				1FB198351C2CFA7600CFC44F /* jsoncpp.cpp in Sources */,
+				1FFB0CF01E8E6F4500AC72E3 /* iowin32.c in Sources */,
 				1FB1981C1C2CF86500CFC44F /* lparser.c in Sources */,
 				1F209AD01CAB79D70011D40B /* adler32.c in Sources */,
 				1FB198281C2CF86500CFC44F /* lvm.c in Sources */,
@@ -573,12 +699,15 @@
 				1FB198001C2CF86500CFC44F /* cmd_factory.cpp in Sources */,
 				1F209ADD1CAB7A0A0011D40B /* compress.cpp in Sources */,
 				1FB1980D1C2CF86500CFC44F /* ldblib.c in Sources */,
+				1FDCF7BD1E95F3D800295D42 /* algo_init.cpp in Sources */,
 				1FB198221C2CF86500CFC44F /* ltm.c in Sources */,
 				1F209ADA1CAB79D70011D40B /* zutil.c in Sources */,
 				1F209AD41CAB79D70011D40B /* infback.c in Sources */,
 				1FB1980A1C2CF86500CFC44F /* lcode.c in Sources */,
 				1FB71D151C464BE000412128 /* tcp_wrap_default.cpp in Sources */,
+				1FFB0CF81E8E6FE400AC72E3 /* sqlite_warp.cpp in Sources */,
 				1FB198121C2CF86500CFC44F /* lgc.c in Sources */,
+				1FDCFA3E1E95FC3C00295D42 /* crypto_wrap.cpp in Sources */,
 				1FB198291C2CF86500CFC44F /* lzio.c in Sources */,
 				1FB1973E1C2CDE4300CFC44F /* bizlayer.mm in Sources */,
 				1FB198071C2CF86500CFC44F /* lauxlib.c in Sources */,
@@ -588,12 +717,16 @@
 				1F209AD51CAB79D70011D40B /* inffast.c in Sources */,
 				1FB198141C2CF86500CFC44F /* liolib.c in Sources */,
 				1F209AD61CAB79D70011D40B /* inflate.c in Sources */,
+				1FFB0CEF1E8E6F4500AC72E3 /* ioapi.c in Sources */,
 				1FB1982C1C2CF86500CFC44F /* UUID.cpp in Sources */,
 				1FB198181C2CF86500CFC44F /* loadlib.c in Sources */,
 				1FB198081C2CF86500CFC44F /* lbaselib.c in Sources */,
 				1F657CCD1C48C54500F45F11 /* timer.cpp in Sources */,
 				1FB198151C2CF86500CFC44F /* llex.c in Sources */,
+				1FFB0CF31E8E6F4500AC72E3 /* unzip.c in Sources */,
 				1FB198271C2CF86500CFC44F /* lutf8lib.c in Sources */,
+				1FDCF7C01E95F3D800295D42 /* http_init.cpp in Sources */,
+				1FDCF7BE1E95F3D800295D42 /* database_init.cpp in Sources */,
 				1FB198231C2CF86500CFC44F /* lua.c in Sources */,
 				1F209AD21CAB79D70011D40B /* crc32.c in Sources */,
 				1FB1980B1C2CF86500CFC44F /* lcorolib.c in Sources */,
@@ -602,13 +735,16 @@
 				1F209AD91CAB79D70011D40B /* uncompr.c in Sources */,
 				1FB1980C1C2CF86500CFC44F /* lctype.c in Sources */,
 				1FB198241C2CF86500CFC44F /* lua_bind.cpp in Sources */,
+				1FFB0CF21E8E6F4500AC72E3 /* mztools.c in Sources */,
+				1FDCF7BF1E95F3D800295D42 /* file_init.cpp in Sources */,
+				1FDCF8051E95F71400295D42 /* sqlite3.c in Sources */,
 				1FB1980E1C2CF86500CFC44F /* ldebug.c in Sources */,
 				1FB1981E1C2CF86500CFC44F /* lstring.c in Sources */,
+				1FDCF7C11E95F3D800295D42 /* tcp_init.cpp in Sources */,
 				1F6D4A301CA3D74700F0FD0C /* protocol.cpp in Sources */,
 				1FB198091C2CF86500CFC44F /* lbitlib.c in Sources */,
 				1FB1981B1C2CF86500CFC44F /* loslib.c in Sources */,
 				1FB1982A1C2CF86500CFC44F /* time.cpp in Sources */,
-				1FB198011C2CF86500CFC44F /* sqlite_warp.cpp in Sources */,
 				1F40C3501C473D27006EFE0A /* thread_dispatch.cpp in Sources */,
 				1FB198261C2CF86500CFC44F /* lundump.c in Sources */,
 				1F209AD31CAB79D70011D40B /* deflate.c in Sources */,
@@ -665,10 +801,11 @@
 					"$(PROJECT_DIR)/../../../common/src",
 					"$(PROJECT_DIR)/../../../common/header",
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 9.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
+				USE_HEADERMAP = YES;
 			};
 			name = Debug;
 		};
@@ -708,9 +845,10 @@
 					"$(PROJECT_DIR)/../../../common/src",
 					"$(PROJECT_DIR)/../../../common/header",
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 9.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
+				USE_HEADERMAP = YES;
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
@@ -718,24 +856,66 @@
 		1FB197421C2CDE4300CFC44F /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				ENABLE_ON_DEMAND_RESOURCES = NO;
+				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_PREPROCESSOR_DEFINITIONS = (
-					"DEBUG=1",
 					"$(inherited)",
 					IOS,
 				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = NO;
+				"GCC_WARN_64_TO_32_BIT_CONVERSION[arch=*64]" = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(PROJECT_DIR)/../../../3rd/jsoncpp/dist",
+					"$(PROJECT_DIR)/../../../common/src",
+					"$(PROJECT_DIR)/../../../common/header",
+					"$(PROJECT_DIR)/../../../3rd/unzip",
+					"$(PROJECT_DIR)/../../../3rd/cryptopp_ios",
+				);
+				ONLY_ACTIVE_ARCH = NO;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SEPARATE_STRIP = YES;
 				SKIP_INSTALL = YES;
+				USER_HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/../../../3rd/curl/include-armv64 $(PROJECT_DIR)/../../../3rd/curl/include-x86_64 $(PROJECT_DIR)/../../../3rd/curl/include-armv7 $(PROJECT_DIR)/../../../3rd/curl/include-armv7s $(PROJECT_DIR)/../../../3rd/cryptopp_ios";
+				"USER_HEADER_SEARCH_PATHS[arch=*]" = "$(PROJECT_DIR)/../../../3rd/curl/include-x86_64 $(PROJECT_DIR)/../../../3rd/curl/include-i386 $(PROJECT_DIR)/../../../3rd/cryptopp_ios";
+				"USER_HEADER_SEARCH_PATHS[arch=arm64]" = "$(PROJECT_DIR)/../../../3rd/curl/include-arm64";
+				"USER_HEADER_SEARCH_PATHS[arch=armv7]" = "$(PROJECT_DIR)/../../../3rd/curl/include-armv7";
+				"USER_HEADER_SEARCH_PATHS[arch=armv7s]" = "$(PROJECT_DIR)/../../../3rd/curl/include-armv7s";
+				VALID_ARCHS = "arm64 armv7 armv7s x86_64";
 			};
 			name = Debug;
 		};
 		1FB197431C2CDE4300CFC44F /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				ENABLE_ON_DEMAND_RESOURCES = NO;
+				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_PREPROCESSOR_DEFINITIONS = IOS;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = NO;
+				"GCC_WARN_64_TO_32_BIT_CONVERSION[arch=*64]" = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(PROJECT_DIR)/../../../3rd/jsoncpp/dist",
+					"$(PROJECT_DIR)/../../../common/src",
+					"$(PROJECT_DIR)/../../../common/header",
+					"$(PROJECT_DIR)/../../../3rd/unzip",
+					"$(PROJECT_DIR)/../../../3rd/cryptopp_ios",
+				);
+				ONLY_ACTIVE_ARCH = NO;
+				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SEPARATE_STRIP = YES;
 				SKIP_INSTALL = YES;
+				USER_HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/../../../3rd/curl/include-x86_64 $(PROJECT_DIR)/../../../3rd/curl/include-armv64 $(PROJECT_DIR)/../../../3rd/curl/include-armv7 $(PROJECT_DIR)/../../../3rd/curl/include-armv7s $(PROJECT_DIR)/../../../3rd/cryptopp_ios";
+				"USER_HEADER_SEARCH_PATHS[arch=*]" = "$(PROJECT_DIR)/../../../3rd/curl/include-x86_64 $(PROJECT_DIR)/../../../3rd/curl/include-i386 $(PROJECT_DIR)/../../../3rd/cryptopp_ios";
+				"USER_HEADER_SEARCH_PATHS[arch=arm64]" = "$(PROJECT_DIR)/../../../3rd/curl/include-arm64";
+				"USER_HEADER_SEARCH_PATHS[arch=armv7]" = "$(PROJECT_DIR)/../../../3rd/curl/include-armv7";
+				"USER_HEADER_SEARCH_PATHS[arch=armv7s]" = "$(PROJECT_DIR)/../../../3rd/curl/include-armv7s";
+				VALID_ARCHS = "arm64 armv7 armv7s x86_64";
 			};
 			name = Release;
 		};

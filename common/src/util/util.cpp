@@ -208,6 +208,6 @@ namespace plan9
     }
 
     bool util::get_dir_info(std::string path, long *capacity, long *free, long *available) {
-        impl->get_dir_info(path, capacity, free, available);
+        return impl->get_dir_info(path, capacity, free, available);
     }
 }

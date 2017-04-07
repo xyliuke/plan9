@@ -6,7 +6,7 @@
 #include <sstream>
 #include <assert.h>
 #include <fstream>
-#include <curses.h>
+//#include <curses.h>
 #include "JSONObject.h"
 
 namespace plan9 {

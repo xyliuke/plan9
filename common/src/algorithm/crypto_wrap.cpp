@@ -5,10 +5,10 @@
 
 #include <sstream>
 #include <files.h>
-#include <hex.h>
+#include "hex.h"
 #include <boost/filesystem.hpp>
-#include <sha.h>
-#include <base64.h>
+#include "sha.h"
+#include "base64.h"
 #include "crypto_wrap.h"
 #include "md5.h"
 

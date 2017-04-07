@@ -10,8 +10,11 @@
 
 namespace plan9
 {
-    static const char netwrok_begin = '^';
     static const int BUF_SIZE = 10240;
+
+    static void resolve_handler(const boost::system::error_code &ec, boost::asio::ip::tcp::resolver::iterator it) {
+
+    }
 
     class tcp::tcp_impl {
 
@@ -22,7 +25,8 @@ namespace plan9
                      port(-1),
                      enable_ping(false),
                      ping_delay_second(20),
-                     check_disconnect_interval(30) {
+                     check_disconnect_interval(30),
+                     is_connect_url(false){
 
         }
 
@@ -50,6 +54,7 @@ namespace plan9
         void on_write(const boost::system::error_code &error_code, std::size_t bytes) {
             if (error_code.value() == 0) {
                 //成功
+                log_wrap::net().d("send success data : ", std::string(write_buf, bytes));
                 sendWriteState(write_buf, bytes);
             } else if (error_code.value() == boost::asio::error::eof){
                 //服务器断开
@@ -94,6 +99,25 @@ namespace plan9
 #endif
         }
 
+
+
+        static std::shared_ptr<std::vector<std::tuple<std::string, int >>> resolve_url(std::string url, int port) {
+            using namespace boost::asio;
+            boost::asio::io_service io;
+            boost::asio::ip::tcp::resolver resolver(io);
+            boost::asio::ip::tcp::resolver::query query(url, std::to_string(port));
+            ip::tcp::resolver::iterator i = resolver.resolve(query);
+            std::shared_ptr<std::vector<std::tuple<std::string, int >>> ret(new std::vector<std::tuple<std::string, int >>);
+            for(; i != ip::tcp::resolver::iterator(); ++i) {
+                boost::asio::ip::tcp::endpoint end = *i;
+                log_wrap::net().d("resolver ", url, " ip address: ", end.address().to_string(), " port: ", end.port());
+                ret->push_back(std::make_tuple(end.address().to_string(), end.port()));
+            }
+            return ret;
+        }
+
+
+
         void run() {
             io_service->run();
         }
@@ -124,6 +148,7 @@ namespace plan9
 
         void close() {
             io_service->stop();
+            is_connect_url = false;
         }
 
         void set_connect_handler(std::function<void(bool)> function) {
@@ -183,6 +208,10 @@ namespace plan9
         bool enable_ping;
         int ping_delay_second;
         int check_disconnect_interval;//断线检测间隔
+        std::string url;
+        std::vector<std::pair<std::string, int >> ip_vector;
+        bool is_connect_url;
+
 
         std::shared_ptr<boost::asio::ip::tcp::socket> socket_;
 //        std::shared_ptr<boost::asio::deadline_timer> ping_timer;//定期发送ping包
@@ -203,17 +232,16 @@ namespace plan9
         impl->connect(ip, port);
     }
 
+    void tcp::resolver(std::string url, int port,
+                       std::function<void(std::shared_ptr<std::vector<std::tuple<std::string, int>>>)> callback) {
+        if (callback != nullptr) {
+            callback(tcp_impl::resolve_url(url, port));
+        }
+    }
+
     void tcp::set_connect_handler(std::function<void(bool)> function) {
         impl->set_connect_handler(function);
     }
-
-//    void tcp::write(std::string msg) {
-//        impl->write(network_server_type::SERVER_CONNECT, msg);
-//    }
-
-//    void tcp::write(network_server_type type, std::string msg) {
-//        impl->write(type, msg);
-//    }
 
     void tcp::write(const char *data, int len) {
         impl->write(data, len);

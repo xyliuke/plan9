@@ -113,6 +113,8 @@ namespace plan9
          */
         static std::string get_cache_path();
 
+        static std::string get_tcp_notify_function();
+
     private:
         static void init_function();
         static void init_log();

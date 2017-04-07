@@ -20,9 +20,11 @@
 		1FB198371C2D02ED00CFC44F /* libstdc++.6.0.9.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 1FB198361C2D02ED00CFC44F /* libstdc++.6.0.9.dylib */; };
 		1FB198391C2D054C00CFC44F /* libc++.1.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 1FB198381C2D054C00CFC44F /* libc++.1.dylib */; };
 		1FB1983B1C2D058700CFC44F /* libz.1.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 1FB1983A1C2D058700CFC44F /* libz.1.dylib */; };
-		1FB1983D1C2D07A700CFC44F /* libCommon.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1FB1983C1C2D07A700CFC44F /* libCommon.a */; };
 		1FB198491C2D1D6600CFC44F /* lua in Resources */ = {isa = PBXBuildFile; fileRef = 1FB198481C2D1D6600CFC44F /* lua */; };
-		1FB1984A1C2D278900CFC44F /* boost.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1FB197A21C2CF70100CFC44F /* boost.framework */; };
+		1FDCF7FB1E95F6BD00295D42 /* boost.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1FB197A21C2CF70100CFC44F /* boost.framework */; };
+		1FDCF7FC1E95F6BD00295D42 /* libCommon.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1FB1983C1C2D07A700CFC44F /* libCommon.a */; };
+		1FDCF7FE1E95F6BE00295D42 /* libcurl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1FDCF7FD1E95F6BE00295D42 /* libcurl.a */; };
+		1FDCFCFC1E963AD900295D42 /* libcryptopp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1FDCFCFB1E963AD900295D42 /* libcryptopp.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -69,6 +71,12 @@
 		1FB1983C1C2D07A700CFC44F /* libCommon.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libCommon.a; path = ../lib/libCommon.a; sourceTree = "<group>"; };
 		1FB1983E1C2D1CF600CFC44F /* bizlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = bizlayer.h; path = biz/bizlayer.h; sourceTree = "<group>"; };
 		1FB198481C2D1D6600CFC44F /* lua */ = {isa = PBXFileReference; lastKnownFileType = folder; path = lua; sourceTree = "<group>"; };
+		1FDCF7C31E95F48200295D42 /* libcurl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcurl.a; path = ../../../3rd/curl/ios_lib/libcurl.a; sourceTree = "<group>"; };
+		1FDCF7FD1E95F6BE00295D42 /* libcurl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcurl.a; path = ../lib/libcurl.a; sourceTree = "<group>"; };
+		1FDCF7FF1E95F6CE00295D42 /* libcurl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcurl.a; path = ../lib/libcurl.a; sourceTree = "<group>"; };
+		1FDCFA381E95FB8900295D42 /* libcrypto.0.9.8.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libcrypto.0.9.8.dylib; path = ../../../../../../../usr/lib/libcrypto.0.9.8.dylib; sourceTree = "<group>"; };
+		1FDCFCF91E963ACF00295D42 /* libcryptopp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcryptopp.a; path = ../lib/libcryptopp.a; sourceTree = "<group>"; };
+		1FDCFCFB1E963AD900295D42 /* libcryptopp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcryptopp.a; path = ../lib/libcryptopp.a; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -76,8 +84,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1FB1984A1C2D278900CFC44F /* boost.framework in Frameworks */,
-				1FB1983D1C2D07A700CFC44F /* libCommon.a in Frameworks */,
+				1FDCF7FE1E95F6BE00295D42 /* libcurl.a in Frameworks */,
+				1FDCF7FB1E95F6BD00295D42 /* boost.framework in Frameworks */,
+				1FDCF7FC1E95F6BD00295D42 /* libCommon.a in Frameworks */,
+				1FDCFCFC1E963AD900295D42 /* libcryptopp.a in Frameworks */,
 				1FB1983B1C2D058700CFC44F /* libz.1.dylib in Frameworks */,
 				1FB198391C2D054C00CFC44F /* libc++.1.dylib in Frameworks */,
 				1FB198371C2D02ED00CFC44F /* libstdc++.6.0.9.dylib in Frameworks */,
@@ -104,6 +114,8 @@
 		1FB1975A1C2CF4BB00CFC44F = {
 			isa = PBXGroup;
 			children = (
+				1FDCFCFB1E963AD900295D42 /* libcryptopp.a */,
+				1FDCF7FF1E95F6CE00295D42 /* libcurl.a */,
 				1FB1983C1C2D07A700CFC44F /* libCommon.a */,
 				1FB1983A1C2D058700CFC44F /* libz.1.dylib */,
 				1FB198381C2D054C00CFC44F /* libc++.1.dylib */,
@@ -113,6 +125,7 @@
 				1FB1977F1C2CF4BB00CFC44F /* IOSDemoTests */,
 				1FB1978A1C2CF4BB00CFC44F /* IOSDemoUITests */,
 				1FB197641C2CF4BB00CFC44F /* Products */,
+				1FDCF7C21E95F48100295D42 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -181,6 +194,17 @@
 			name = biz;
 			sourceTree = "<group>";
 		};
+		1FDCF7C21E95F48100295D42 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				1FDCFCF91E963ACF00295D42 /* libcryptopp.a */,
+				1FDCFA381E95FB8900295D42 /* libcrypto.0.9.8.dylib */,
+				1FDCF7FD1E95F6BE00295D42 /* libcurl.a */,
+				1FDCF7C31E95F48200295D42 /* libcurl.a */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -243,11 +267,12 @@
 		1FB1975B1C2CF4BB00CFC44F /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0720;
+				LastUpgradeCheck = 0830;
 				ORGANIZATIONNAME = liuke;
 				TargetAttributes = {
 					1FB197621C2CF4BB00CFC44F = {
 						CreatedOnToolsVersion = 7.2;
+						ProvisioningStyle = Automatic;
 					};
 					1FB1977B1C2CF4BB00CFC44F = {
 						CreatedOnToolsVersion = 7.2;
@@ -384,10 +409,13 @@
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
@@ -427,10 +455,13 @@
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
@@ -456,14 +487,22 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEVELOPMENT_TEAM = "";
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/../lib/";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+					IOS,
+				);
 				INFOPLIST_FILE = IOSDemo/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = "$(PROJECT_DIR)/../lib/";
 				PRODUCT_BUNDLE_IDENTIFIER = cn.gocoding.IOSDemo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 			};
 			name = Debug;
 		};
@@ -472,14 +511,18 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEVELOPMENT_TEAM = "";
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/../lib/";
+				GCC_PREPROCESSOR_DEFINITIONS = IOS;
 				INFOPLIST_FILE = IOSDemo/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = "$(PROJECT_DIR)/../lib/";
 				PRODUCT_BUNDLE_IDENTIFIER = cn.gocoding.IOSDemo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 			};
 			name = Release;
 		};

@@ -13,14 +13,16 @@ namespace plan9 {
     public:
         int id;
         long millisecond;//执行时的时间点,为1970到今的毫秒数
+        long interval;
         std::function<void(void)> function;
+        bool repeat;
     };
 
 
     std::map<int, std::shared_ptr<std::thread>> thread_dispatch::thread_map;
     std::map<int, std::shared_ptr<std::list<std::function<void(void)>>>> thread_dispatch::thread_queue;
     std::map<int, std::shared_ptr<std::map<int, std::shared_ptr<thread_dispatch::thread_timer>>>> thread_dispatch::thread_timer_queue;
-    std::mutex thread_dispatch::mutex;
+    std::recursive_mutex thread_dispatch::mutex;
     bool thread_dispatch::stop_ = false;
     int thread_dispatch::timer_precision = 50;//默认timer精度
     static const uint16_t timer_loop_count = 5000;
@@ -99,7 +101,7 @@ namespace plan9 {
         }
     }
 
-    int thread_dispatch::post(int tid, std::function<void(void)> func, long millisecond) {
+    int thread_dispatch::post(int tid, std::function<void(void)> func, long millisecond, bool repeat) {
         static int id = 0;
         thread_mutex_raii();
 
@@ -109,6 +111,8 @@ namespace plan9 {
         timer->id = id;
         timer->function = func;
         timer->millisecond = (plan9::time::milliseconds() + millisecond);
+        timer->repeat = repeat;
+        timer->interval = millisecond;
 
         if (thread_map.find(tid) != thread_map.end()) {
             if (thread_timer_queue.find(tid) != thread_timer_queue.end()) {
@@ -126,6 +130,7 @@ namespace plan9 {
         return id;
     }
 
+
     void thread_dispatch::cancel(int tid, int timer_id) {
         thread_mutex_raii();
 
@@ -133,6 +138,9 @@ namespace plan9 {
             if (thread_timer_queue.find(tid) != thread_timer_queue.end()) {
                 auto queue = thread_timer_queue[tid];
                 if (queue->find(timer_id) != queue->end()) {
+                    auto t = (*queue)[timer_id];
+                    t->repeat = false;
+                    t->millisecond = 0;
                     queue->erase(timer_id);
                 }
             }
@@ -159,15 +167,26 @@ namespace plan9 {
         if(thread_timer_queue.find(tid) != thread_timer_queue.end()) {
             auto queue = thread_timer_queue[tid];
             std::map<int, std::shared_ptr<thread_dispatch::thread_timer>>::iterator it = queue->begin();
-            while (it != queue->end()) {
+            while (queue->size() > 0 && it != queue->end()) {
                 auto func = it->second;
+                if (!func) {
+                    queue->erase(it);
+                    continue;
+                }
                 if (current_time > func->millisecond) {
-                    if (func->function != nullptr) {
+                    if (func && func->function != nullptr) {
                         func->function();
                     }
-                    queue->erase(it ++);
-                } else {
-                    ++ it;
+                    if (func && func->repeat) {
+                        func->millisecond += func->interval;
+                    }
+                }
+                if (queue->size() > 0 && it->second && it != queue->end()) {
+                    if (func && func->repeat) {
+                        ++ it;
+                    } else {
+                        it = queue->erase(it);
+                    }
                 }
             }
         }

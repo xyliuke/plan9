@@ -292,7 +292,6 @@ end
 
 
 
-
 --- 注册lua中可供c++调用的函数
 -- @param name 函数的命名空间,即函数的包装table名
 -- @param func 函数实体
@@ -315,6 +314,7 @@ end
 function native:set_platform(param)
     lua_c_bridge.platform = param.args.platform
     lua_c_bridge:log_i("platform set " .. lua_c_bridge.platform)
+    lua_c_bridge:call_native("tcp_connect", {ip = "127.0.0.1", port = 8880})
 end
 
 lua_c_bridge:register_lua_function("native", native)

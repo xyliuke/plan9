@@ -45,12 +45,22 @@ TEST(common_test, init) {
 //    std::cout << utf << ", " << utf1 << ", ";
 //    std::wcout << ws;
 //    plan9::common::init("./data", "./abc.zip");
-    plan9::common::init("./data", "../lua");
+
+//    plan9::common::init("./data", "../lua");
 //    plan9::common::set_notify_function([=](std::string data){
 //        std::cout << "notify data " << data << std::endl;
 //    });
-    plan9::common::set_macosx_platform();
+//    plan9::common::set_macosx_platform();
 
+    std::map<int, int> m;
+    m[1] = 10;
+    m[2] = 20;
+    m[3] = 30;
+    auto it = m.begin();
+    while (it != m.end()) {
+        it = m.erase(it);
+//        it ++;
+    }
 
 //    JSONObject p;
 //    p["file"] = "./1.jpg";

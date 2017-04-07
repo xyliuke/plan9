@@ -18,6 +18,9 @@
 #include <network/easy_http.h>
 
 TEST(network_test, tcp) {
+    using namespace plan9;
+//    tcp t;
+//    t.connect_url("www.baidu.com", 443);
 
 //    plan9::tcp_wrap_default::instance().set_connect_handler([=](bool connect){
 //        std::cout << "connect : " << connect << std::endl;

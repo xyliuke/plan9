@@ -10,6 +10,8 @@ local server = {
 lua_c_bridge:register_lua_function("server", server)
 
 local config = lua_c_bridge:get_module("config")
+--每个客户端的id,登录前为0,登录后由服务器返回
+local client_id = 0
 
 --- 封装向服务器发送的数据
 -- @param method 方法名
@@ -21,6 +23,7 @@ function server:wrap(method, param, server_type, timeout)
     msg.timeout = timeout
     msg.server = server_type
     msg.to = method
+    msg.client_id = client_id
     return msg
 end
 

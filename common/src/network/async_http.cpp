@@ -4,7 +4,7 @@
 
 #include "async_http.h"
 #include <boost/asio.hpp>
-#include <curl/multi.h>
+#include "curl/multi.h"
 #include <boost/bind.hpp>
 #include <iostream>
 #include <fstream>

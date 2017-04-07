@@ -25,11 +25,11 @@
     [self.view addSubview:btn];
     
 
-    [BizProxy call:@"server.connect" param:nil callback:nil];
+//    [BizProxy call:@"server.connect" param:nil callback:nil];
     
-    [BizProxy call:@"native.get_error_code" param:nil callback:^(NSDictionary *data) {
-        NSLog(@"%@",data);
-    }];
+//    [BizProxy call:@"native.get_error_code" param:nil callback:^(NSDictionary *data) {
+//        NSLog(@"%@",data);
+//    }];
 }
 
 - (void) action

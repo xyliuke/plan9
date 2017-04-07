@@ -32,7 +32,7 @@ namespace plan9 {
          * @param millisecond 延迟的毫秒数
          * @return 返回相应任务的id,用于取消
          */
-        static int post(int tid, std::function<void(void)>func, long millisecond);
+        static int post(int tid, std::function<void(void)>func, long millisecond, bool repeat);
         /**
          * 取消一个timer
          * @param tid 线程id
@@ -52,7 +52,7 @@ namespace plan9 {
         static std::map<int, std::shared_ptr<std::thread>> thread_map;
         static std::map<int, std::shared_ptr<std::list<std::function<void(void)>>>> thread_queue;
         static std::map<int, std::shared_ptr<std::map<int, std::shared_ptr<thread_timer>>>> thread_timer_queue;
-        static std::mutex mutex;
+        static std::recursive_mutex mutex;
         static bool stop_;
         static int timer_precision;
     private:
