@@ -54,6 +54,7 @@ public class Bizlayer {
             FileUtils.copyAssetDirToFiles(context, assetLua, luaPath);
             Bizlayer.init(rootPath, luaPath);
         } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -107,11 +108,14 @@ public class Bizlayer {
                     BizlayerCallback callback = callbackMap.get(id);
                     if (callback != null) {
                         callback.callback(data);
+                        if (!aux.has("once") || aux.getBoolean("once")) {
+                            callbackMap.remove(id);
+                        }
                     }
                 }
             }
         } catch (Exception e) {
-
+            e.printStackTrace();
         }
     }
 

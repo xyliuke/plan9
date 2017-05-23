@@ -39,7 +39,10 @@
 //    [BizProxy call:@"server.send" param:@{@"test_data" : @"hello world from ios"} callback:^(NSDictionary *data) {
 //        NSLog(@"callback : %@", data);
 //    }];
-    [BizProxy logI:@"test lua log"];
+//    [BizProxy logI:@"test lua log"];
+    [BizProxy call:@"http.test_get" param:nil callback:^(NSDictionary *data) {
+        NSLog(@"%@", data);
+    }];
 }
 
 - (void)didReceiveMemoryWarning {

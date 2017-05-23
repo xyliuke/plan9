@@ -16,6 +16,7 @@
 //#include <fstream>
 #include <network/async_http.h>
 #include <network/easy_http.h>
+#include <json/JSONObject.h>
 
 TEST(network_test, tcp) {
     using namespace plan9;
@@ -86,6 +87,31 @@ TEST(network_test, http) {
 //    });
 //    http.get_string("https://www.microsoft.com/zh-cn", [=](std::string ret){
 //        std::cout << ret << std::endl;
+//    });
+
+//    std::string data = "<dsdfslfsl\"";
+    std::string str = "<dsdfslfsl\"fdsfsf<html></html>sdf\"";
+    plan9::JSONObject json;
+    json["data"] = str;
+    std::string j_str = json.to_string();
+    std::string str2 = json["data"].get_string();
+
+    plan9::JSONObject j2(j_str);
+    std::string d = j2["data"].get_string();
+    std::cout << j2.to_format_string() << std::endl;
+    std::cout << d << std::endl;
+
+//    plan9::easy_http::instance().get("http://www.baidu.com", [=](int curl_code, std::string debug_trace, long http_state, char* data, size_t len){
+//        std::string str(data, len);
+//        plan9::JSONObject json;
+//        json["data"] = str;
+//        std::string j_str = json.to_string();
+//
+//        plan9::JSONObject j2(j_str);
+//        std::string d = j2["data"].get_string();
+//        std::cout << j2.to_format_string() << std::endl;
+//        std::cout << d << std::endl;
+//
 //    });
 
 

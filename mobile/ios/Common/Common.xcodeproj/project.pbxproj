@@ -871,6 +871,7 @@
 					"$(PROJECT_DIR)/../../../common/src",
 					"$(PROJECT_DIR)/../../../common/header",
 					"$(PROJECT_DIR)/../../../3rd/unzip",
+					"$(PROJECT_DIR)/../../../3rd/openssl",
 					"$(PROJECT_DIR)/../../../3rd/cryptopp_ios",
 				);
 				ONLY_ACTIVE_ARCH = NO;
@@ -878,11 +879,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SEPARATE_STRIP = YES;
 				SKIP_INSTALL = YES;
-				USER_HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/../../../3rd/curl/include-armv64 $(PROJECT_DIR)/../../../3rd/curl/include-x86_64 $(PROJECT_DIR)/../../../3rd/curl/include-armv7 $(PROJECT_DIR)/../../../3rd/curl/include-armv7s $(PROJECT_DIR)/../../../3rd/cryptopp_ios";
-				"USER_HEADER_SEARCH_PATHS[arch=*]" = "$(PROJECT_DIR)/../../../3rd/curl/include-x86_64 $(PROJECT_DIR)/../../../3rd/curl/include-i386 $(PROJECT_DIR)/../../../3rd/cryptopp_ios";
-				"USER_HEADER_SEARCH_PATHS[arch=arm64]" = "$(PROJECT_DIR)/../../../3rd/curl/include-arm64";
-				"USER_HEADER_SEARCH_PATHS[arch=armv7]" = "$(PROJECT_DIR)/../../../3rd/curl/include-armv7";
-				"USER_HEADER_SEARCH_PATHS[arch=armv7s]" = "$(PROJECT_DIR)/../../../3rd/curl/include-armv7s";
+				USER_HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/../../../3rd/curl/curl_ios/include $(PROJECT_DIR)/../../../3rd/cryptopp_ios";
 				VALID_ARCHS = "arm64 armv7 armv7s x86_64";
 			};
 			name = Debug;
@@ -902,6 +899,7 @@
 					"$(PROJECT_DIR)/../../../common/src",
 					"$(PROJECT_DIR)/../../../common/header",
 					"$(PROJECT_DIR)/../../../3rd/unzip",
+					"$(PROJECT_DIR)/../../../3rd/openssl",
 					"$(PROJECT_DIR)/../../../3rd/cryptopp_ios",
 				);
 				ONLY_ACTIVE_ARCH = NO;
@@ -910,11 +908,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SEPARATE_STRIP = YES;
 				SKIP_INSTALL = YES;
-				USER_HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/../../../3rd/curl/include-x86_64 $(PROJECT_DIR)/../../../3rd/curl/include-armv64 $(PROJECT_DIR)/../../../3rd/curl/include-armv7 $(PROJECT_DIR)/../../../3rd/curl/include-armv7s $(PROJECT_DIR)/../../../3rd/cryptopp_ios";
-				"USER_HEADER_SEARCH_PATHS[arch=*]" = "$(PROJECT_DIR)/../../../3rd/curl/include-x86_64 $(PROJECT_DIR)/../../../3rd/curl/include-i386 $(PROJECT_DIR)/../../../3rd/cryptopp_ios";
-				"USER_HEADER_SEARCH_PATHS[arch=arm64]" = "$(PROJECT_DIR)/../../../3rd/curl/include-arm64";
-				"USER_HEADER_SEARCH_PATHS[arch=armv7]" = "$(PROJECT_DIR)/../../../3rd/curl/include-armv7";
-				"USER_HEADER_SEARCH_PATHS[arch=armv7s]" = "$(PROJECT_DIR)/../../../3rd/curl/include-armv7s";
+				USER_HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/../../../3rd/curl/curl_ios/include $(PROJECT_DIR)/../../../3rd/cryptopp_ios";
 				VALID_ARCHS = "arm64 armv7 armv7s x86_64";
 			};
 			name = Release;

@@ -7,6 +7,9 @@
 #include <assert.h>
 #include <fstream>
 //#include <curses.h>
+#include <stdlib.h>
+#include <limits>
+#include <util/util.h>
 #include "JSONObject.h"
 
 namespace plan9 {
@@ -19,6 +22,7 @@ namespace plan9 {
     static const char VALUE_SEPARATE = ',';
     static const char STRING_FLAG = '"';
     static const char TRANSFER_FLAG = '\\';
+    static const std::string REPLACE_QUOTATION = "⚛☯";
 
     static std::string double_to_string(double value) {
         std::stringstream ss;
@@ -55,19 +59,19 @@ namespace plan9 {
         return "";
     }
 
-    static std::string &ltrim(std::string &s) {
-        s.erase(s.begin(), std::find_if(s.begin(), s.end(), std::not1(std::ptr_fun<int, int>(std::isspace))));
-        return s;
-    }
+//    static std::string &ltrim(std::string &s) {
+//        s.erase(s.begin(), std::find_if(s.begin(), s.end(), std::not1(std::ptr_fun<int, int>(std::isspace))));
+//        return s;
+//    }
 
-    static std::string &rtrim(std::string &s) {
-        s.erase(std::find_if(s.rbegin(), s.rend(), std::not1(std::ptr_fun<int, int>(std::isspace))).base(), s.end());
-        return s;
-    }
+//    static std::string &rtrim(std::string &s) {
+//        s.erase(std::find_if(s.rbegin(), s.rend(), std::not1(std::ptr_fun<int, int>(std::isspace))).base(), s.end());
+//        return s;
+//    }
 
-    static std::string& trim(std::string str){
-        return ltrim(rtrim(str));
-    }
+//    static std::string& trim(std::string str){
+//        return ltrim(rtrim(str));
+//    }
 
     static void trim(const char* string, unsigned long begin_index, unsigned long end_index, unsigned long *new_begin_index, unsigned long *new_end_index) {
         unsigned long a = begin_index, b = end_index;
@@ -112,19 +116,23 @@ namespace plan9 {
     }
 
     static long get_long_from_string(const char* string) {
-        return std::atol(string);
+//        return std::atol(string);
+        return atol(string);
     }
 
-    static long get_long_from_string(std::string& string) {
-        return std::stol(string);
-    }
+//    static long get_long_from_string(std::string& string) {
+//        return std::stol(string);
+//        return stol(string);
+//    }
 
     static double get_double_from_string(const char* string) {
-        return std::atof(string);
+//        return std::atof(string);
+        return atof(string);
     }
-    static double get_double_from_string(std::string& string) {
-        return std::stod(string);
-    }
+//    static double get_double_from_string(std::string& string) {
+//        return std::stod(string);
+//        return stod(string);
+//    }
 
     static char num_buf[100];
 
@@ -171,12 +179,10 @@ namespace plan9 {
         JSONObject_impl(bool value) {this->value.b = value; this->type = _BOOL;}
         JSONObject_impl(bool value, std::string comment) {this->value.b = value; this->type = _BOOL; comment_ = comment;}
         JSONObject_impl(const char* value) {
-            value_string = std::string(value);
-            this->type = _STRING;
+            set(value);
         }
         JSONObject_impl(std::string value) {
-            value_string = value;
-            this->type = _STRING;
+            set(value);
         }
         JSONObject_impl(const char* key, int value) {
             this->value_object.reset(new std::map<std::string, std::shared_ptr<JSONObject_impl>>);
@@ -203,7 +209,7 @@ namespace plan9 {
             put(key, value);
         }
         JSONObject_impl(const char* key, std::shared_ptr<JSONObject_impl> value) {
-            put(key, value);
+            put(std::string(key), value);
         }
         JSONObject_impl(std::string& key, int value) {
             put(key, value);
@@ -232,6 +238,46 @@ namespace plan9 {
 
         void set_comment(std::string comment) {
             comment_ = comment;
+        }
+        //将引号前加 转义符
+        std::string op_string_quotation(std::string str) {
+            int index = 0, buf_index = 0;
+            const char* str_char = str.c_str();
+            char* buf = (char*)malloc((str.length() << 2) + str.length());
+            while (index < str.length()) {
+                char c = str_char[index];
+                if (c == '\"' && index > 0 && str_char[index - 1] != '\\') {
+                    buf[buf_index ++] = '\\';
+                }
+                buf[buf_index ++] = c;
+                index ++;
+            }
+            std::string ret(buf, buf_index);
+            free(buf);
+            return ret;
+        }
+
+        //将有转义符的引号去掉转义符
+        std::string op_string_quotation2(std::string str) {
+            int index = 0, buf_index = 0;
+            const char* str_char = str.c_str();
+            char* buf = (char*)malloc((str.length() << 2) + str.length());
+            while (index < str.length()) {
+                char c = str_char[index];
+                if (c == '\\' && str_char[index + 1] == '\"') {
+                    c = str_char[index + 1];
+                    index ++;
+                }
+                buf[buf_index ++] = c;
+                index ++;
+            }
+            std::string ret(buf, buf_index);
+            free(buf);
+            return ret;
+        }
+
+        std::string change_string_quotation(std::string str) {
+            return util::instance().replace_all(str, "\"", REPLACE_QUOTATION);
         }
 
         std::string get_next_key(const char* json_string, unsigned long begin_index, unsigned long end_index, unsigned long* new_begin_index) {
@@ -434,7 +480,7 @@ namespace plan9 {
                 for (unsigned long i = *value_begin + 1; i <= end_index; ++i) {
                     char c = json_string[i];
                     if (in_string) {
-                        if (c == STRING_FLAG) {
+                        if (c == STRING_FLAG && json_string[i - 1] != '\\') {
                             in_string = !in_string;
 
                             if (i == end_index) {
@@ -465,7 +511,7 @@ namespace plan9 {
                     if (json_string[*value_begin] == STRING_FLAG) {
                         *value_begin += 1;
                     }
-                    if (json_string[*value_end] == STRING_FLAG) {
+                    if (json_string[*value_end] == STRING_FLAG && json_string[*value_end - 1] != '\\') {
                         *value_end-= 1;
                     }
                 }
@@ -736,7 +782,8 @@ namespace plan9 {
 
         std::string get_string() {
             if (is_string()) {
-                return value_string;
+                return util::instance().replace_all(value_string, REPLACE_QUOTATION, "\"");
+//                return value_string;
             }
             return std::string();
         }
@@ -1170,7 +1217,7 @@ namespace plan9 {
         }
 
         void set(std::string& value) {
-            value_string = value;
+            value_string = change_string_quotation(op_string_quotation2(value));
             type = _STRING;
         }
         void set(std::string& value, std::string comment) {
@@ -1293,7 +1340,7 @@ namespace plan9 {
                 } else if (is_double()) {
                     ss << get_string_from_double();
                 } else if (is_string()) {
-                    ss << "\"" << get_string() << "\"";
+                    ss << "\"" << op_string_quotation(get_string()) << "\"";
                 } else if (is_float()) {
                     ss << get_float();
                 } else if (is_long()) {
@@ -1347,7 +1394,8 @@ namespace plan9 {
                 } else if (is_double()) {
                     ss << get_string_from_double();
                 } else if (is_string()) {
-                    ss << "\"" << get_string() << "\"";
+                    ss << "\"" << op_string_quotation(get_string()) << "\"";
+//                    ss << "\"" << get_string() << "\"";
                 } else if (is_float()) {
                     ss << get_float();
                 } else if (is_long()) {
@@ -1399,11 +1447,11 @@ namespace plan9 {
     JSONObject::JSONObject() : impl_(new JSONObject_impl){
 
     }
-    JSONObject::JSONObject(const char* value) : impl_(new JSONObject_impl(value)) {
+    JSONObject::JSONObject(const char* value) : impl_(new JSONObject_impl()) {
         std::string v(value);
         impl_->set(impl_->parse(v));
     }
-    JSONObject::JSONObject(std::string & value) : impl_(new JSONObject_impl(value)) {
+    JSONObject::JSONObject(std::string & value) : impl_(new JSONObject_impl()) {
         impl_->set(impl_->parse(value));
     }
     JSONObject::JSONObject(const char *key, int value) : impl_(new JSONObject_impl(key, value)){

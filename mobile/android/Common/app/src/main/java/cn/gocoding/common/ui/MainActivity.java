@@ -7,6 +7,14 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+
+import org.json.JSONObject;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+
 import cn.gocoding.common.Bizlayer;
 
 import cn.gocoding.common.BizlayerCallback;
@@ -27,9 +35,30 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
+                Bizlayer.call("http.test_get", null, new BizlayerCallback() {
+                    @Override
+                    public void callback(String data) {
+                        System.out.println(data);
+                        try {
+                            String d = data;
+                            JSONObject jsonObject = new JSONObject(data);
+                        } catch (Exception e) {
+
+                        }
+                    }
+                });
             }
         });
-        Bizlayer.initBiz(this, "lua", Environment.getExternalStorageDirectory().getAbsolutePath().concat("/common"));
+        String path = Environment.getExternalStorageDirectory().getAbsolutePath().concat("/common");
+        Bizlayer.initBiz(this, "lua", path);
+
+        Bizlayer.call("http.test_get", null, new BizlayerCallback() {
+            @Override
+            public void callback(String data) {
+                System.out.println(data);
+            }
+        });
+
 
 //        Bizlayer.call("server.connect", null, new BizlayerCallback() {
 //            @Override
@@ -40,15 +69,15 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-        for (int i = 0; i < 1; i ++) {
-            Bizlayer.call("native.get_error_code", null, new BizlayerCallback() {
-                @Override
-                public void callback(String data) {
-                    System.out.println(count);
-                    count ++;
-                }
-            });
-        }
+//        for (int i = 0; i < 1; i ++) {
+//            Bizlayer.call("native.get_error_code", null, new BizlayerCallback() {
+//                @Override
+//                public void callback(String data) {
+//                    System.out.println(count);
+//                    count ++;
+//                }
+//            });
+//        }
 //        for (int i = 0; i < 500; i ++) {
 //            Bizlayer.logw("log to android : " + i);
 //        }

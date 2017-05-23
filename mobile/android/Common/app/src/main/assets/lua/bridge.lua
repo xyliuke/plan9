@@ -19,6 +19,18 @@ function lua_c_bridge:get_id()
     return __native_get_id__()
 end
 
+function lua_c_bridge:notify(to_, type_, data_)
+    local n = {aux = {to = to_, type = type_}}
+    if type(data_) == "object" then
+        n.result = {data = data_}
+    else
+        n.result = {data = {data = data_}}
+    end
+
+    lua_c_bridge:log_i("lua notify data : " .. lua_c_bridge:tostring(n))
+    __notify__(n)
+end
+
 --- lua调用c++函数的封装
 -- @param method c++中注册的函数名
 -- @param param 参数,为table值
@@ -38,6 +50,11 @@ function lua_c_bridge:call_native(method, param, callback)
         end
         __native_call__(id, method, param, false);
     end
+end
+--- lua中写log函数,INFO级别
+-- @param msg 日志内容
+function lua_c_bridge:log_d(msg)
+    lua_c_bridge:call_native("log", {level = "debug", msg = msg, target = "lua"})
 end
 --- lua中写log函数,INFO级别
 -- @param msg 日志内容
@@ -63,9 +80,12 @@ function lua_c_bridge.callback_from_c(param)
     local callback = lua_c_bridge.callback_map[id]
     if callback then
         param.aux.action = "callback"
-        param.aux.callback_id = nil
         callback(param)
-        lua_c_bridge.callback_map[id] = nil
+        if param == nil or param.aux == nil or param.aux.once == nil or param.aux.once then
+            param.aux.callback_id = nil
+            lua_c_bridge.callback_map[id] = nil
+        end
+
     end
 end
 
@@ -80,9 +100,9 @@ end
 --- 这个函数供lua调用,用来将值回调给c++
 -- @param param 由c++传递来的参数
 -- @param result 回调的成功或失败,值必须为boolean值或者nil值,如果为nil则为false
--- @param data 回调给C++的数据圣贤,必须为table值或nil值
+-- @param data 回调给C++的数据,必须为table值或nil值
 -- @param data_style 检测data是否符合data_style定义的格式,可以为nil
-function lua_c_bridge:callback(param, result, data, data_style)
+function lua_c_bridge:callback(param, result, data, error, reason, data_style)
     if param then
         if param.result == nil then
             param.result = {}
@@ -97,12 +117,16 @@ function lua_c_bridge:callback(param, result, data, data_style)
                 return
             end
         end
+        if not param.result.success then
+            param.result.error = error
+            param.result.reason = reason
+        end
         if data then
             if type(data) == "table" then
                 param.result.data = data;
             else
-                lua_c_bridge:log_e("callback from lua param error, data must be table")
-                return
+                param.result.data = {data = data}
+                lua_c_bridge:log_w("callback from lua param warning, data should be table, but is not. we change to it")
             end
         else
             param.result.data = data;
@@ -171,7 +195,9 @@ function lua_c_bridge:tostring(obj)
                 tmp[#tmp + 1] = lua_c_bridge:tostring(v)
                 tmp[#tmp + 1] = ","
             end
-            tmp[#tmp] = nil
+            if tmp[#tmp] == "," then
+                tmp[#tmp] = nil
+            end
             tmp[#tmp + 1] = "]"
         else
             tmp[#tmp + 1] = "{"
@@ -181,7 +207,9 @@ function lua_c_bridge:tostring(obj)
                 tmp[#tmp + 1] = lua_c_bridge:tostring(v)
                 tmp[#tmp + 1] = ","
             end
-            tmp[#tmp] = nil
+            if tmp[#tmp] == "," then
+                tmp[#tmp] = nil
+            end
             tmp[#tmp + 1] = "}"
         end
 
@@ -228,8 +256,8 @@ function lua_c_bridge.call_lua(param)
     local last = func
     func = func[methods[#methods]]
     if func ~= nil and type(func) == "function" then
-        func(last, param, function(param, result, data, data_style)
-            lua_c_bridge:callback(param, result, data, data_style);
+        func(last, param, function(param, result, data, error, reason, data_style)
+            lua_c_bridge:callback(param, result, data, error, reason, data_style);
         end)
     else
         lua_c_bridge:log_e("can not find lua function, param:\n " .. lua_c_bridge:tostring(param))
@@ -264,7 +292,6 @@ end
 
 
 
-
 --- 注册lua中可供c++调用的函数
 -- @param name 函数的命名空间,即函数的包装table名
 -- @param func 函数实体
@@ -287,6 +314,7 @@ end
 function native:set_platform(param)
     lua_c_bridge.platform = param.args.platform
     lua_c_bridge:log_i("platform set " .. lua_c_bridge.platform)
+    lua_c_bridge:call_native("tcp_connect", {ip = "127.0.0.1", port = 8880})
 end
 
 lua_c_bridge:register_lua_function("native", native)
