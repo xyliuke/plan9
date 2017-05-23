@@ -8,6 +8,7 @@
 #include <functional>
 #include <string>
 #include <map>
+#include <memory>
 
 namespace plan9 {
 

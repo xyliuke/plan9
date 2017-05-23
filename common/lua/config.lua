@@ -24,6 +24,8 @@ function config:get_config(param, callback)
         tcp_notify_function = "tcp.tcp_notify", -- tcp 连接、读取、写入数据事件处理函数，使用前提是必须在lib中有tcp项
 --        compress = true, -- tcp包是否压缩
 --        encrypt = false,  -- tcp包是否加密,如果需要加密,则必须要压缩
+        ssl_verify_peer = false,
+        ssl_verify_host = false,
         lib = {"http", "algo", "database", "file", "tcp"}  --加载的库名
     }, nil)
 end

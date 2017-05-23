@@ -10,7 +10,7 @@
 #include <functional>
 #include <memory>
 #include <json/JSONObject.h>
-#include "lua.hpp"
+#include <lua/lua.hpp>
 
 namespace plan9
 {

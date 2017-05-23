@@ -13,6 +13,7 @@
 #include <thread/thread_wrap.h>
 #include <error/error_num.h>
 #include <thread/timer_wrap.h>
+#include <network/async_http.h>
 #include "algorithm/compress.h"
 #include "http_init.h"
 #include "algo_init.h"
@@ -78,15 +79,13 @@ namespace plan9
                 lua_bind::instance().call(method, param, [=](JSONObject result) mutable {
                     bool succ;
                     std::string error = success(result, &succ);
-                    if (succ) {
-                        if (callback != nullptr) {
-                            callback(result);
-                        }
-                    } else {
+                    if (!succ) {
                         //调用失败,则查询失败原因
                         if (error == LUA_FUNCTION_NOT_EXSIT) {
                             log_wrap::io().e(method, " is not register");
                         }
+                    }
+                    if (callback != nullptr) {
                         callback(result);
                     }
                 });
@@ -442,8 +441,10 @@ namespace plan9
 
         bfs::path bridge = p / "bridge.lua";
         bfs::path common = p / "common.lua";
-        assert(lua_bind::instance().lua_bind_loadfile(bridge.string()));
-        assert(lua_bind::instance().lua_bind_loadfile(common.string()));
+        bool ret = lua_bind::instance().lua_bind_loadfile(bridge.string());
+        log_wrap::lua().d("load lua file ", bridge.string(), " success ? ", ret);
+        ret = lua_bind::instance().lua_bind_loadfile(common.string());
+        log_wrap::lua().d("load lua file ", common.string(), " success ? ", ret);
 
         if (is_zip) {
             bfs::remove_all(lua_path_);
@@ -513,6 +514,14 @@ namespace plan9
 
                     if (data.has("tcp_notify_function")) {
                         tcp_notify_function = data["tcp_notify_function"].get_string();
+                    }
+
+                    if (data.has("ssl_verify_peer")) {
+                        async_http::set_ssl_verifypeer(data["ssl_verify_peer"].get_bool());
+                    }
+
+                    if (data.has("ssl_verify_host")) {
+                        async_http::set_ssl_verifyhost(data["ssl_verify_host"].get_bool());
                     }
 
 //                    if (data.has("compress")) {

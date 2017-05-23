@@ -7,6 +7,7 @@
 #include <boost/asio.hpp>
 #include <thread>
 #include <thread/thread_define.h>
+#include <string>
 
 namespace plan9
 {
@@ -105,7 +106,8 @@ namespace plan9
             using namespace boost::asio;
             boost::asio::io_service io;
             boost::asio::ip::tcp::resolver resolver(io);
-            boost::asio::ip::tcp::resolver::query query(url, std::to_string(port));
+//            boost::asio::ip::tcp::resolver::query query(url, std::to_string(port));
+            boost::asio::ip::tcp::resolver::query query(url, "8080");
             ip::tcp::resolver::iterator i = resolver.resolve(query);
             std::shared_ptr<std::vector<std::tuple<std::string, int >>> ret(new std::vector<std::tuple<std::string, int >>);
             for(; i != ip::tcp::resolver::iterator(); ++i) {

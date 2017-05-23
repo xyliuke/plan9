@@ -18,6 +18,7 @@ namespace plan9 {
         bool repeat;
     };
 
+    static std::map<int, std::string> tid_thread_id;
 
     std::map<int, std::shared_ptr<std::thread>> thread_dispatch::thread_map;
     std::map<int, std::shared_ptr<std::list<std::function<void(void)>>>> thread_dispatch::thread_queue;
@@ -44,6 +45,9 @@ namespace plan9 {
         }
         uint16_t count = 0;
         std::shared_ptr<std::thread> thread(new std::thread([=]() mutable {
+            std::stringstream ss;
+            ss << std::this_thread::get_id();
+            tid_thread_id[tid] = ss.str();
             while (true) {
                 if (stop_) {
                     break;
@@ -88,6 +92,14 @@ namespace plan9 {
     void thread_dispatch::post(int tid, std::function<void(void)> func) {
         thread_mutex_raii();
         if (thread_map.find(tid) != thread_map.end()) {
+            auto t = thread_map[tid];
+            std::stringstream ss;
+            ss << std::this_thread::get_id();
+            if (tid_thread_id[tid] == ss.str()) {
+                log_wrap::io().d("current thread is background thread");
+                func();
+                return;
+            }
             if (thread_queue.find(tid) != thread_queue.end()) {
                 auto queue = thread_queue[tid];
                 queue->push_back(func);

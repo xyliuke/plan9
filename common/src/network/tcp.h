@@ -9,6 +9,8 @@
 #include <memory>
 #include <string>
 #include <functional>
+#include <tuple>
+#include <vector>
 
 
 /**
@@ -33,7 +35,7 @@ namespace plan9 {
          */
         void connect(std::string ip, int port);
 
-        static void resolver(std::string url, int port, std::function<void(std::shared_ptr<std::vector<std::tuple<std::string, int>>>)> callback);
+        static void resolver(std::string url, int port, std::function<void(std::shared_ptr<std::vector<std::tuple<std::string, int> > >) > callback);
         /**
          * 重新连接服务器
          */

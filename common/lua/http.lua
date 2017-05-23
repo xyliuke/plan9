@@ -13,7 +13,7 @@ local util = lua_c_bridge:get_module("util")
 -- @param header_ http头部参数，table值
 -- @param callback 回调
 function http:get(url_str, header_, callback)
-    local p = {type = "get", model = "sync", url = url_str, header = header_}
+    local p = {type = "get", model = "asyn", url = url_str, header = header_}
     lua_c_bridge:call_native("http", p, callback)
 end
 

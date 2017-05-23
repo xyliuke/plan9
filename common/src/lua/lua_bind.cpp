@@ -4,7 +4,6 @@
 
 #include "lua_bind.h"
 
-#include <json/json_wrap.h>
 
 #include <iostream>
 #include <util/UUID.h>
@@ -87,6 +86,7 @@ namespace plan9 {
             lua_pushcfunction(L, pcall_error_function);
             register_callback();
             is_load_ = true;
+            log_wrap::lua().d("lua init success");
             return true;
         }
 
@@ -426,6 +426,7 @@ namespace plan9 {
                         break;
                     } else if (type == LUA_TNIL) {
                         ret = false;
+                        break;
                     }
                 }
             }

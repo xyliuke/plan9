@@ -36,11 +36,13 @@ namespace plan9
 
     void log::init() {
         if (!exist()) {
-            ofs.open(filepath, std::ios::app);
+            ofs.close();
+            ofs.open(filepath, std::ios::app | std::ios::in);
             isInit = true;
         }
         if (!isInit) {
-            ofs.open(filepath, std::ios::app);
+            ofs.close();
+            ofs.open(filepath, std::ios::app | std::ios::in);
             isInit = true;
         }
     }

@@ -44,8 +44,14 @@ namespace plan9
         ss << time::microseconds();
         ss << "-";
 
-        char r[4];
-        sprintf(r, "%04d", UUID::random());
+        int r = UUID::random();
+        if (r < 10) {
+            ss << "000";
+        } else if (r < 100) {
+            ss << "00";
+        } else if (r < 1000) {
+            ss << "0";
+        }
         ss << r;
         ss << "-";
 
@@ -72,8 +78,8 @@ namespace plan9
 
     int UUID::random(int max) {
         std::random_device device;
-        std :: default_random_engine e(device()) ;
-        std::uniform_int_distribution<> u(0, max);
+        std::default_random_engine e(device()) ;
+        std::uniform_int_distribution<int> u(0, max);
         return u(e);
     }
 }

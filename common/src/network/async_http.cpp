@@ -17,6 +17,8 @@ namespace plan9
 {
     static float download_interval = 1;
     static boost::asio::io_service service;
+    static long verify_peer = 1L;
+    static long verify_host = 2L;
     struct socket_info {
         socket_info(boost::asio::io_service &io) : socket(io), mask(0){
         }
@@ -393,8 +395,8 @@ namespace plan9
             curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
             curl_easy_setopt(curl, CURLOPT_POST, 1);
             curl_easy_setopt(curl, CURLOPT_VERBOSE, 1);
-            curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
-            curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
+            curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, verify_peer);
+            curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, verify_host);
             curl_easy_setopt(curl, CURLOPT_DEBUGFUNCTION, debug_callback);
             curl_easy_setopt(curl, CURLOPT_DEBUGDATA, &ho);
             curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
@@ -475,8 +477,9 @@ namespace plan9
             curl_easy_setopt(curl, CURLOPT_DEBUGFUNCTION, debug_callback);
             curl_easy_setopt(curl, CURLOPT_DEBUGDATA, ho);
 
-            curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
-            curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
+            curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, verify_peer);
+            curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, verify_host);
+
             if (timeout_second > 0) {
                 curl_easy_setopt(curl, CURLOPT_TIMEOUT, timeout_second);
             } else {
@@ -531,8 +534,8 @@ namespace plan9
             curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
             curl_easy_setopt(curl, CURLOPT_POST, 1);
             curl_easy_setopt(curl, CURLOPT_VERBOSE, 1);
-            curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
-            curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
+            curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, verify_peer);
+            curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, verify_host);
             curl_easy_setopt(curl, CURLOPT_DEBUGFUNCTION, &debug_callback);
             curl_easy_setopt(curl, CURLOPT_DEBUGDATA, ho);
             curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
@@ -599,8 +602,8 @@ namespace plan9
             curl_easy_setopt(curl, CURLOPT_PRIVATE, ho);
             curl_easy_setopt(curl, CURLOPT_OPENSOCKETFUNCTION, open_socket);
             curl_easy_setopt(curl, CURLOPT_CLOSESOCKETFUNCTION, close_socket);
-            curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
-            curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
+            curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, verify_peer);
+            curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, verify_host);
 
             curl_easy_setopt(curl, CURLOPT_DEBUGFUNCTION, &debug_callback);
             curl_easy_setopt(curl, CURLOPT_DEBUGDATA, ho);
@@ -714,5 +717,11 @@ namespace plan9
         return curl_code == CURLE_OK;
     }
 
+    void async_http::set_ssl_verifypeer(bool verify) {
+        verify_peer = verify ? 1L : 0L;
+    }
+    void async_http::set_ssl_verifyhost(bool verify) {
+        verify_host = verify ? 2L : 0L;
+    }
 
 }

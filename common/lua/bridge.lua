@@ -125,8 +125,8 @@ function lua_c_bridge:callback(param, result, data, error, reason, data_style)
             if type(data) == "table" then
                 param.result.data = data;
             else
-                lua_c_bridge:log_e("callback from lua param error, data must be table")
-                return
+                param.result.data = {data = data}
+                lua_c_bridge:log_w("callback from lua param warning, data should be table, but is not. we change it")
             end
         else
             param.result.data = data;

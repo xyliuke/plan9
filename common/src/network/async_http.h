@@ -37,6 +37,9 @@ namespace plan9 {
 
         static bool is_timeout(int curl_code);
         static bool is_ok(int curl_code);
+
+        static void set_ssl_verifypeer(bool verify);
+        static void set_ssl_verifyhost(bool verify);
     private:
         async_http();
         class asyn_http_impl;

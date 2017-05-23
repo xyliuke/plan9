@@ -5,7 +5,7 @@
 #include "sqlite_warp.h"
 #include <sqlite3.h>
 #include <iostream>
-#import "log/log_wrap.h"
+#include "log/log_wrap.h"
 namespace plan9
 {
     static std::map<int, std::shared_ptr<result_set>> tmp_;

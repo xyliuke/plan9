@@ -45,6 +45,8 @@ namespace plan9 {
         std::string trim(std::string str);
         std::string trim2(std::string str);
 
+        std::string replace_all(std::string str, std::string old, std::string newer);
+
         /**
          * 将char数据转变成string打印
          */

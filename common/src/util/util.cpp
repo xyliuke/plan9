@@ -210,4 +210,18 @@ namespace plan9
     bool util::get_dir_info(std::string path, long *capacity, long *free, long *available) {
         return impl->get_dir_info(path, capacity, free, available);
     }
+
+    std::string util::replace_all(std::string str, std::string old, std::string newer) {
+        using namespace std;
+        string::size_type pos = 0;
+        string::size_type srcLen = old.size();
+        string::size_type desLen = newer.size();
+        pos = str.find(old, pos);
+        while ((pos != string::npos))
+        {
+            str.replace(pos, srcLen, newer);
+            pos = str.find(old, (pos + desLen));
+        }
+        return str;
+    }
 }

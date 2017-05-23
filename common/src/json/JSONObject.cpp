@@ -1379,7 +1379,7 @@ namespace plan9 {
                 auto it = value_object->begin();
                 while (it != value_object->end()) {
 
-                    ss << it->first << ":" << it->second->to_string();
+                    ss << "\"" << it->first << "\"" << ":" << it->second->to_string();
 
                     if (index != (size - 1)) {
                         ss << ",";

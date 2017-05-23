@@ -14,6 +14,7 @@ namespace plan9{
 #ifdef THREAD_ENABLE
         if (!background) {
             thread_dispatch::create(1);
+            background = true;
         }
 
         thread_dispatch::post(1, func);
@@ -25,6 +26,7 @@ namespace plan9{
     int thread_wrap::post_background(std::function<void(void)> function, long milliseconds, bool repeat) {
         if (!background) {
             thread_dispatch::create(1);
+            background = true;
         }
         return thread_dispatch::post(1, function, milliseconds, repeat);
     }
