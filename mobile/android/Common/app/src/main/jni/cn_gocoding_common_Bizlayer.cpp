@@ -73,6 +73,11 @@ void JNICALL Java_cn_gocoding_common_Bizlayer_stop(JNIEnv *, jclass)
     plan9::common::stop();
 }
 
+jstring JNICALL Java_cn_gocoding_common_Bizlayer_createid(JNIEnv *e, jclass)
+{
+    return util_string::to_jstring(e, plan9::UUID::id());
+}
+
 static void call(JNIEnv* env, std::string method, std::string param, bool isCallback) {
     if ("log" != method) {
         std::stringstream ss;

@@ -23,6 +23,9 @@ JNIEXPORT void JNICALL Java_cn_gocoding_common_Bizlayer_init
 JNIEXPORT void JNICALL Java_cn_gocoding_common_Bizlayer_stop
   (JNIEnv *, jclass);
 
+JNIEXPORT jstring JNICALL Java_cn_gocoding_common_Bizlayer_createid
+  (JNIEnv *, jclass);
+
 /*
  * Class:     cn_gocoding_common_Bizlayer
  * Method:    call

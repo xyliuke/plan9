@@ -30,6 +30,18 @@ namespace plan9
         static std::string base64(std::string text);
         static std::string base64_decode(std::string text);
 
+        static std::string rsa_public_key_file_encrypt_openssl(std::string key_file, std::string text);
+        static std::string rsa_public_key_file_decrypt_openssl(std::string key_file, std::string text);
+        static std::string rsa_private_key_file_decrypt_openssl(std::string key_file, std::string text);
+        static std::string rsa_private_key_file_encrypt_openssl(std::string key_file, std::string text);
+
+        static std::string rsa_public_key_encrypt_openssl(std::string key_content, std::string text);
+        static std::string rsa_public_key_decrypt_openssl(std::string key_content, std::string text);
+        static std::string rsa_private_key_decrypt_openssl(std::string key_content, std::string text);
+        static std::string rsa_private_key_encrypt_openssl(std::string key_content, std::string text);
+
+        static bool create_rsa_private_public_key_file(std::string private_key_file, std::string public_key_file, int length = 1024);
+        static bool create_rsa_private_public_key(char* private_key, int* private_key_len, char* public_key, int* public_key_len, int length = 1024);
     };
 }
 

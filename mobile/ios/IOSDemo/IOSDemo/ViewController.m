@@ -8,6 +8,7 @@
 
 #import "ViewController.h"
 #import "BizProxy.h"
+#import "JsonHelper.h"
 
 @interface ViewController ()
 @property (nonatomic, strong) NSTimer* timer;
@@ -34,12 +35,18 @@
 
 - (void) action
 {
-    NSLog(@"xxxxxxxxxxx\n");
+//    NSLog(@"xxxxxxxxxxx\n");
 //    [@"ddd" hasSuffix:@""];
 //    [BizProxy call:@"server.send" param:@{@"test_data" : @"hello world from ios"} callback:^(NSDictionary *data) {
 //        NSLog(@"callback : %@", data);
 //    }];
 //    [BizProxy logI:@"test lua log"];
+//    NSString* string = @"{aux:{action:\"callback\",id:\"ID-I-1495513584357823-0097-DJ\",to:\"http.test_get\"},result:{data:{code:-1,message:\"uri match failed\"},success:true}}";
+//    NSString* string = @"{\"code\":-1,\"message\":\"uri match failed.\",\"data\":[]}";
+//    NSDictionary*dic = [JsonHelper string2json:test];
+//    NSError* error;
+//    NSDictionary* dic = [NSJSONSerialization JSONObjectWithData:[string dataUsingEncoding:NSUTF8StringEncoding] options:NSJSONReadingMutableLeaves error: &error];
+    
     [BizProxy call:@"http.test_get" param:nil callback:^(NSDictionary *data) {
         NSLog(@"%@", data);
     }];

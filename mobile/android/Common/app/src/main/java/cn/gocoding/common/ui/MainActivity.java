@@ -39,12 +39,6 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void callback(String data) {
                         System.out.println(data);
-                        try {
-                            String d = data;
-                            JSONObject jsonObject = new JSONObject(data);
-                        } catch (Exception e) {
-
-                        }
                     }
                 });
             }
@@ -52,12 +46,12 @@ public class MainActivity extends AppCompatActivity {
         String path = Environment.getExternalStorageDirectory().getAbsolutePath().concat("/common");
         Bizlayer.initBiz(this, "lua", path);
 
-        Bizlayer.call("http.test_get", null, new BizlayerCallback() {
-            @Override
-            public void callback(String data) {
-                System.out.println(data);
-            }
-        });
+//        Bizlayer.call("http.test_get", null, new BizlayerCallback() {
+//            @Override
+//            public void callback(String data) {
+//                System.out.println(data);
+//            }
+//        });
 
 
 //        Bizlayer.call("server.connect", null, new BizlayerCallback() {

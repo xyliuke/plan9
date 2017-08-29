@@ -45,6 +45,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		1F5896A11ED3F25D00B4CDDC /* JsonHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JsonHelper.h; path = biz/JsonHelper.h; sourceTree = "<group>"; };
 		1F67607B1C2D28BA00441D5F /* TestBizlayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TestBizlayer.m; sourceTree = "<group>"; };
 		1FB197631C2CF4BB00CFC44F /* IOSDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = IOSDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1FB197671C2CF4BB00CFC44F /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -187,6 +188,7 @@
 		1FB197991C2CF50E00CFC44F /* biz */ = {
 			isa = PBXGroup;
 			children = (
+				1F5896A11ED3F25D00B4CDDC /* JsonHelper.h */,
 				1FB1983E1C2D1CF600CFC44F /* bizlayer.h */,
 				1FB1979C1C2CF55400CFC44F /* BizProxy.h */,
 				1FB1979D1C2CF55400CFC44F /* BizProxy.m */,

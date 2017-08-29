@@ -103,6 +103,7 @@ static void(^callabck_to)(NSDictionary*);
         
         if (callback) {
             plan9::common::call([method UTF8String], [p_str UTF8String], [=](std::string result){
+                NSLog(@"callback from bizlayer %@", [NSString stringWithUTF8String:result.c_str()]);
                 callback([JsonHelper string2json:[[NSString alloc] initWithUTF8String:result.c_str()]]);
             });
         } else {

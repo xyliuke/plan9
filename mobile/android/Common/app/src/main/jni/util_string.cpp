@@ -3,6 +3,7 @@
 //
 
 #include "util_string.h"
+#include <stdlib.h>
 
 std::string util_string::to_string(JNIEnv *env, jstring jstr) {
     char* rtn = NULL;

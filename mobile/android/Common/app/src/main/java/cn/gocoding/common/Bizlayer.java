@@ -22,24 +22,25 @@ public class Bizlayer {
      * @return
      */
     private static String createID() {
-        StringBuffer sb = new StringBuffer();
-        sb.append("ID");
-        sb.append(System.currentTimeMillis());
-        sb.append(ALP[i]);
-        sb.append(ALP[j]);
-
-        if (j > 24) {
-            j = 0;
-            if (i > 24) {
-                i = 0;
-            } else {
-                i ++;
-            }
-        } else {
-            j ++;
-        }
-
-        return sb.toString();
+//        StringBuffer sb = new StringBuffer();
+//        sb.append("ID");
+//        sb.append(System.currentTimeMillis());
+//        sb.append(ALP[i]);
+//        sb.append(ALP[j]);
+//
+//        if (j > 24) {
+//            j = 0;
+//            if (i > 24) {
+//                i = 0;
+//            } else {
+//                i ++;
+//            }
+//        } else {
+//            j ++;
+//        }
+//
+//        return sb.toString();
+        return createid();
     }
 
     /**
@@ -126,6 +127,7 @@ public class Bizlayer {
     public static native void logi(String msg);
     public static native void logw(String msg);
     public static native void loge(String msg);
+    public static native String createid();
 
     private static Map<String, BizlayerCallback> callbackMap = new HashMap<>();
     private static int i = 0, j = 0;
