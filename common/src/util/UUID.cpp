@@ -25,7 +25,6 @@ namespace plan9
         static char i = 0;
         static char j = 0;
         std::stringstream ss;
-        ss << "ID-";
 
 #ifdef IOS
         ss << "I-";
@@ -40,8 +39,9 @@ namespace plan9
 #else
         ss << "O-";
 #endif
-
-        ss << time::microseconds();
+        long long int ms = time::microseconds();
+        ms = ms & 0xFFFFFFFFFFF;
+        ss << ms;
         ss << "-";
 
         int r = UUID::random();

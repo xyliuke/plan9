@@ -14,6 +14,7 @@
 #include <error/error_num.h>
 #include <thread/timer_wrap.h>
 #include <network/async_http.h>
+#include <network/async_uv_http.h>
 #include "algorithm/compress.h"
 #include "http_init.h"
 #include "algo_init.h"
@@ -358,6 +359,13 @@ namespace plan9
             } else {
                 cmd_factory::instance().callback(param, ERROR_PARAMETER, util::instance().cat(ERROR_STRING(ERROR_PARAMETER), " refer to timer_id required"));
             }
+        });
+
+        cmd_factory::instance().register_cmd("test_func", [](JSONObject param){
+            async_uv_http::instance().get(param["args.url"].get_string(), 0, nullptr, [=](int curl_code, std::string debug_trace, long http_state, char* data, size_t len){
+                std::string str(data, len);
+                log_wrap::net().e("test_func output ", curl_code, "\n", debug_trace, "\n", http_state, "\n", str);
+            });
         });
 
         /**

@@ -71,6 +71,7 @@ LOCAL_CFLAGS += -I$(LOCAL_PATH)/../../../../../../../3rd/sqlite/
 LOCAL_CFLAGS += -I$(LOCAL_PATH)/../../../../../../../3rd/cryptopp565/
 LOCAL_CFLAGS += -I$(LOCAL_PATH)/../../../../../../../3rd/curl/android/include/
 LOCAL_CFLAGS += -I$(LOCAL_PATH)/../../../../../../../3rd/libuv-1.x/android-include/
+LOCAL_CFLAGS += -I$(LOCAL_PATH)/../../../../../../../3rd/
 LOCAL_CFLAGS += -D__ARM_ARCH_5__
 LOCAL_CFLAGS += -DANDROID
 LOCAL_CFLAGS += -lstdc++

@@ -14,21 +14,15 @@
 #include "crypto_wrap.h"
 #include "md5.h"
 #include "rsa.h"
-#include<openssl/rsa.h>
-#include<openssl/pem.h>
-#include<openssl/err.h>
+#include <openssl/rsa.h>
+#include <openssl/pem.h>
+#include <openssl/err.h>
 
 
 namespace plan9
 {
 
     static const char alp[] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
-
-//    CryptoPP::RandomPool & GlobalRNG()
-//    {
-//        static CryptoPP::RandomPool randomPool;
-//        return randomPool;
-//    }
 
     std::string crypto_wrap::MD5(std::string text) {
         CryptoPP::Weak::MD5 md5;
@@ -193,59 +187,51 @@ namespace plan9
     }
 
 
-    std::string crypto_wrap::rsa_public_key_file_encrypt_openssl(std::string key, std::string text) {
+    std::string crypto_wrap::rsa_public_key_file_encrypt(std::string key, std::string text, bool *error) {
         std::shared_ptr<RSA> rsa = get_rsa_from_file(key, true);
-        bool error;
-        std::string ret = rsa_public_op_data(rsa, text, true, &error);
+        std::string ret = rsa_public_op_data(rsa, text, true, error);
         return ret;
     }
 
-    std::string crypto_wrap::rsa_private_key_file_decrypt_openssl(std::string key, std::string text) {
+    std::string crypto_wrap::rsa_private_key_file_decrypt(std::string key, std::string text, bool *error) {
         std::shared_ptr<RSA> rsa = get_rsa_from_file(key, false);
-        bool error;
-        std::string ret = rsa_private_op_data(rsa, text, false, &error);
+        std::string ret = rsa_private_op_data(rsa, text, false, error);
         return ret;
     }
 
-    std::string crypto_wrap::rsa_private_key_file_encrypt_openssl(std::string key, std::string text) {
+    std::string crypto_wrap::rsa_private_key_file_encrypt(std::string key, std::string text, bool *error) {
         std::shared_ptr<RSA> rsa = get_rsa_from_file(key, false);
-        bool error;
-        std::string ret = rsa_private_op_data(rsa, text, true, &error);
+        std::string ret = rsa_private_op_data(rsa, text, true, error);
         return ret;
     }
 
-    std::string crypto_wrap::rsa_public_key_file_decrypt_openssl(std::string key, std::string text) {
+    std::string crypto_wrap::rsa_public_key_file_decrypt(std::string key, std::string text, bool *error) {
         std::shared_ptr<RSA> rsa = get_rsa_from_file(key, true);
-        bool error;
-        std::string ret = rsa_public_op_data(rsa, text, false, &error);
+        std::string ret = rsa_public_op_data(rsa, text, false, error);
         return ret;
     }
 
-    std::string crypto_wrap::rsa_public_key_encrypt_openssl(std::string key_content, std::string text) {
+    std::string crypto_wrap::rsa_public_key_encrypt(std::string key_content, std::string text, bool *error) {
         auto rsa = get_rsa_from_content(key_content, true);
-        bool error;
-        std::string ret = rsa_public_op_data(rsa, text, true, &error);
+        std::string ret = rsa_public_op_data(rsa, text, true, error);
         return ret;
     }
 
-    std::string crypto_wrap::rsa_public_key_decrypt_openssl(std::string key_content, std::string text) {
+    std::string crypto_wrap::rsa_public_key_decrypt(std::string key_content, std::string text, bool *error) {
         std::shared_ptr<RSA> rsa = get_rsa_from_content(key_content, true);
-        bool error;
-        std::string ret = rsa_public_op_data(rsa, text, false, &error);
+        std::string ret = rsa_public_op_data(rsa, text, false, error);
         return ret;
     }
 
-    std::string crypto_wrap::rsa_private_key_encrypt_openssl(std::string key_content, std::string text) {
+    std::string crypto_wrap::rsa_private_key_encrypt(std::string key_content, std::string text, bool *error) {
         std::shared_ptr<RSA> rsa = get_rsa_from_content(key_content, false);
-        bool error;
-        std::string ret = rsa_private_op_data(rsa, text, true, &error);
+        std::string ret = rsa_private_op_data(rsa, text, true, error);
         return ret;
     }
 
-    std::string crypto_wrap::rsa_private_key_decrypt_openssl(std::string key_content, std::string text) {
+    std::string crypto_wrap::rsa_private_key_decrypt(std::string key_content, std::string text, bool *error) {
         std::shared_ptr<RSA> rsa = get_rsa_from_content(key_content, false);
-        bool error;
-        std::string ret = rsa_private_op_data(rsa, text, false, &error);
+        std::string ret = rsa_private_op_data(rsa, text, false, error);
         return ret;
     }
 
@@ -331,7 +317,7 @@ namespace plan9
         RSA_free(rsa);
         BN_free(bne);
 
-        return ret == 1;
+        return true;
     }
 
 }

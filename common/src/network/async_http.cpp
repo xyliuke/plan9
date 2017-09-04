@@ -102,10 +102,12 @@ namespace plan9
                 ho->debug_stream << std::string(data, size);
                 break;
         }
+        log_wrap::net().d("debug_callback ", ho->debug_stream.str());
         return 0;
     }
 
     static size_t write_callback(char *data, size_t n, size_t l, void *p) {
+        log_wrap::net().d("write_callback");
         http_object *h = (http_object *) p;
         size_t clen = n * l;
         if (h->cap == 0) {
@@ -174,6 +176,8 @@ namespace plan9
         CURL *easy;
         CURLcode res;
 
+        log_wrap::net().d("check multi curl");
+
         while((msg = curl_multi_info_read(aho->curlm, &msgs_left))) {
             if(msg->msg == CURLMSG_DONE) {
                 easy = msg->easy_handle;
@@ -195,20 +199,25 @@ namespace plan9
     static void event_callback(void* data, std::shared_ptr<socket_info> tcp_socket, curl_socket_t curl_socket, CURL* curl, int action, const boost::system::error_code &err) {
         asyn_http_object* aho = (asyn_http_object*)data;
 
+        log_wrap::net().d("event callback action : ", action);
+
         if (err) {
             log_wrap::net().e("function : ", __FUNCTION__, ", socket : ", curl_socket, ", action : ", action, " error : ", err.message());
             CURLMcode code = curl_multi_socket_action(aho->curlm, tcp_socket->socket.native_handle(), CURL_CSELECT_ERR, &aho->still_running);
         } else {
             CURLMcode code = curl_multi_socket_action(aho->curlm, tcp_socket->socket.native_handle(), action, &aho->still_running);
+            log_wrap::net().d("event callback multi socket action ", code);
         }
 
         check_multi_curl(data);
 
         if (aho->still_running <= 0) {
+            log_wrap::net().d("event callback cancel timer ");
             timer.cancel();
         } else {
             int action_continue = (tcp_socket->mask) & action;
             if (action_continue) {
+                log_wrap::net().d("event callback set socket");
                 set_socket(tcp_socket, curl_socket, curl, action_continue, data);
             }
         }
@@ -216,6 +225,7 @@ namespace plan9
 
     static void set_socket(std::shared_ptr<socket_info> tcp_socket, curl_socket_t curl_socket, CURL *curl, int action, void* data) {
 
+        log_wrap::net().d("set socket action ", action);
 
         if (action == CURL_POLL_IN) {
             //socket readable
@@ -236,6 +246,7 @@ namespace plan9
     }
 
     static int socket_callback(CURL *e, curl_socket_t s, int what, void *data, void *socket_ptr) {
+        log_wrap::net().d("socket callback what ", what);
         asyn_http_object* aho = (asyn_http_object*)data;
         int* action_ptr = (int*)socket_ptr;
         auto it = socket_map.find(s);
@@ -256,6 +267,9 @@ namespace plan9
         }
 
         if (what == CURL_POLL_REMOVE) {
+//            if (socket_ptr) {
+//                free(socket_ptr);
+//            }
         } else {
             //set socket
             set_socket(tcp_socket, s, e, what, data);
@@ -265,6 +279,7 @@ namespace plan9
     }
 
     static void asio_timer_callback(const boost::system::error_code& error, void* data) {
+        log_wrap::net().d("asio timer callback ", error.message());
         if (!error) {
             asyn_http_object* aho = (asyn_http_object*)data;
             CURLMcode code = curl_multi_socket_action(aho->curlm, CURL_SOCKET_TIMEOUT, 0, &aho->still_running);
@@ -275,6 +290,8 @@ namespace plan9
 
     static int timer_callback(CURLM *multi, long timeout_ms, void *data) {
         timer.cancel();
+
+        log_wrap::net().d("timer callback timeout ", timeout_ms);
 
         if (timeout_ms > 0) {
             timer.expires_from_now(boost::posix_time::millisec(timeout_ms));
@@ -290,7 +307,7 @@ namespace plan9
 
     static curl_socket_t open_socket(void *clientp, curlsocktype purpose, struct curl_sockaddr *address) {
         curl_socket_t sockfd = CURL_SOCKET_BAD;
-
+        log_wrap::net().d("curl socket type", purpose, "address family", address->family);
         //创建socket
         if(purpose == CURLSOCKTYPE_IPCXN && address->family == AF_INET) {
             socket_info* tcp_socket = new socket_info(service);
@@ -373,7 +390,7 @@ namespace plan9
                   std::function<void(int curl_code, std::string debug_trace, long http_state, char *data, size_t len)> callback) {
             init();
 
-            CURL *curl = create_post_easy_crul(url, timeout_second, header, form_params, callback);
+            CURL *curl = create_post_easy_curl(url, timeout_second, header, form_params, callback);
             if (curl) {
                 CURLMcode code = curl_multi_add_handle(multi_curl, curl);
 
@@ -381,8 +398,11 @@ namespace plan9
             }
         }
 
-        CURL* create_post_easy_crul(std::string url, long timeout_second, std::shared_ptr<std::map<std::string, std::string>> header, std::shared_ptr<std::map<std::string, std::string>> form_params,
-                  std::function<void(int curl_code, std::string debug_trace, long http_state, char *data, size_t len)> callback) {
+        CURL* create_post_easy_curl(std::string url, long timeout_second,
+                                    std::shared_ptr<std::map<std::string, std::string>> header,
+                                    std::shared_ptr<std::map<std::string, std::string>> form_params,
+                                    std::function<void(int curl_code, std::string debug_trace, long http_state,
+                                                       char *data, size_t len)> callback) {
             http_object* ho = new http_object;
 
             CURL *curl = curl_easy_init();
@@ -604,6 +624,7 @@ namespace plan9
             curl_easy_setopt(curl, CURLOPT_CLOSESOCKETFUNCTION, close_socket);
             curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, verify_peer);
             curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, verify_host);
+            curl_easy_setopt(curl, CURLOPT_FAILONERROR, 1L);
 
             curl_easy_setopt(curl, CURLOPT_DEBUGFUNCTION, &debug_callback);
             curl_easy_setopt(curl, CURLOPT_DEBUGDATA, ho);
@@ -633,10 +654,13 @@ namespace plan9
 
         void run() {
             if (service.stopped()) {
+                log_wrap::net().d("service reset");
                 service.reset();
             }
 
+            log_wrap::net().d("service run before");
             service.run();
+            log_wrap::net().d("service run after");
             curl_multi_cleanup(multi_curl);
             multi_curl = NULL;
         }

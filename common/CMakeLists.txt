@@ -6,9 +6,10 @@ set(SYSDEPMEM "macosx")
 #set(CMAKE_OSX_ARCHITECTURES  x86_64)
 
 #添加搜索头文件路径
-include_directories(../3rd/jsoncpp/dist ../3rd/boost_1_63_0 ../3rd/googletest/googletest/include ../3rd/zlib/ ../3rd/unzip ../3rd/curl ../3rd/cryptopp565 ../3rd/sqlite)
+include_directories(../3rd ../3rd/jsoncpp/dist ../3rd/boost_1_63_0 ../3rd/googletest/googletest/include ../3rd/zlib/ ../3rd/unzip ../3rd/curl ../3rd/cryptopp565 ../3rd/sqlite
+        ../3rd/libuv-1.x/include ../3rd/libuv-1.x/src)
 #添加搜索库路径
-link_directories(../3rd/boost_1_63_0/lib ../3rd/googletest/googletest ../3rd/sqlite)
+link_directories(../3rd/boost_1_63_0/lib ../3rd/googletest/googletest ../3rd/sqlite ../3rd/libuv-1.x/lib/macosx ../3rd/openssl-1.0.2l)
 
 set(SOURCE_FILES main.cpp)
 
@@ -26,7 +27,8 @@ aux_source_directory(../3rd/sqlite/ SQLITE_SRC)
 #aux_source_directory(../3rd/freeimage/LibPNG/ PNG_SRC)
 #aux_source_directory(../3rd/freeimage/FreeImageToolkit/ FREE_IMG_TK_SRC)
 #aux_source_directory(../3rd/MagickCore/ MAGICK_CORE_SRC)
-#aux_source_directory(../3rd/curl/lib CURL_SRC)
+#aux_source_directory(../3rd/libuv-1-1.x/src UV_SRC)
+#aux_source_directory(../3rd/libuv-1-1.x/src/unix UV_UNIX_SRC)
 aux_source_directory(src/commander COMMADNER_SRC)
 aux_source_directory(src/json JSONWRAP_SRC)
 aux_source_directory(src/util/ UTIL_SRC)
@@ -41,14 +43,13 @@ aux_source_directory(src/algorithm/ ALG_SRC)
 aux_source_directory(src/error/ ERROR_SRC)
 aux_source_directory(src/image/ IMG_SRC)
 
-
 aux_source_directory(test/ TEST_SRC)
 
 
 #生成可执行文件
 add_executable(common ${SOURCE_FILES} ${COMMADNER_SRC} ${TEST_SRC} ${JSONCPP_SRC} ${JSONWRAP_SRC} ${UTIL_SRC}
         ${LOG_SRC} ${LUA_SRC} ${INIT_SRC} ${DATABASE_SRC} ${NETWORK_SRC} ${THREAD_SRC} ${SIGNAL_SRC} ${ALG_SRC}
-        ${ZLIB_SRC} ${ZIP_SRC} ${CRYPTO_SRC} ${ERROR_SRC} ${IMG_SRC} ${SQLITE_SRC}
+        ${ZLIB_SRC} ${ZIP_SRC} ${CRYPTO_SRC} ${ERROR_SRC} ${IMG_SRC} ${SQLITE_SRC} ${UV_SRC} ${UV_UNIX_SRC} ${UV_ALL_SRC}
 #        ${FREE_IMG_SRC}
 #        ${JPEG_SRC}
 #        ${JPEG_SRC} ${PNG_SRC} ${FREE_IMG_TK_SRC}
@@ -60,4 +61,4 @@ add_executable(common ${SOURCE_FILES} ${COMMADNER_SRC} ${TEST_SRC} ${JSONCPP_SRC
 #add_library(common SHARED ${SOURCE_FILES} ${COMMADNER_SRC} ${JSONCPP_SRC} ${JSONWRAP_SRC} ${UTIL_SRC} ${LOG_SRC} ${LUA_SRC} ${INIT_SRC} ${DATABASE_SRC})
 
 
-target_link_libraries(common boost_system boost_thread boost_filesystem boost_date_time gtest curl)
+target_link_libraries(common boost_system boost_thread boost_filesystem boost_date_time gtest curl uv ssl crypto)
