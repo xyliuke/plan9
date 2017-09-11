@@ -50,12 +50,15 @@ TEST(common_test, init) {
 //    plan9::common::set_notify_function([=](std::string data){
 //        std::cout << "notify data " << data << std::endl;
 //    });
-    plan9::common::set_macosx_platform();
+//    plan9::common::set_macosx_platform();
     JSONObject args;
-    args["type"] = "gen";
-    plan9::common::call_("rsa", args, [=](JSONObject result){
-        std::cout << result.to_string() << std::endl;
-    });
+//    args["type"] = "gen";
+//    plan9::common::call_("rsa", args, [=](JSONObject result){
+//        std::cout << result.to_string() << std::endl;
+//    });
+
+    args["url"] = "https://api.guazipai.com";
+    plan9::common::call_("test_func", args, nullptr);
 
 //    JSONObject p;
 //    p["file"] = "./1.jpg";

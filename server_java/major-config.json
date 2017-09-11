@@ -1,0 +1,6 @@
+{
+  "identity": "major-config-server",
+  "port": 8081,
+  "version": 1,
+  "check-client-disconnect-period" : 600000
+}

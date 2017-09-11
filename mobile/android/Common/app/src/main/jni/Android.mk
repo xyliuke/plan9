@@ -81,7 +81,7 @@ MY_CPP_LIST += $(wildcard $(LOCAL_PATH)/../../../../../../../common/src/*/*.c)
 MY_CPP_LIST += $(wildcard $(LOCAL_PATH)/../../../../../../../3rd/jsoncpp/dist/*.cpp)
 MY_CPP_LIST += $(wildcard $(LOCAL_PATH)/../../../../../../../3rd/zlib/*.c)
 MY_CPP_LIST += $(wildcard $(LOCAL_PATH)/../../../../../../../3rd/unzip/*.c)
-# MY_CPP_LIST += $(wildcard $(LOCAL_PATH)/../../../../../../../3rd/sqlite/*.c)
+MY_CPP_LIST += $(wildcard $(LOCAL_PATH)/../../../../../../../3rd/sqlite/*.c)
 MY_CPP_LIST += $(wildcard $(LOCAL_PATH)/../../../../../../../3rd/cryptopp565/*.cpp)
 
 LOCAL_SRC_FILES := $(MY_CPP_LIST:$(LOCAL_PATH)/%=%)

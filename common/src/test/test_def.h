@@ -25,13 +25,13 @@
 
 #ifdef TEST_ENABLE
 
-//#define COMMON_TEST
+#define COMMON_TEST
 //#define IMAGE_TEST
 //#define COMMANDER_TEST
 //#define JSON_TEST
 //#define LOG_TEST
 //#define TIME_TEST
-#define UTIL_TEST
+//#define UTIL_TEST
 //#define DATABASE_TEST
 //#define LUA_TEST
 //#define DATABASE_TEST

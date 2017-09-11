@@ -1,0 +1,14 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="server_java:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/server_java_jar</output-path>
+    <root id="archive" name="server_java.jar">
+      <element id="module-output" name="server_java" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/log4j-api-2.5.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/junit-4.12.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/junit.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/log4j-core-2.5.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/hamcrest-core-1.3.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/fastjson-1.2.8.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>

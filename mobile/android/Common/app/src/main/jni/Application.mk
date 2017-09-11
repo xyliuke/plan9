@@ -9,7 +9,7 @@ APP_STL := gnustl_static
 NDK_TOOLCHAIN_VERSION := clang
 # NDK_TOOLCHAIN_VERSION := 4.9
 TARGET_PLATFORM := android-21
-APP_PLATFORM ：= android-21
+# APP_PLATFORM ：= android-21
 APP_OPTIM := debug
 
 

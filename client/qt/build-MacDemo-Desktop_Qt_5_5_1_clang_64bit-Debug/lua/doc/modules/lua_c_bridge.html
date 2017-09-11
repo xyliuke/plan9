@@ -1,0 +1,571 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<head>
+    <title>Reference</title>
+    <link rel="stylesheet" href="../ldoc.css" type="text/css" />
+</head>
+<body>
+
+<div id="container">
+
+<div id="product">
+	<div id="product_logo"></div>
+	<div id="product_name"><big><b></b></big></div>
+	<div id="product_description"></div>
+</div> <!-- id="product" -->
+
+
+<div id="main">
+
+
+<!-- Menu -->
+
+<div id="navigation">
+<br/>
+<h1>common库lua文档</h1>
+
+<ul>
+  <li><a href=".././doc.html">Index</a></li>
+</ul>
+
+<h2>Contents</h2>
+<ul>
+<li><a href="#Functions">Functions</a></li>
+</ul>
+
+
+<h2>Modules</h2>
+<ul class="nowrap">
+  <li><strong>lua_c_bridge</strong></li>
+  <li><a href="../modules/config.html">config</a></li>
+  <li><a href="../modules/data_check_style.html">data_check_style</a></li>
+  <li><a href="../modules/error_code.html">error_code</a></li>
+  <li><a href="../modules/server.html">server</a></li>
+  <li><a href="../modules/table_check.html">table_check</a></li>
+</ul>
+
+</div>
+
+<div id="content">
+
+<h1>Module <code>lua_c_bridge</code></h1>
+<p>lua和c的桥接层,用来完成c和lua的交互</p>
+<p>
+
+</p>
+
+
+<h2><a href="#Functions">Functions</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#get_id">get_id ()</a></td>
+	<td class="summary">调用c++函数,获取唯一的id</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#call_native">call_native (method, param, callback)</a></td>
+	<td class="summary">lua调用c++函数的封装</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#log_i">log_i (msg)</a></td>
+	<td class="summary">lua中写log函数,INFO级别</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#log_w">log_w (msg)</a></td>
+	<td class="summary">lua中写log函数,WARN级别</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#log_e">log_e (msg)</a></td>
+	<td class="summary">lua中写log函数,ERROR级别</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#callback_from_c">callback_from_c (param)</a></td>
+	<td class="summary">这个函数是供c++调用的, 以此来达到lua调用c++函数的而callback的结果</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#callback_direct">callback_direct (result)</a></td>
+	<td class="summary">这个函数供lua调用,lua回调给c++</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#callback">callback (param, result, data, data_style)</a></td>
+	<td class="summary">这个函数供lua调用,用来将值回调给c++</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#split">split (s, p)</a></td>
+	<td class="summary">将字符串使用某一字符分隔,如a.b 使用.号分隔结果就是a  b</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#tostring">tostring (obj)</a></td>
+	<td class="summary">将lua中的table数据转换成json格式的字符串</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#split_function">split_function (s)</a></td>
+	<td class="summary">分隔函数名,函数名使用.点运算来表示</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#call_lua">call_lua (param)</a></td>
+	<td class="summary">c++调用lua的统一入口</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#is_ios">is_ios ()</a></td>
+	<td class="summary">判断当前宿主是否ios</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#is_android">is_android ()</a></td>
+	<td class="summary">判断当前宿主是否android</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#is_windows">is_windows ()</a></td>
+	<td class="summary">判断当前宿主是否windows</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#is_macosx">is_macosx ()</a></td>
+	<td class="summary">判断当前宿主是否macosx</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#register_lua_function">register_lua_function (name, func)</a></td>
+	<td class="summary">注册lua中可供c++调用的函数</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#get_module">get_module (name)</a></td>
+	<td class="summary">得到在lua<em>c</em>bridge注册的函数</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#native:set_platform">native:set_platform (param)</a></td>
+	<td class="summary">设置当前平台,供内部使用</td>
+	</tr>
+</table>
+
+<br/>
+<br/>
+
+
+    <h2 class="section-header "><a name="Functions"></a>Functions</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "get_id"></a>
+    <strong>get_id ()</strong>
+    </dt>
+    <dd>
+    调用c++函数,获取唯一的id
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+        返回一个唯一的id值
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "call_native"></a>
+    <strong>call_native (method, param, callback)</strong>
+    </dt>
+    <dd>
+    lua调用c++函数的封装
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">method</span>
+         c++中注册的函数名
+        </li>
+        <li><span class="parameter">param</span>
+         参数,为table值
+        </li>
+        <li><span class="parameter">callback</span>
+         回调,可为nil值
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "log_i"></a>
+    <strong>log_i (msg)</strong>
+    </dt>
+    <dd>
+    lua中写log函数,INFO级别
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">msg</span>
+         日志内容
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "log_w"></a>
+    <strong>log_w (msg)</strong>
+    </dt>
+    <dd>
+    lua中写log函数,WARN级别
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">msg</span>
+         日志内容
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "log_e"></a>
+    <strong>log_e (msg)</strong>
+    </dt>
+    <dd>
+    lua中写log函数,ERROR级别
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">msg</span>
+         日志内容
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "callback_from_c"></a>
+    <strong>callback_from_c (param)</strong>
+    </dt>
+    <dd>
+    这个函数是供c++调用的, 以此来达到lua调用c++函数的而callback的结果
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">param</span>
+         c++传递的json格式数据
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "callback_direct"></a>
+    <strong>callback_direct (result)</strong>
+    </dt>
+    <dd>
+    这个函数供lua调用,lua回调给c++
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">result</span>
+         将回调的值整合成一个table后传递给C++
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "callback"></a>
+    <strong>callback (param, result, data, data_style)</strong>
+    </dt>
+    <dd>
+    这个函数供lua调用,用来将值回调给c++
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">param</span>
+         由c++传递来的参数
+        </li>
+        <li><span class="parameter">result</span>
+         回调的成功或失败,值必须为boolean值或者nil值,如果为nil则为false
+        </li>
+        <li><span class="parameter">data</span>
+         回调给C++的数据圣贤,必须为table值或nil值
+        </li>
+        <li><span class="parameter">data_style</span>
+         检测data是否符合data_style定义的格式,可以为nil
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "split"></a>
+    <strong>split (s, p)</strong>
+    </dt>
+    <dd>
+    将字符串使用某一字符分隔,如a.b 使用.号分隔结果就是a  b
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">s</span>
+         字符串
+        </li>
+        <li><span class="parameter">p</span>
+         分隔符
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        返回分隔后字符串数组
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "tostring"></a>
+    <strong>tostring (obj)</strong>
+    </dt>
+    <dd>
+    将lua中的table数据转换成json格式的字符串
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">obj</span>
+         数据
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        返回字符串表示
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "split_function"></a>
+    <strong>split_function (s)</strong>
+    </dt>
+    <dd>
+    分隔函数名,函数名使用.点运算来表示
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">s</span>
+         函数名
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "call_lua"></a>
+    <strong>call_lua (param)</strong>
+    </dt>
+    <dd>
+    c++调用lua的统一入口
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">param</span>
+         传入参数,为json格式数据
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "is_ios"></a>
+    <strong>is_ios ()</strong>
+    </dt>
+    <dd>
+    判断当前宿主是否ios
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+        是则返回true,否则返回false
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "is_android"></a>
+    <strong>is_android ()</strong>
+    </dt>
+    <dd>
+    判断当前宿主是否android
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+        是则返回true,否则返回false
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "is_windows"></a>
+    <strong>is_windows ()</strong>
+    </dt>
+    <dd>
+    判断当前宿主是否windows
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+        是则返回true,否则返回false
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "is_macosx"></a>
+    <strong>is_macosx ()</strong>
+    </dt>
+    <dd>
+    判断当前宿主是否macosx
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+        是则返回true,否则返回false
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "register_lua_function"></a>
+    <strong>register_lua_function (name, func)</strong>
+    </dt>
+    <dd>
+    注册lua中可供c++调用的函数
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">name</span>
+         函数的命名空间,即函数的包装table名
+        </li>
+        <li><span class="parameter">func</span>
+         函数实体
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "get_module"></a>
+    <strong>get_module (name)</strong>
+    </dt>
+    <dd>
+    得到在lua<em>c</em>bridge注册的函数
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">name</span>
+         函数名
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        返回注册的table值
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "native:set_platform"></a>
+    <strong>native:set_platform (param)</strong>
+    </dt>
+    <dd>
+    设置当前平台,供内部使用
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">param</span>
+
+
+
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+</dl>
+
+
+</div> <!-- id="content" -->
+</div> <!-- id="main" -->
+<div id="about">
+<i>generated by <a href="http://github.com/stevedonovan/LDoc">LDoc 1.4.3</a></i>
+<i style="float:right;">Last updated 2016-01-19 21:35:45 </i>
+</div> <!-- id="about" -->
+</div> <!-- id="container" -->
+</body>
+</html>

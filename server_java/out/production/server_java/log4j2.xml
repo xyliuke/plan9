@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="warn">
+    <Appenders>
+        <Console name="Console" target="SYSTEM_OUT">
+            <!--<PatternLayout pattern="%d [%t] %-5p [%c] - %m%n"/>-->
+            <PatternLayout pattern="[%date{yyyy-MM-dd HH:mm:ss.SSS}] [%thread] [%level] [%class] [line:%line] : %message%n"/>
+        </Console>
+
+        <RollingRandomAccessFile name="DebugAppender" fileName="./logs/debug.log" append="true" filePattern="./logs/debug.log.%d{yyyyMMdd}">
+            <PatternLayout>
+                <Pattern>%d %-5p [%c] %m%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="24" modulate="true"/>
+            </Policies>
+        </RollingRandomAccessFile>
+
+    </Appenders>
+    <Loggers>
+        <root level="Debug">
+            <appender-ref ref="Console" />
+            <!--<appender-ref ref="DebugAppender" />-->
+        </root>
+    </Loggers>
+
+</Configuration>

@@ -15,6 +15,7 @@
 #include <thread/timer_wrap.h>
 #include <network/async_http.h>
 #include <network/async_uv_http.h>
+#include <network/async_test.h>
 #include "algorithm/compress.h"
 #include "http_init.h"
 #include "algo_init.h"
@@ -362,10 +363,12 @@ namespace plan9
         });
 
         cmd_factory::instance().register_cmd("test_func", [](JSONObject param){
-            async_uv_http::instance().get(param["args.url"].get_string(), 0, nullptr, [=](int curl_code, std::string debug_trace, long http_state, char* data, size_t len){
-                std::string str(data, len);
-                log_wrap::net().e("test_func output ", curl_code, "\n", debug_trace, "\n", http_state, "\n", str);
-            });
+//            async_uv_http::instance().get(param["args.url"].get_string(), 0, nullptr, [=](int curl_code, std::string debug_trace, long http_state, char* data, size_t len){
+//                std::string str(data, len);
+//                log_wrap::net().e("test_func output ", curl_code, "\n", debug_trace, "\n", http_state, "\n", str);
+//            });
+            std::string path = common::get_cache_path() + "/test.html";
+            async_test::get(param["args.url"].get_string(), path);
         });
 
         /**

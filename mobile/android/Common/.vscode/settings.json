@@ -1,0 +1,9 @@
+{
+    "git.ignoreLimitWarning": true,
+    "files.associations": {
+        "__mutex_base": "c",
+        "mutex": "c",
+        "*.ipp": "c"
+    },
+    "java.configuration.updateBuildConfiguration": "automatic"
+}

@@ -122,7 +122,6 @@ namespace plan9 {
                         });
                     } else {
                         async_http::instance().get(url, timeout, header, [=](int curl_code, std::string debug_trace, long http_state, char *data, size_t len){
-//                        async_uv_http::instance().get(url, timeout, header, [=](int curl_code, std::string debug_trace, long http_state, char *data, size_t len){
                             thread_wrap::post_background([=]() {
                                 string s(data, len);
                                 log_wrap::net().d("http request ", id, " end, the result : ", debug_trace, "\n", s);

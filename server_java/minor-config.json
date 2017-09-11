@@ -1,0 +1,19 @@
+{
+  "identity": "minor-config-server",
+  "client-id" : 1,
+  "port" : 8090,
+  "check-client-disconnect-period" : 600000,
+  "version" : 1,
+
+  "major-config-server-ip" : "127.0.0.1",
+  "major-config-server-port" : 8081,
+
+  "manager-server-type" : 64,
+  "manager-server-num" : 1,
+  "manager-server-jar-path" : "./a.jar",
+  "manager-server-config-file" :
+    [
+        "./a.config"
+    ]
+
+}

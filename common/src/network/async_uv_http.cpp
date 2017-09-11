@@ -226,12 +226,13 @@ namespace plan9
 
     static int start_timeout(CURLM *multi, long timeout_ms, void *userp)
     {
+        log_wrap::net().d("start_timeout ", timeout_ms);
         if(timeout_ms < 0) {
             uv_timer_stop(&timeout);
         }
         else {
             if(timeout_ms == 0)
-                timeout_ms = 1; /* 0 means directly call socket_action, but we'll do it
+                timeout_ms = 10; /* 0 means directly call socket_action, but we'll do it
                          in a bit */
             uv_timer_start(&timeout, on_timeout, timeout_ms, 0);
         }
@@ -243,7 +244,7 @@ namespace plan9
     {
         curl_context_t *curl_context;
         int events = 0;
-
+        log_wrap::net().d("handle_socket", action);
         switch(action) {
             case CURL_POLL_IN:
             case CURL_POLL_OUT:

@@ -1,0 +1,3 @@
+/Users/liuke/workspace/plan9/common/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+/Users/liuke/workspace/plan9/common/cmake-build-debug/CMakeFiles/edit_cache.dir
+/Users/liuke/workspace/plan9/common/cmake-build-debug/CMakeFiles/common.dir
