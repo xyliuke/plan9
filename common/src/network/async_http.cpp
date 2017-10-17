@@ -268,7 +268,7 @@ namespace plan9
 
         if (what == CURL_POLL_REMOVE) {
             if (socket_ptr) {
-                free(socket_ptr);
+//                free(socket_ptr);
             }
         } else {
             //set socket

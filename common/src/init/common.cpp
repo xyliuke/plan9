@@ -7,14 +7,9 @@
 #include <log/log_wrap.h>
 #include <commander/cmd_factory.h>
 #include <lua/lua_bind.h>
-#include <json/json_wrap.h>
-#include <network/tcp_wrap_default.h>
-#include <thread/timer.h>
-#include <thread/thread_wrap.h>
+#include <thread/uv_thread_wrap.hpp>
 #include <error/error_num.h>
-#include <thread/timer_wrap.h>
 #include <network/async_http.h>
-#include <network/async_uv_http.h>
 #include <network/async_test.h>
 #include "algorithm/compress.h"
 #include "http_init.h"
@@ -38,30 +33,41 @@ namespace plan9
     static std::string tcp_notify_function = "";
 
     void common::init(std::string path, std::string lua_path) {
-        path_ = path;
-        cache_path_ = path_ + "/cache";
-        lua_path_ = lua_path;
-        if (!boost::filesystem::exists(path)) {
-            boost::filesystem::create_directories(path);
-        }
-        if (!boost::filesystem::exists(cache_path_)) {
-            boost::filesystem::create_directories(cache_path_);
-        }
-        if (tmp_path_ == "") {
-            tmp_path_ = path_ + "/tmp";
-        }
-        if (!boost::filesystem::exists(tmp_path_)) {
-            boost::filesystem::create_directories(tmp_path_);
-        }
-        init_log();
-        init_lua();
-        init_config();
-        init_function();
+        init(path, lua_path, "");
     }
 
     void common::init(std::string path, std::string lua_path, std::string tmp_path) {
-        tmp_path_ = tmp_path;
-        common::init(path, lua_path);
+        init(path, lua_path, tmp_path, nullptr);
+    }
+
+    void common::init(std::string path, std::string lua_path, std::string tmp_path, std::function<void(void)> callback) {
+        uv_thread_wrap::init([=](){
+            uv_thread_wrap::post_serial_queue([=](){
+                tmp_path_ = tmp_path;
+                path_ = path;
+                cache_path_ = path_ + "/cache";
+                lua_path_ = lua_path;
+                if (!boost::filesystem::exists(path)) {
+                    boost::filesystem::create_directories(path);
+                }
+                if (!boost::filesystem::exists(cache_path_)) {
+                    boost::filesystem::create_directories(cache_path_);
+                }
+                if (tmp_path_ == "") {
+                    tmp_path_ = path_ + "/tmp";
+                }
+                if (!boost::filesystem::exists(tmp_path_)) {
+                    boost::filesystem::create_directories(tmp_path_);
+                }
+                init_log();
+                init_lua();
+                init_config();
+                init_function();
+                if (callback) {
+                    callback();
+                }
+            });
+        });
     }
 
     void common::set_notify_function(std::function<void(std::string)> notify) {
@@ -70,7 +76,7 @@ namespace plan9
     }
 
     void common::call_(std::string method, JSONObject param, std::function<void(JSONObject)> callback) {
-        thread_wrap::post_background([=](){
+        uv_thread_wrap::post_serial_queue([=]() {
             if ("log" == method) {
                 cmd_factory::instance().execute(method, param);
                 return;
@@ -329,37 +335,37 @@ namespace plan9
         timer_json.put("repeat_mode", "true or false, optional, default is false");
         std::string timer_str = timer_json.get_string();
         cmd_factory::instance().register_cmd("create_timer", [timer_str](JSONObject param){
-            if (param.has("args")) {
-                JSONObject args = param["args"];
-                if (args.has("interval")) {
-                    long interval = args["interval"].get_long();
-                    bool repeat = false;
-                    if (args.has("repeat_mode")) {
-                        repeat = args["repeat_mode"].get_bool();
-                    }
-                    std::shared_ptr<int> id(new int);
-                    auto callback = [=]()mutable{
-                        JSONObject ret;
-                        ret.put("timer_id", *id);
-                        ret.put("repeat", repeat);
-                        param["aux.once"] = (!repeat);
-                        cmd_factory::instance().callback(param, true, ret);
-                    };
-                    *id = thread_wrap::post_background(callback, interval, repeat);
-                } else {
-                    cmd_factory::instance().callback(param, ERROR_PARAMETER, util::instance().cat(ERROR_STRING(ERROR_PARAMETER), " refer to ", timer_str));
-                }
-            } else {
-                cmd_factory::instance().callback(param, ERROR_PARAMETER, util::instance().cat(ERROR_STRING(ERROR_PARAMETER), " refer to ", timer_str));
-            }
+//            if (param.has("args")) {
+//                JSONObject args = param["args"];
+//                if (args.has("interval")) {
+//                    long interval = args["interval"].get_long();
+//                    bool repeat = false;
+//                    if (args.has("repeat_mode")) {
+//                        repeat = args["repeat_mode"].get_bool();
+//                    }
+//                    std::shared_ptr<int> id(new int);
+//                    auto callback = [=]()mutable{
+//                        JSONObject ret;
+//                        ret.put("timer_id", *id);
+//                        ret.put("repeat", repeat);
+//                        param["aux.once"] = (!repeat);
+//                        cmd_factory::instance().callback(param, true, ret);
+//                    };
+//                    *id = thread_wrap::post_background(callback, interval, repeat);
+//                } else {
+//                    cmd_factory::instance().callback(param, ERROR_PARAMETER, util::instance().cat(ERROR_STRING(ERROR_PARAMETER), " refer to ", timer_str));
+//                }
+//            } else {
+//                cmd_factory::instance().callback(param, ERROR_PARAMETER, util::instance().cat(ERROR_STRING(ERROR_PARAMETER), " refer to ", timer_str));
+//            }
         });
 
         cmd_factory::instance().register_cmd("cancel_timer", [](JSONObject param){
-            if (param.has("args.timer_id")) {
-                thread_wrap::cancel_background_function(param["args.timer_id"].get_int());
-            } else {
-                cmd_factory::instance().callback(param, ERROR_PARAMETER, util::instance().cat(ERROR_STRING(ERROR_PARAMETER), " refer to timer_id required"));
-            }
+//            if (param.has("args.timer_id")) {
+//                thread_wrap::cancel_background_function(param["args.timer_id"].get_int());
+//            } else {
+//                cmd_factory::instance().callback(param, ERROR_PARAMETER, util::instance().cat(ERROR_STRING(ERROR_PARAMETER), " refer to timer_id required"));
+//            }
         });
 
         cmd_factory::instance().register_cmd("test_func", [](JSONObject param){

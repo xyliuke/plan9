@@ -7,6 +7,7 @@
 #include <util/time.h>
 #include <boost/filesystem.hpp>
 #include <thread>
+#include <thread/uv_thread_wrap.hpp>
 
 namespace plan9
 {
@@ -61,9 +62,9 @@ namespace plan9
             }
 
             ss << msg;
-            if (!util::instance().is_suffix(msg, '\n')) {
+//            if (!util::instance().is_suffix(msg, '\n')) {
                 ss << "\n";
-            }
+//            }
 
             write(ss.str());
         }
@@ -158,19 +159,27 @@ namespace plan9
 
 
     void log_wrap::d_(std::string msg) {
-        impl->write(log_level::L_DEBUG, msg);
+//        thread_wrap::post_serial_background([=](){
+            impl->write(log_level::L_DEBUG, msg);
+//        });
     }
 
     void log_wrap::i_(std::string msg) {
-        impl->write(log_level::L_INFO, msg);
+//        thread_wrap::post_serial_background([=]() {
+            impl->write(log_level::L_INFO, msg);
+//        });
     }
 
     void log_wrap::w_(std::string msg) {
-        impl->write(log_level::L_WARN, msg);
+//        thread_wrap::post_serial_background([=]() {
+            impl->write(log_level::L_WARN, msg);
+//        });
     }
 
     void log_wrap::e_(std::string msg) {
-        impl->write(log_level::L_ERROR, msg);
+//        thread_wrap::post_serial_background([=]() {
+            impl->write(log_level::L_ERROR, msg);
+//        });
     }
 
     void log_wrap::set_level(log_level level) {

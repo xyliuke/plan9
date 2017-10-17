@@ -29,6 +29,8 @@ namespace plan9
          */
         static void init(std::string path, std::string lua_path, std::string tmp_path);
 
+        static void init(std::string path, std::string lua_path, std::string tmp_path, std::function<void(void)> callback);
+
         /**
          * 调用库函数的统一接口,这个函数可以是c++中注册的函数,也可以是lua中的函数.但会优先查找lua中的函数来执行,如果找不到再去查找c++中
          * @param method 函数名
