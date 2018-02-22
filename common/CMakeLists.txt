@@ -3,13 +3,16 @@ project(common)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 set(SYSDEPMEM "macosx")
-#set(CMAKE_OSX_ARCHITECTURES  x86_64)
+set(CMAKE_OSX_ARCHITECTURES  x86_64)
 
 #添加搜索头文件路径
-include_directories(../3rd ../3rd/jsoncpp/dist ../3rd/boost_1_63_0 ../3rd/googletest/googletest/include ../3rd/zlib/ ../3rd/unzip ../3rd/curl ../3rd/cryptopp565 ../3rd/sqlite
-        ../3rd/libuv-1.x/include ../3rd/libuv-1.x/src)
+include_directories(../3rd ../3rd/jsoncpp/dist ../3rd/boost_1_63_0 ../3rd/googletest/googletest/include ../3rd/zlib/ ../3rd/unzip ../3rd/curl ../3rd/sqlite
+        ../3rd/libuv-1.x/include ../3rd/libuv-1.x/src ../3rd/openssl_header)
 #添加搜索库路径
 link_directories(../3rd/boost_1_63_0/lib ../3rd/googletest/googletest ../3rd/sqlite ../3rd/libuv-1.x/lib/macosx ../3rd/openssl-1.0.2l)
+find_library(COREFOUNDATION CoreFoundation)
+find_library(SECURITY Security)
+find_library(CFNETWORK CFNetwork)
 
 set(SOURCE_FILES main.cpp)
 
@@ -42,6 +45,13 @@ aux_source_directory(src/signal/ SIGNAL_SRC)
 aux_source_directory(src/algorithm/ ALG_SRC)
 aux_source_directory(src/error/ ERROR_SRC)
 aux_source_directory(src/image/ IMG_SRC)
+aux_source_directory(src/state/ STATE_SRC)
+aux_source_directory(src/ssl/ SSL_SRC)
+aux_source_directory(src/proxy/ PROXY_SRC)
+aux_source_directory(src/uvwrapper/ UVW_SRC)
+aux_source_directory(src/cert/ CERT_SRC)
+aux_source_directory(src/common/ COMMON_SRC)
+
 
 aux_source_directory(test/ TEST_SRC)
 
@@ -50,6 +60,7 @@ aux_source_directory(test/ TEST_SRC)
 add_executable(common ${SOURCE_FILES} ${COMMADNER_SRC} ${TEST_SRC} ${JSONCPP_SRC} ${JSONWRAP_SRC} ${UTIL_SRC}
         ${LOG_SRC} ${LUA_SRC} ${INIT_SRC} ${DATABASE_SRC} ${NETWORK_SRC} ${THREAD_SRC} ${SIGNAL_SRC} ${ALG_SRC}
         ${ZLIB_SRC} ${ZIP_SRC} ${CRYPTO_SRC} ${ERROR_SRC} ${IMG_SRC} ${SQLITE_SRC} ${UV_SRC} ${UV_UNIX_SRC} ${UV_ALL_SRC}
+        ${STATE_SRC} ${PROXY_SRC} ${SSL_SRC} ${UVW_SRC} ${CERT_SRC} ${COMMON_SRC}
 #        ${FREE_IMG_SRC}
 #        ${JPEG_SRC}
 #        ${JPEG_SRC} ${PNG_SRC} ${FREE_IMG_TK_SRC}
@@ -61,4 +72,5 @@ add_executable(common ${SOURCE_FILES} ${COMMADNER_SRC} ${TEST_SRC} ${JSONCPP_SRC
 #add_library(common SHARED ${SOURCE_FILES} ${COMMADNER_SRC} ${JSONCPP_SRC} ${JSONWRAP_SRC} ${UTIL_SRC} ${LOG_SRC} ${LUA_SRC} ${INIT_SRC} ${DATABASE_SRC})
 
 
-target_link_libraries(common boost_system boost_thread boost_filesystem boost_date_time gtest curl uv ssl crypto)
+target_link_libraries(common boost_system boost_thread boost_filesystem boost_date_time gtest curl uv ssl crypto ${COREFOUNDATION} ${SECURITY}
+        ${CFNETWORK})

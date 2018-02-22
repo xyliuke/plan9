@@ -11,6 +11,7 @@
 #include <sstream>
 #include <boost/filesystem/path.hpp>
 #include <boost/filesystem.hpp>
+#include <curl/curl.h>
 #include "log/log_wrap.h"
 
 namespace plan9
@@ -695,7 +696,77 @@ namespace plan9
     }
 
     std::string async_http::version() {
-        return std::string(curl_version());
+        curl_version_info_data *info = curl_version_info(CURLVERSION_NOW);
+        std::stringstream ss;
+        ss << curl_version();
+        ss << "\ncurl enable features : ";
+        if (info->features & CURL_VERSION_IPV6) {
+            ss << "CURL_VERSION_IPV6\t";
+        }
+        if (info->features & CURL_VERSION_KERBEROS4) {
+            ss << "CURL_VERSION_KERBEROS4\t";
+        }
+        if (info->features & CURL_VERSION_SSL) {
+            ss << "CURL_VERSION_SSL\t";
+        }
+        if (info->features & CURL_VERSION_LIBZ) {
+            ss << "CURL_VERSION_LIBZ\t";
+        }
+        if (info->features & CURL_VERSION_NTLM) {
+            ss << "CURL_VERSION_NTLM\t";
+        }
+        if (info->features & CURL_VERSION_GSSNEGOTIATE) {
+            ss << "CURL_VERSION_GSSNEGOTIATE\t";
+        }
+        if (info->features & CURL_VERSION_DEBUG) {
+            ss << "CURL_VERSION_DEBUG\t";
+        }
+        if (info->features & CURL_VERSION_ASYNCHDNS) {
+            ss << "CURL_VERSION_ASYNCHDNS\t";
+        }
+        if (info->features & CURL_VERSION_SPNEGO) {
+            ss << "CURL_VERSION_SPNEGO\t";
+        }
+        if (info->features & CURL_VERSION_LARGEFILE) {
+            ss << "CURL_VERSION_LARGEFILE\t";
+        }
+        if (info->features & CURL_VERSION_IDN) {
+            ss << "CURL_VERSION_IDN\t";
+        }
+        if (info->features & CURL_VERSION_SSPI) {
+            ss << "CURL_VERSION_SSPI\t";
+        }
+        if (info->features & CURL_VERSION_CONV) {
+            ss << "CURL_VERSION_CONV\t";
+        }
+        if (info->features & CURL_VERSION_CURLDEBUG) {
+            ss << "CURL_VERSION_CURLDEBUG\t";
+        }
+        if (info->features & CURL_VERSION_TLSAUTH_SRP) {
+            ss << "CURL_VERSION_TLSAUTH_SRP\t";
+        }
+        if (info->features & CURL_VERSION_NTLM_WB) {
+            ss << "CURL_VERSION_NTLM_WB\t";
+        }
+        if (info->features & CURL_VERSION_HTTP2) {
+            ss << "CURL_VERSION_HTTP2\t";
+        }
+        if (info->features & CURL_VERSION_GSSAPI) {
+            ss << "CURL_VERSION_GSSAPI\t";
+        }
+        if (info->features & CURL_VERSION_KERBEROS5) {
+            ss << "CURL_VERSION_KERBEROS5\t";
+        }
+        if (info->features & CURL_VERSION_UNIX_SOCKETS) {
+            ss << "CURL_VERSION_UNIX_SOCKETS\t";
+        }
+        if (info->features & CURL_VERSION_PSL) {
+            ss << "CURL_VERSION_PSL\t";
+        }
+        if (info->features & CURL_VERSION_HTTPS_PROXY) {
+            ss << "CURL_VERSION_HTTPS_PROXY\t";
+        }
+        return ss.str();
     }
 
     void async_http::download(std::string url, std::string path, long timeout_second, std::shared_ptr<std::map<std::string, std::string>> header,

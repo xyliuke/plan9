@@ -16,6 +16,7 @@
 #include <json/JSONObject.h>
 #include <wchar.h>
 #include <iconv.h>
+#include <thread/uv_thread_wrap.hpp>
 
 using namespace plan9;
 
@@ -46,19 +47,53 @@ TEST(common_test, init) {
 //    std::wcout << ws;
 //    plan9::common::init("./data", "./abc.zip");
 
-    plan9::common::init("./data", "../lua");
+    JSONObject args;
+//    args["url"] = "https://api.guazipai.com";
+    plan9::common::init("./data", "./lua", "", [=](){
+        uv_thread_wrap::resolve("www.baidu.com", 80, [=](bool suc, std::string reason, std::shared_ptr<std::vector<std::string>> data) {
+            std::cout << suc << "\t" << reason << "\t" << data->size();
+        });
+//        for (int i = 0; i < 30; ++i) {
+//            plan9::common::call_("http.test_get", args, [=](JSONObject data){
+//                std::string str = data.to_string();
+//                std::cout << str << std::endl ;
+//            });
+//        }
+    });
+//    plan9::common::call_("test_func", args, nullptr);
+//    plan9::common::call_("http.test_get", args, [=](JSONObject data){
+//        std::string str = data.to_string();
+//        std::cout << str << std::endl ;
+//    });
+//    plan9::common::call_("http.test_get", args, [=](JSONObject data){
+//        std::string str = data.to_string();
+//        std::cout << str << std::endl ;
+//    });
+//    plan9::common::call_("http.test_get", args, [=](JSONObject data){
+//        std::string str = data.to_string();
+//        std::cout << str << std::endl ;
+//    });
 //    plan9::common::set_notify_function([=](std::string data){
 //        std::cout << "notify data " << data << std::endl;
 //    });
 //    plan9::common::set_macosx_platform();
-    JSONObject args;
+//    JSONObject args;
 //    args["type"] = "gen";
 //    plan9::common::call_("rsa", args, [=](JSONObject result){
 //        std::cout << result.to_string() << std::endl;
 //    });
 
-    args["url"] = "https://api.guazipai.com";
-    plan9::common::call_("test_func", args, nullptr);
+//    args["url"] = "https://api.guazipai.com";
+//    plan9::common::call_("test_func", args, nullptr);
+//    plan9::common::call_("http.test_get", args, [=](JSONObject data){
+//        std::cout << data.to_string() ;
+//    });
+
+    sleep(10);
+//    plan9::common::call_("http.test_get", args, [=](JSONObject data){
+//        std::cout << data.to_string() ;
+//    });
+//    sleep(10);
 
 //    JSONObject p;
 //    p["file"] = "./1.jpg";

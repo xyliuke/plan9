@@ -53,11 +53,17 @@ TEST(algo, crypt) {
     std::string s1 = "abc";
     std::cout << s1 << " md5 " << crypto_wrap::MD5(s1) << std::endl;
 
-    std::cout << s1 << " md5 file " << crypto_wrap::MD5_file("./abc.zip") << std::endl;
-    std::cout << s1 << " md5 file " << crypto_wrap::MD5_file("./abc1.zip") << std::endl;
+    std::cout << s1 << " md5 file " << crypto_wrap::MD5_file("./algo_test") << std::endl;
+    std::cout << s1 << " md5 file " << crypto_wrap::MD5_file("./algo_test") << std::endl;
 
     std::cout << s1 << " sha1 " << crypto_wrap::SHA1(s1) << std::endl;
-    std::cout << s1 << " sha1 file " << crypto_wrap::SHA1_file("./abc.zip") << std::endl;
+    std::cout << s1 << " sha1 file " << crypto_wrap::SHA1_file("./algo_test") << std::endl;
+
+    std::cout << s1 << " sha256 " << crypto_wrap::SHA256(s1) << std::endl;
+    std::cout << s1 << " sha256 file " << crypto_wrap::SHA256_file("./algo_test") << std::endl;
+
+    std::cout << s1 << " sha512 " << crypto_wrap::SHA512(s1) << std::endl;
+    std::cout << s1 << " sha512 file " << crypto_wrap::SHA512_file("./algo_test") << std::endl;
 
     std::cout << s1 << " base64 " << crypto_wrap::base64(s1) << std::endl;
     std::cout << s1 << " base64 decode " << crypto_wrap::base64_decode(crypto_wrap::base64(s1)) << std::endl;

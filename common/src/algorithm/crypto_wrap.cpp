@@ -4,19 +4,20 @@
 #define CRYPTOPP_ENABLE_NAMESPACE_WEAK 1
 
 #include <sstream>
-#include <files.h>
-#include "hex.h"
+//#include <files.h>
+//#include "hex.h"
 #include <boost/filesystem.hpp>
 //#include <cryptopp565/validate.h>
 //#include <cryptopp565/randpool.h>
-#include "sha.h"
-#include "base64.h"
+//#include "sha.h"
+//#include "base64.h"
 #include "crypto_wrap.h"
-#include "md5.h"
-#include "rsa.h"
+//#include "md5.h"
+//#include "rsa.h"
 #include <openssl/rsa.h>
 #include <openssl/pem.h>
 #include <openssl/err.h>
+#include <openssl/md5.h>
 
 
 namespace plan9
@@ -25,13 +26,11 @@ namespace plan9
     static const char alp[] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
 
     std::string crypto_wrap::MD5(std::string text) {
-        CryptoPP::Weak::MD5 md5;
-        CryptoPP::SecByteBlock digest(md5.DigestSize());
-        md5.Update((byte*)text.c_str(), text.length());
-        md5.Final(digest);
         std::stringstream ss;
-        for (int i = 0; i < digest.m_size; ++i) {
-            byte b = digest[i];
+        unsigned char md5[MD5_DIGEST_LENGTH] = {0};
+        ::MD5((const unsigned char*)(text.c_str()), text.length(), md5);
+        for (int i = 0; i < MD5_DIGEST_LENGTH; ++i) {
+            unsigned char b = md5[i];
             int b1 = (b & 0xF0) >> 4;
             int b2 = (b & 0x0F);
             ss << alp[b1];
@@ -43,27 +42,39 @@ namespace plan9
     std::string crypto_wrap::MD5_file(std::string file) {
         using namespace boost::filesystem;
         if (exists(file) && is_regular_file(file)) {
-            CryptoPP::Weak::MD5 md5;
-            const size_t size = (size_t)(CryptoPP::Weak1::MD5::DIGESTSIZE * 2);
-            byte buf[size] = {0};
-            CryptoPP::FileSource(file.c_str(), true,
-                                 new CryptoPP::HashFilter(md5, new CryptoPP::HexEncoder( new CryptoPP::ArraySink(buf, size))));
+            FILE* f = fopen(file.c_str(), "rb");
+            if (f != NULL) {
+                MD5_CTX ctx;
+                MD5_Init(&ctx);
+                char buf[1024] = {0};
+                int len = 0;
+                while ((len = fread(buf, 1, 1024, f)) > 0) {
+                    MD5_Update(&ctx, buf, len);
+                    memset(buf, 0, 1024);
+                }
+                char md5[MD5_DIGEST_LENGTH] = {0};
+                MD5_Final((unsigned char*)md5, &ctx);
+                std::stringstream ss;
+                for (int i = 0; i < MD5_DIGEST_LENGTH; ++i) {
+                    unsigned char b = md5[i];
+                    int b1 = (b & 0xF0) >> 4;
+                    int b2 = (b & 0x0F);
+                    ss << alp[b1];
+                    ss << alp[b2];
+                }
 
-            std::string strHash = std::string(reinterpret_cast<const char*>(buf), size);
-            return strHash;
-        } else {
-            return "";
+                return ss.str();
+            }
         }
+        return "";
     }
 
     std::string crypto_wrap::SHA1(std::string text) {
-        CryptoPP::SHA1 sha1;
-        CryptoPP::SecByteBlock digest(sha1.DigestSize());
-        sha1.Update((byte*)text.c_str(), text.length());
-        sha1.Final(digest);
+        unsigned char sha[SHA_DIGEST_LENGTH] = {0};
+        ::SHA1((const unsigned char*)(text.c_str()), text.length(), sha);
         std::stringstream ss;
-        for (int i = 0; i < digest.m_size; ++i) {
-            byte b = digest[i];
+        for (int i = 0; i < SHA_DIGEST_LENGTH; ++i) {
+            unsigned char b = sha[i];
             int b1 = (b & 0xF0) >> 4;
             int b2 = (b & 0x0F);
             ss << alp[b1];
@@ -75,29 +86,159 @@ namespace plan9
     std::string crypto_wrap::SHA1_file(std::string file) {
         using namespace boost::filesystem;
         if (exists(file) && is_regular_file(file)) {
-            CryptoPP::SHA1 sha1;
-            const size_t size = (size_t) CryptoPP::SHA1::DIGESTSIZE * 2;
-            byte buf[size] = {0};
-            CryptoPP::FileSource(file.c_str(), true, new CryptoPP::HashFilter(sha1, new CryptoPP::HexEncoder(
-                    new CryptoPP::HexEncoder(new CryptoPP::ArraySink(buf, size)))));
-            std::string strHash = std::string(reinterpret_cast<const char *>(buf), size);
-            return strHash;
-        } else {
-            return "";
+            FILE* f = fopen(file.c_str(), "rb");
+            if (f != NULL) {
+                SHA_CTX ctx;
+                SHA1_Init(&ctx);
+                char buf[1024] = {0};
+                int len = 0;
+                while ((len = fread(buf, 1, 1024, f)) > 0) {
+                    SHA1_Update(&ctx, buf, len);
+                    memset(buf, 0, 1024);
+                }
+                char sha[SHA_DIGEST_LENGTH] = {0};
+                SHA1_Final((unsigned char*)sha, &ctx);
+
+                std::stringstream ss;
+                for (int i = 0; i < SHA_DIGEST_LENGTH; ++i) {
+                    unsigned char b = sha[i];
+                    int b1 = (b & 0xF0) >> 4;
+                    int b2 = (b & 0x0F);
+                    ss << alp[b1];
+                    ss << alp[b2];
+                }
+
+                return ss.str();
+            }
         }
+        return "";
+    }
+
+    std::string crypto_wrap::SHA256(std::string text) {
+        unsigned char sha[SHA256_DIGEST_LENGTH] = {0};
+        ::SHA256((const unsigned char*)(text.c_str()), text.length(), sha);
+        std::stringstream ss;
+        for (int i = 0; i < SHA256_DIGEST_LENGTH; ++i) {
+            unsigned char b = sha[i];
+            int b1 = (b & 0xF0) >> 4;
+            int b2 = (b & 0x0F);
+            ss << alp[b1];
+            ss << alp[b2];
+        }
+        return ss.str();
+    }
+
+    std::string crypto_wrap::SHA256_file(std::string file) {
+        using namespace boost::filesystem;
+        if (exists(file) && is_regular_file(file)) {
+            FILE* f = fopen(file.c_str(), "rb");
+            if (f != NULL) {
+                SHA256_CTX ctx;
+                SHA256_Init(&ctx);
+                char buf[1024] = {0};
+                int len = 0;
+                while ((len = fread(buf, 1, 1024, f)) > 0) {
+                    SHA256_Update(&ctx, buf, len);
+                    memset(buf, 0, 1024);
+                }
+                char sha[SHA256_DIGEST_LENGTH] = {0};
+                SHA256_Final((unsigned char*)sha, &ctx);
+
+                std::stringstream ss;
+                for (int i = 0; i < SHA256_DIGEST_LENGTH; ++i) {
+                    unsigned char b = sha[i];
+                    int b1 = (b & 0xF0) >> 4;
+                    int b2 = (b & 0x0F);
+                    ss << alp[b1];
+                    ss << alp[b2];
+                }
+
+                return ss.str();
+            }
+        }
+        return "";
+    }
+
+    std::string crypto_wrap::SHA512(std::string text) {
+        unsigned char sha[SHA512_DIGEST_LENGTH] = {0};
+        ::SHA512((const unsigned char*)(text.c_str()), text.length(), sha);
+        std::stringstream ss;
+        for (int i = 0; i < SHA512_DIGEST_LENGTH; ++i) {
+            unsigned char b = sha[i];
+            int b1 = (b & 0xF0) >> 4;
+            int b2 = (b & 0x0F);
+            ss << alp[b1];
+            ss << alp[b2];
+        }
+        return ss.str();
+    }
+
+    std::string crypto_wrap::SHA512_file(std::string file) {
+        using namespace boost::filesystem;
+        if (exists(file) && is_regular_file(file)) {
+            FILE* f = fopen(file.c_str(), "rb");
+            if (f != NULL) {
+                SHA512_CTX ctx;
+                SHA512_Init(&ctx);
+                char buf[1024] = {0};
+                int len = 0;
+                while ((len = fread(buf, 1, 1024, f)) > 0) {
+                    SHA512_Update(&ctx, buf, len);
+                    memset(buf, 0, 1024);
+                }
+                char sha[SHA512_DIGEST_LENGTH] = {0};
+                SHA512_Final((unsigned char*)sha, &ctx);
+
+                std::stringstream ss;
+                for (int i = 0; i < SHA512_DIGEST_LENGTH; ++i) {
+                    unsigned char b = sha[i];
+                    int b1 = (b & 0xF0) >> 4;
+                    int b2 = (b & 0x0F);
+                    ss << alp[b1];
+                    ss << alp[b2];
+                }
+
+                return ss.str();
+            }
+        }
+        return "";
     }
 
     std::string crypto_wrap::base64(std::string text) {
         std::string ret;
-        CryptoPP::StringSource(text, true, new CryptoPP::Base64Encoder(new CryptoPP::StringSink(ret)));
-        if (ret.at(ret.length() - 1) == '\n') {
-            return ret.substr(0, ret.length() - 1);
-        }
+        BIO* b64 = BIO_new(BIO_f_base64());
+        BIO_set_flags(b64, BIO_FLAGS_BASE64_NO_NL);
+        BIO* bmem = BIO_new(BIO_s_mem());
+        BIO_push(b64, bmem);
+        BIO_write(b64, text.c_str(), text.length());
+        BIO_flush(b64);
+        BUF_MEM* bptr = NULL;
+        BIO_get_mem_ptr(b64, &bptr);
+
+        ret = std::string(bptr->data, bptr->length);
+
+        BIO_free_all(b64);
         return ret;
     }
     std::string crypto_wrap::base64_decode(std::string text) {
         std::string ret;
-        CryptoPP::StringSource(text, true, new CryptoPP::Base64Decoder(new CryptoPP::StringSink(ret)));
+
+        BIO * b64 = NULL;
+        BIO * bmem = NULL;
+        char * buffer = (char *)malloc(text.length());
+        memset(buffer, 0, text.length());
+
+        b64 = BIO_new(BIO_f_base64());
+        BIO_set_flags(b64, BIO_FLAGS_BASE64_NO_NL);
+
+        bmem = BIO_new_mem_buf(text.c_str(), text.length());
+        bmem = BIO_push(b64, bmem);
+        BIO_read(bmem, buffer, text.length());
+
+        ret = std::string(buffer);
+
+        BIO_free_all(bmem);
+
         return ret;
     }
 
@@ -321,3 +462,4 @@ namespace plan9
     }
 
 }
+

@@ -27,6 +27,12 @@ namespace plan9
         static std::string SHA1(std::string text);
         static std::string SHA1_file(std::string file);
 
+        static std::string SHA256(std::string text);
+        static std::string SHA256_file(std::string file);
+
+        static std::string SHA512(std::string text);
+        static std::string SHA512_file(std::string file);
+
         static std::string base64(std::string text);
         static std::string base64_decode(std::string text);
 

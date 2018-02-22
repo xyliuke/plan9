@@ -24,6 +24,7 @@ public:
     static int post_timer(std::function<void(void)> callback, long time, long repeat);
     static int post_timer(std::function<void(void)> callback, long time, long repeat, int repeat_times);
     static void cancel_timer(int timer_id);
+    static void resolve(std::string url, int port, std::function<void(bool, std::string resaon, std::shared_ptr<std::vector<std::string>>)> callback);
 };
 
 #endif /* thread_wrap_hpp */

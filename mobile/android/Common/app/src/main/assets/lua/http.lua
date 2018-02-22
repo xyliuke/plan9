@@ -14,7 +14,7 @@ local util = lua_c_bridge:get_module("util")
 -- @param callback 回调
 function http:get(url_str, header_, callback)
     local p = {type = "get",
---        model = "sync",
+        model = "async",
         url = url_str, header = header_}
     lua_c_bridge:call_native("http", p, callback)
 --    lua_c_bridge:call_native("test_func", p, callback)
@@ -59,7 +59,7 @@ function http:upload(param, url_str, path_, header_, form_, process_, callback)
 end
 
 function http:test_get(param, callback)
-    self:get("https://api.guazipai.com", nil, function(result)
+    self:get("https://api.chesupai.cn", nil, function(result)
 --    self:get("https://www.baidu.com", nil, function(result)
         callback(param, result.result.success, result.result.data, result.result.error, result.result.reason, nil)
     end)
