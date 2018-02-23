@@ -7,7 +7,6 @@
 #include <util/time.h>
 #include <boost/filesystem.hpp>
 #include <thread>
-#include <thread/uv_thread_wrap.hpp>
 
 namespace plan9
 {

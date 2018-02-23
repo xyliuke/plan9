@@ -278,8 +278,8 @@ namespace plan9
                 SSL_load_error_strings();
                 ERR_load_BIO_strings();
                 ctx = SSL_CTX_new(SSLv23_client_method());
-//                SSL_CTX_set_info_callback(ctx, dummy_ssl_info_callback);
-//                SSL_CTX_set_msg_callback(ctx, dummy_ssl_msg_callback);
+                SSL_CTX_set_info_callback(ctx, dummy_ssl_info_callback);
+                SSL_CTX_set_msg_callback(ctx, dummy_ssl_msg_callback);
                 SSL_CTX_set_verify(ctx, SSL_VERIFY_PEER, verify_callback);
                 assert(ctx);
             }

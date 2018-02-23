@@ -971,6 +971,10 @@ namespace plan9 {
         impl->set_response_file(file);
     }
 
+    int ahttp_response::get_response_code() {
+        return impl->get_status();
+    }
+
     long ahttp_response::get_response_data_length() {
         return impl->get_body_len();
     }

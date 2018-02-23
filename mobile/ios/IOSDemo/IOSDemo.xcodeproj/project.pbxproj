@@ -24,7 +24,9 @@
 		1FDCF7FB1E95F6BD00295D42 /* boost.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1FB197A21C2CF70100CFC44F /* boost.framework */; };
 		1FDCF7FC1E95F6BD00295D42 /* libCommon.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1FB1983C1C2D07A700CFC44F /* libCommon.a */; };
 		1FDCF7FE1E95F6BE00295D42 /* libcurl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1FDCF7FD1E95F6BE00295D42 /* libcurl.a */; };
-		1FDCFCFC1E963AD900295D42 /* libcryptopp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1FDCFCFB1E963AD900295D42 /* libcryptopp.a */; };
+		E32F615C203FF9BA006A61CA /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E32F615B203FF9BA006A61CA /* libssl.a */; };
+		E32F615E203FFAB4006A61CA /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E32F615D203FFAB4006A61CA /* libcrypto.a */; };
+		E32F617E203FFEB9006A61CA /* libuv.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E32F617D203FFEB9006A61CA /* libuv.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -78,6 +80,10 @@
 		1FDCFA381E95FB8900295D42 /* libcrypto.0.9.8.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libcrypto.0.9.8.dylib; path = ../../../../../../../usr/lib/libcrypto.0.9.8.dylib; sourceTree = "<group>"; };
 		1FDCFCF91E963ACF00295D42 /* libcryptopp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcryptopp.a; path = ../lib/libcryptopp.a; sourceTree = "<group>"; };
 		1FDCFCFB1E963AD900295D42 /* libcryptopp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcryptopp.a; path = ../lib/libcryptopp.a; sourceTree = "<group>"; };
+		E32F6157203FF982006A61CA /* libssl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libssl.a; path = ../lib/libssl.a; sourceTree = "<group>"; };
+		E32F615B203FF9BA006A61CA /* libssl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libssl.a; path = ../lib/libssl.a; sourceTree = "<group>"; };
+		E32F615D203FFAB4006A61CA /* libcrypto.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcrypto.a; path = ../lib/libcrypto.a; sourceTree = "<group>"; };
+		E32F617D203FFEB9006A61CA /* libuv.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libuv.a; path = ../lib/libuv.a; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -85,10 +91,12 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E32F617E203FFEB9006A61CA /* libuv.a in Frameworks */,
+				E32F615C203FF9BA006A61CA /* libssl.a in Frameworks */,
 				1FDCF7FE1E95F6BE00295D42 /* libcurl.a in Frameworks */,
+				E32F615E203FFAB4006A61CA /* libcrypto.a in Frameworks */,
 				1FDCF7FB1E95F6BD00295D42 /* boost.framework in Frameworks */,
 				1FDCF7FC1E95F6BD00295D42 /* libCommon.a in Frameworks */,
-				1FDCFCFC1E963AD900295D42 /* libcryptopp.a in Frameworks */,
 				1FB1983B1C2D058700CFC44F /* libz.1.dylib in Frameworks */,
 				1FB198391C2D054C00CFC44F /* libc++.1.dylib in Frameworks */,
 				1FB198371C2D02ED00CFC44F /* libstdc++.6.0.9.dylib in Frameworks */,
@@ -115,6 +123,9 @@
 		1FB1975A1C2CF4BB00CFC44F = {
 			isa = PBXGroup;
 			children = (
+				E32F617D203FFEB9006A61CA /* libuv.a */,
+				E32F615D203FFAB4006A61CA /* libcrypto.a */,
+				E32F615B203FF9BA006A61CA /* libssl.a */,
 				1FDCFCFB1E963AD900295D42 /* libcryptopp.a */,
 				1FDCF7FF1E95F6CE00295D42 /* libcurl.a */,
 				1FB1983C1C2D07A700CFC44F /* libCommon.a */,
@@ -199,6 +210,7 @@
 		1FDCF7C21E95F48100295D42 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				E32F6157203FF982006A61CA /* libssl.a */,
 				1FDCFCF91E963ACF00295D42 /* libcryptopp.a */,
 				1FDCFA381E95FB8900295D42 /* libcrypto.0.9.8.dylib */,
 				1FDCF7FD1E95F6BE00295D42 /* libcurl.a */,

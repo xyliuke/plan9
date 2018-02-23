@@ -275,7 +275,7 @@ namespace plan9 {
         std::stringstream ss;
         ss << size;
         std::string s = ss.str();
-        uv_os_setenv("UV_THREADPOOL_SIZE", s.c_str());
+//        uv_os_setenv("UV_THREADPOOL_SIZE", s.c_str());
     }
 
     int uv_wrapper::post_concurrent_queue(std::function<void()> callback) {

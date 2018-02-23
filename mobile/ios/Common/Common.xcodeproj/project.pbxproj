@@ -85,6 +85,15 @@
 		1FFB0CF41E8E6F4500AC72E3 /* zip.c in Sources */ = {isa = PBXBuildFile; fileRef = 1FFB0CED1E8E6F4500AC72E3 /* zip.c */; };
 		1FFB0CF81E8E6FE400AC72E3 /* sqlite_warp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1FFB0CF61E8E6FE400AC72E3 /* sqlite_warp.cpp */; };
 		E32F6156203E7249006A61CA /* local_proxy.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E32F6154203E7249006A61CA /* local_proxy.cpp */; };
+		E32F6161203FFC9A006A61CA /* ahttp_wrapper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E32F615F203FFC99006A61CA /* ahttp_wrapper.cpp */; };
+		E32F6165203FFD4C006A61CA /* state_machine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E32F6163203FFD4C006A61CA /* state_machine.cpp */; };
+		E32F6169203FFD62006A61CA /* ssl_shake.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E32F6168203FFD62006A61CA /* ssl_shake.cpp */; };
+		E32F616D203FFD8E006A61CA /* uv_wrapper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E32F616B203FFD8D006A61CA /* uv_wrapper.cpp */; };
+		E32F6179203FFDA9006A61CA /* string_parser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E32F616F203FFDA9006A61CA /* string_parser.cpp */; };
+		E32F617A203FFDA9006A61CA /* char_array.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E32F6171203FFDA9006A61CA /* char_array.cpp */; };
+		E32F617B203FFDA9006A61CA /* case_insensitive_map.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E32F6175203FFDA9006A61CA /* case_insensitive_map.cpp */; };
+		E32F617C203FFDA9006A61CA /* common_callback.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E32F6177203FFDA9006A61CA /* common_callback.cpp */; };
+		E32F6183203FFED4006A61CA /* err.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E32F6181203FFED4006A61CA /* err.cpp */; };
 		E38F850B202DD5B000C8A8C7 /* cert.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E38F850A202DD5B000C8A8C7 /* cert.cpp */; };
 		E38F850E202DD7C700C8A8C7 /* zlib_wrap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E38F850D202DD7C700C8A8C7 /* zlib_wrap.cpp */; };
 		E38F8513202DD80000C8A8C7 /* ahttp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E38F8510202DD80000C8A8C7 /* ahttp.cpp */; };
@@ -252,6 +261,27 @@
 		1FFB0CF71E8E6FE400AC72E3 /* sqlite_warp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = sqlite_warp.h; sourceTree = "<group>"; };
 		E32F6154203E7249006A61CA /* local_proxy.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = local_proxy.cpp; sourceTree = "<group>"; };
 		E32F6155203E7249006A61CA /* local_proxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = local_proxy.h; sourceTree = "<group>"; };
+		E32F615F203FFC99006A61CA /* ahttp_wrapper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ahttp_wrapper.cpp; sourceTree = "<group>"; };
+		E32F6160203FFC9A006A61CA /* ahttp_wrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ahttp_wrapper.h; sourceTree = "<group>"; };
+		E32F6163203FFD4C006A61CA /* state_machine.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = state_machine.cpp; sourceTree = "<group>"; };
+		E32F6164203FFD4C006A61CA /* state_machine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = state_machine.h; sourceTree = "<group>"; };
+		E32F6167203FFD62006A61CA /* ssl_shake.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ssl_shake.h; sourceTree = "<group>"; };
+		E32F6168203FFD62006A61CA /* ssl_shake.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ssl_shake.cpp; sourceTree = "<group>"; };
+		E32F616B203FFD8D006A61CA /* uv_wrapper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = uv_wrapper.cpp; sourceTree = "<group>"; };
+		E32F616C203FFD8D006A61CA /* uv_wrapper.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = uv_wrapper.hpp; sourceTree = "<group>"; };
+		E32F616F203FFDA9006A61CA /* string_parser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = string_parser.cpp; sourceTree = "<group>"; };
+		E32F6170203FFDA9006A61CA /* common_callback.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = common_callback.hpp; sourceTree = "<group>"; };
+		E32F6171203FFDA9006A61CA /* char_array.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = char_array.cpp; sourceTree = "<group>"; };
+		E32F6172203FFDA9006A61CA /* case_insensitive_map.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = case_insensitive_map.h; sourceTree = "<group>"; };
+		E32F6173203FFDA9006A61CA /* tri_bool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tri_bool.h; sourceTree = "<group>"; };
+		E32F6174203FFDA9006A61CA /* string_parser.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = string_parser.hpp; sourceTree = "<group>"; };
+		E32F6175203FFDA9006A61CA /* case_insensitive_map.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = case_insensitive_map.cpp; sourceTree = "<group>"; };
+		E32F6176203FFDA9006A61CA /* common_callback_err_wrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = common_callback_err_wrapper.h; sourceTree = "<group>"; };
+		E32F6177203FFDA9006A61CA /* common_callback.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = common_callback.cpp; sourceTree = "<group>"; };
+		E32F6178203FFDA9006A61CA /* char_array.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = char_array.h; sourceTree = "<group>"; };
+		E32F6180203FFED4006A61CA /* err.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = err.h; sourceTree = "<group>"; };
+		E32F6181203FFED4006A61CA /* err.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = err.cpp; sourceTree = "<group>"; };
+		E32F6182203FFED4006A61CA /* error_num.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = error_num.h; sourceTree = "<group>"; };
 		E38F8509202DD5B000C8A8C7 /* cert.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cert.h; sourceTree = "<group>"; };
 		E38F850A202DD5B000C8A8C7 /* cert.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cert.cpp; sourceTree = "<group>"; };
 		E38F850C202DD7C600C8A8C7 /* zlib_wrap.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = zlib_wrap.hpp; path = ../../../common/src/algorithm/zlib_wrap.hpp; sourceTree = "<group>"; };
@@ -372,6 +402,11 @@
 		1FB197A61C2CF83800CFC44F /* other */ = {
 			isa = PBXGroup;
 			children = (
+				E32F617F203FFED4006A61CA /* error */,
+				E32F616E203FFDA9006A61CA /* common */,
+				E32F616A203FFD8D006A61CA /* uvwrapper */,
+				E32F6166203FFD62006A61CA /* ssl */,
+				E32F6162203FFD4C006A61CA /* state */,
 				E32F6153203E7249006A61CA /* proxy */,
 				E38F8508202DD5B000C8A8C7 /* cert */,
 				1FDCF8011E95F71400295D42 /* sqlite */,
@@ -543,6 +578,8 @@
 		1FB71D0F1C45F48E00412128 /* network */ = {
 			isa = PBXGroup;
 			children = (
+				E32F615F203FFC99006A61CA /* ahttp_wrapper.cpp */,
+				E32F6160203FFC9A006A61CA /* ahttp_wrapper.h */,
 				E38F8510202DD80000C8A8C7 /* ahttp.cpp */,
 				E38F850F202DD80000C8A8C7 /* ahttp.hpp */,
 				E38F8512202DD80000C8A8C7 /* ahttp1.cpp */,
@@ -602,6 +639,65 @@
 			);
 			name = proxy;
 			path = ../../../common/src/proxy;
+			sourceTree = "<group>";
+		};
+		E32F6162203FFD4C006A61CA /* state */ = {
+			isa = PBXGroup;
+			children = (
+				E32F6163203FFD4C006A61CA /* state_machine.cpp */,
+				E32F6164203FFD4C006A61CA /* state_machine.h */,
+			);
+			name = state;
+			path = ../../../common/src/state;
+			sourceTree = "<group>";
+		};
+		E32F6166203FFD62006A61CA /* ssl */ = {
+			isa = PBXGroup;
+			children = (
+				E32F6167203FFD62006A61CA /* ssl_shake.h */,
+				E32F6168203FFD62006A61CA /* ssl_shake.cpp */,
+			);
+			name = ssl;
+			path = ../../../common/src/ssl;
+			sourceTree = "<group>";
+		};
+		E32F616A203FFD8D006A61CA /* uvwrapper */ = {
+			isa = PBXGroup;
+			children = (
+				E32F616B203FFD8D006A61CA /* uv_wrapper.cpp */,
+				E32F616C203FFD8D006A61CA /* uv_wrapper.hpp */,
+			);
+			name = uvwrapper;
+			path = ../../../common/src/uvwrapper;
+			sourceTree = "<group>";
+		};
+		E32F616E203FFDA9006A61CA /* common */ = {
+			isa = PBXGroup;
+			children = (
+				E32F616F203FFDA9006A61CA /* string_parser.cpp */,
+				E32F6170203FFDA9006A61CA /* common_callback.hpp */,
+				E32F6171203FFDA9006A61CA /* char_array.cpp */,
+				E32F6172203FFDA9006A61CA /* case_insensitive_map.h */,
+				E32F6173203FFDA9006A61CA /* tri_bool.h */,
+				E32F6174203FFDA9006A61CA /* string_parser.hpp */,
+				E32F6175203FFDA9006A61CA /* case_insensitive_map.cpp */,
+				E32F6176203FFDA9006A61CA /* common_callback_err_wrapper.h */,
+				E32F6177203FFDA9006A61CA /* common_callback.cpp */,
+				E32F6178203FFDA9006A61CA /* char_array.h */,
+			);
+			name = common;
+			path = ../../../common/src/common;
+			sourceTree = "<group>";
+		};
+		E32F617F203FFED4006A61CA /* error */ = {
+			isa = PBXGroup;
+			children = (
+				E32F6180203FFED4006A61CA /* err.h */,
+				E32F6181203FFED4006A61CA /* err.cpp */,
+				E32F6182203FFED4006A61CA /* error_num.h */,
+			);
+			name = error;
+			path = ../../../common/src/error;
 			sourceTree = "<group>";
 		};
 		E38F8508202DD5B000C8A8C7 /* cert */ = {
@@ -689,6 +785,7 @@
 				1FFB0CF01E8E6F4500AC72E3 /* iowin32.c in Sources */,
 				1FB1981C1C2CF86500CFC44F /* lparser.c in Sources */,
 				1F209AD01CAB79D70011D40B /* adler32.c in Sources */,
+				E32F6165203FFD4C006A61CA /* state_machine.cpp in Sources */,
 				1FB198281C2CF86500CFC44F /* lvm.c in Sources */,
 				1FB1981F1C2CF86500CFC44F /* lstrlib.c in Sources */,
 				1F209AD11CAB79D70011D40B /* compress.c in Sources */,
@@ -702,6 +799,7 @@
 				1FB198221C2CF86500CFC44F /* ltm.c in Sources */,
 				1F209ADA1CAB79D70011D40B /* zutil.c in Sources */,
 				1F209AD41CAB79D70011D40B /* infback.c in Sources */,
+				E32F6183203FFED4006A61CA /* err.cpp in Sources */,
 				1FB1980A1C2CF86500CFC44F /* lcode.c in Sources */,
 				1FFB0CF81E8E6FE400AC72E3 /* sqlite_warp.cpp in Sources */,
 				1FB198121C2CF86500CFC44F /* lgc.c in Sources */,
@@ -709,22 +807,28 @@
 				1FB198291C2CF86500CFC44F /* lzio.c in Sources */,
 				1FB1973E1C2CDE4300CFC44F /* bizlayer.mm in Sources */,
 				1FB198071C2CF86500CFC44F /* lauxlib.c in Sources */,
+				E32F617B203FFDA9006A61CA /* case_insensitive_map.cpp in Sources */,
 				1FB198201C2CF86500CFC44F /* ltable.c in Sources */,
 				1FB198041C2CF86500CFC44F /* log.cpp in Sources */,
 				1FB198251C2CF86500CFC44F /* luac.c in Sources */,
+				E32F617A203FFDA9006A61CA /* char_array.cpp in Sources */,
 				1F209AD51CAB79D70011D40B /* inffast.c in Sources */,
 				1FB198141C2CF86500CFC44F /* liolib.c in Sources */,
 				1F209AD61CAB79D70011D40B /* inflate.c in Sources */,
+				E32F616D203FFD8E006A61CA /* uv_wrapper.cpp in Sources */,
 				1FFB0CEF1E8E6F4500AC72E3 /* ioapi.c in Sources */,
 				1FB1982C1C2CF86500CFC44F /* UUID.cpp in Sources */,
 				1FB198181C2CF86500CFC44F /* loadlib.c in Sources */,
 				1FB198081C2CF86500CFC44F /* lbaselib.c in Sources */,
 				1FB198151C2CF86500CFC44F /* llex.c in Sources */,
 				1FFB0CF31E8E6F4500AC72E3 /* unzip.c in Sources */,
+				E32F6179203FFDA9006A61CA /* string_parser.cpp in Sources */,
+				E32F6161203FFC9A006A61CA /* ahttp_wrapper.cpp in Sources */,
 				1FB198271C2CF86500CFC44F /* lutf8lib.c in Sources */,
 				1FDCF7C01E95F3D800295D42 /* http_init.cpp in Sources */,
 				1FDCF7BE1E95F3D800295D42 /* database_init.cpp in Sources */,
 				1FB198231C2CF86500CFC44F /* lua.c in Sources */,
+				E32F617C203FFDA9006A61CA /* common_callback.cpp in Sources */,
 				1F209AD21CAB79D70011D40B /* crc32.c in Sources */,
 				1FB1980B1C2CF86500CFC44F /* lcorolib.c in Sources */,
 				1FB197581C2CE4FE00CFC44F /* JsonHelper.m in Sources */,
@@ -745,6 +849,7 @@
 				1FB198261C2CF86500CFC44F /* lundump.c in Sources */,
 				1F209AD31CAB79D70011D40B /* deflate.c in Sources */,
 				1F209AD71CAB79D70011D40B /* inftrees.c in Sources */,
+				E32F6169203FFD62006A61CA /* ssl_shake.cpp in Sources */,
 				1FB198131C2CF86500CFC44F /* linit.c in Sources */,
 				1FB1980F1C2CF86500CFC44F /* ldo.c in Sources */,
 				1FB198061C2CF86500CFC44F /* lapi.c in Sources */,

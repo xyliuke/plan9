@@ -81,12 +81,13 @@ static void(^callabck_to)(NSDictionary*);
     [bizlayer copyLua2Dir:luaSrcPath];
     NSString* data = [bizlayer getDataDir];
     NSString* lua = [bizlayer getLuaDir];
-    plan9::common::init([data UTF8String], [lua UTF8String]);
-    plan9::common::set_ios_platform();
-    callabck_to = notify;
-    plan9::common::set_notify_function([=](std::string result){
-        callabck_to([JsonHelper string2json:[[NSString alloc] initWithUTF8String:result.c_str()]]);
+    plan9::common::init([data UTF8String], [lua UTF8String], "", [=](){
+        plan9::common::set_ios_platform();
+        plan9::common::set_notify_function([=](std::string result){
+            callabck_to([JsonHelper string2json:[[NSString alloc] initWithUTF8String:result.c_str()]]);
+        });
     });
+    callabck_to = notify;
 }
 
 + (void) call:(NSString *)method param:(NSDictionary *)param callback:(void (^)(NSDictionary *))callback

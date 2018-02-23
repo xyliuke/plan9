@@ -7,10 +7,10 @@
 #include <log/log_wrap.h>
 #include <commander/cmd_factory.h>
 #include <lua/lua_bind.h>
-#include <thread/uv_thread_wrap.hpp>
 #include <error/error_num.h>
-#include <network/async_http.h>
-#include <network/async_test.h>
+//#include <network/async_http.h>
+//#include <network/async_test.h>
+#include <uvwrapper/uv_wrapper.hpp>
 #include "algorithm/compress.h"
 #include "http_init.h"
 #include "algo_init.h"
@@ -41,8 +41,8 @@ namespace plan9
     }
 
     void common::init(std::string path, std::string lua_path, std::string tmp_path, std::function<void(void)> callback) {
-        uv_thread_wrap::init([=](){
-            uv_thread_wrap::post_serial_queue([=](){
+        uv_wrapper::init([=](){
+//            uv_wrapper::post_serial_queue([=](){
                 tmp_path_ = tmp_path;
                 path_ = path;
                 cache_path_ = path_ + "/cache";
@@ -66,7 +66,7 @@ namespace plan9
                 if (callback) {
                     callback();
                 }
-            });
+//            });
         });
     }
 
@@ -76,7 +76,7 @@ namespace plan9
     }
 
     void common::call_(std::string method, JSONObject param, std::function<void(JSONObject)> callback) {
-        uv_thread_wrap::post_serial_queue([=]() {
+        uv_wrapper::post_serial_queue([=]() {
             if ("log" == method) {
                 cmd_factory::instance().execute(method, param);
                 return;
@@ -368,14 +368,14 @@ namespace plan9
 //            }
         });
 
-        cmd_factory::instance().register_cmd("test_func", [](JSONObject param){
+//        cmd_factory::instance().register_cmd("test_func", [](JSONObject param){
 //            async_uv_http::instance().get(param["args.url"].get_string(), 0, nullptr, [=](int curl_code, std::string debug_trace, long http_state, char* data, size_t len){
 //                std::string str(data, len);
 //                log_wrap::net().e("test_func output ", curl_code, "\n", debug_trace, "\n", http_state, "\n", str);
 //            });
-            std::string path = common::get_cache_path() + "/test.html";
-            async_test::get(param["args.url"].get_string(), path);
-        });
+//            std::string path = common::get_cache_path() + "/test.html";
+//            async_test::get(param["args.url"].get_string(), path);
+//        });
 
         /**
          * 连接服务器
@@ -534,11 +534,11 @@ namespace plan9
                     }
 
                     if (data.has("ssl_verify_peer")) {
-                        async_http::set_ssl_verifypeer(data["ssl_verify_peer"].get_bool());
+//                        async_http::set_ssl_verifypeer(data["ssl_verify_peer"].get_bool());
                     }
 
                     if (data.has("ssl_verify_host")) {
-                        async_http::set_ssl_verifyhost(data["ssl_verify_host"].get_bool());
+//                        async_http::set_ssl_verifyhost(data["ssl_verify_host"].get_bool());
                     }
 
 //                    if (data.has("compress")) {

@@ -588,6 +588,14 @@ namespace plan9
             mgr->push_task(this);
         }
 
+        void get(std::string url, int timeout, std::shared_ptr<std::map<std::string, std::string>> header, std::function<void(std::shared_ptr<common_callback>ccb, std::shared_ptr<ahttp_request>, std::shared_ptr<ahttp_response>)> callback) {
+            std::shared_ptr<ahttp_request> req = std::make_shared<ahttp_request>();
+            req->set_timeout(timeout);
+            req->set_url(url);
+            req->append_header(header);
+            exec(req, callback);
+        }
+
         static void set_max_connection(int max) {
             mgr->set_max_connection(max);
         }
@@ -1617,6 +1625,12 @@ namespace plan9
 
     void ahttp1::exec(std::shared_ptr<ahttp_request> request, std::function<void(std::shared_ptr<common_callback> ccb, std::shared_ptr<ahttp_request>, std::shared_ptr<ahttp_response>)> callback) {
         impl->exec(request, callback);
+    }
+
+    void ahttp1::get(std::string url, int timeout, std::shared_ptr<std::map<std::string, std::string>> header,
+                     std::function<void(std::shared_ptr<common_callback> ccb, std::shared_ptr<ahttp_request>,
+                                        std::shared_ptr<ahttp_response>)> callback) {
+        impl->get(url, timeout, header, callback);
     }
 
     void ahttp1::is_validate_cert(bool validate) {
