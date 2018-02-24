@@ -6,7 +6,7 @@ set(SYSDEPMEM "macosx")
 set(CMAKE_OSX_ARCHITECTURES  x86_64)
 
 #添加搜索头文件路径
-include_directories(../3rd ../3rd/jsoncpp/dist ../3rd/boost_1_63_0 ../3rd/googletest/googletest/include ../3rd/zlib/ ../3rd/unzip ../3rd/curl ../3rd/sqlite
+include_directories(../3rd ../3rd/boost_1_63_0 ../3rd/googletest/googletest/include ../3rd/zlib/ ../3rd/unzip ../3rd/curl ../3rd/sqlite
         ../3rd/libuv-1.x/include ../3rd/libuv-1.x/src ../3rd/openssl_header)
 #添加搜索库路径
 link_directories(../3rd/boost_1_63_0/lib ../3rd/googletest/googletest ../3rd/sqlite ../3rd/libuv-1.x/lib/macosx ../3rd/openssl-1.0.2l)

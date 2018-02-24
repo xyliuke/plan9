@@ -21,6 +21,7 @@
     // Do any additional setup after loading the view, typically from a nib.
 //    self.view.backgroundColor = [UIColor whiteColor];
     UIButton* btn = [[UIButton alloc] initWithFrame:CGRectMake(100, 100, 100, 100)];
+    btn.backgroundColor = [UIColor whiteColor];
     [btn setTitle:@"测试发送数据" forState:UIControlStateNormal];
     [btn addTarget:self action:@selector(action) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:btn];

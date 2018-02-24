@@ -6,7 +6,6 @@
 #define COMMON_COMMON_H
 
 #include <string>
-#include <json/json.h>
 #include <functional>
 #include <memory>
 #include <json/JSONObject.h>

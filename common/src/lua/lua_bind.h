@@ -6,7 +6,6 @@
 #define LUA_BIND_LUA_BIND_H
 
 #include <string>
-#include <json/json.h>
 #include <functional>
 #include <memory>
 #include <json/JSONObject.h>
