@@ -363,7 +363,8 @@ namespace plan9 {
             uv_timer_stop(t);
             timer_map.erase(timer_id);
             if (t->data != nullptr) {
-                delete t->data;
+                auto f = static_cast<function_wrap<std::function<void(void)>>*>(t->data);
+                delete f;
                 t->data = nullptr;
             }
             reuse_timer_array.push_back(t);
@@ -392,7 +393,7 @@ namespace plan9 {
             if (resolver != nullptr && resolver->data != nullptr) {
                 auto func = (function_wrap<std::function<void(std::shared_ptr<common_callback>, std::shared_ptr<std::vector<std::string>>)>> *) resolver->data;
                 func->function(common_callback::get(), ret);
-                delete resolver->data;
+                delete func;
                 resolver->data = nullptr;
             }
         } else {
@@ -400,7 +401,7 @@ namespace plan9 {
             if (resolver != nullptr && resolver->data != nullptr) {
                 auto func = (function_wrap<std::function<void(std::shared_ptr<common_callback>, std::shared_ptr<std::vector<std::string>>)>> *) resolver->data;
                 func->function(common_callback_err_wrapper::get(E_DNS_RESOLVE), nullptr);
-                delete resolver->data;
+                delete func;
                 resolver->data = nullptr;
             }
         }
