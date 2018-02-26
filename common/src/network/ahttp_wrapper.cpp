@@ -19,10 +19,30 @@ namespace plan9
             using namespace std;
             int id = 0;
             shared_ptr<ahttp1> http = create_http(&id);
-            http->set_debug_mode(true);
+            http->set_debug_mode(true, [=](std::string msg) {
+                log_wrap::net().d(msg);
+            });
             http->get(url, timeout, header, [=](std::shared_ptr<common_callback> ccb, std::shared_ptr<ahttp_request> request, std::shared_ptr<ahttp_response> response) {
-                log_wrap::net().d("http get callback");
+                log_wrap::net().d("http information:\n", request->get_http_string(), "\n", response->to_string(), "\n", http->get_network_info_string());
                 if (callback) {
+                    callback(ccb, response->get_response_code(), response->get_body_string());
+                }
+                remove_http(id);
+            });
+            return id;
+        }
+
+        int post(std::string url, int timeout, std::shared_ptr<std::map<std::string, std::string>> header, std::shared_ptr<std::map<std::string, std::string>> form, std::function<void(std::shared_ptr<common_callback>, int http_code, std::string data)> callback) {
+            using namespace std;
+            int id = 0;
+            shared_ptr<ahttp1> http = create_http(&id);
+            http->set_debug_mode(true, [=](std::string msg) {
+                log_wrap::net().d(msg);
+            });
+            http->post(url, timeout, header, form, [=](std::shared_ptr<common_callback> ccb, std::shared_ptr<ahttp_request> request, std::shared_ptr<ahttp_response> response) {
+                log_wrap::net().d("http information:\n", request->get_http_string(), "\n", response->to_string(), "\n", http->get_network_info_string());
+                if (callback) {
+
                     callback(ccb, response->get_response_code(), response->get_body_string());
                 }
                 remove_http(id);
@@ -62,5 +82,12 @@ namespace plan9
                             std::function<void(std::shared_ptr<common_callback>, int http_code,
                                                std::string data)> callback) {
         return impl->get(url, timeout, header, callback);
+    }
+
+    int ahttp_wrapper::post(std::string url, int timeout, std::shared_ptr<std::map<std::string, std::string>> header,
+                            std::shared_ptr<std::map<std::string, std::string>> form,
+                            std::function<void(std::shared_ptr<common_callback>, int http_code,
+                                               std::string data)> callback) {
+        return impl->post(url, timeout, header, form, callback);
     }
 }

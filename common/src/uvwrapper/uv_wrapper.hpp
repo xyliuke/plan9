@@ -25,6 +25,7 @@ namespace plan9 {
         virtual void validate_cert(bool validate) = 0;
         virtual bool is_domain_invalidation() = 0;
         virtual bool is_cert_invalidation() = 0;
+        virtual void set_debug_mode(bool debug, std::function<void(std::string)> callback) = 0;
     };
 
     class uv_wrapper {

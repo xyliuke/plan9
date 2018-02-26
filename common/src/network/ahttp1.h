@@ -49,6 +49,7 @@ namespace plan9
         void exec(std::shared_ptr<ahttp_request> request, std::function<void(std::shared_ptr<common_callback>ccb, std::shared_ptr<ahttp_request>, std::shared_ptr<ahttp_response>)> callback);
 
         void get(std::string url, int timeout, std::shared_ptr<std::map<std::string, std::string>> header, std::function<void(std::shared_ptr<common_callback>ccb, std::shared_ptr<ahttp_request>, std::shared_ptr<ahttp_response>)> callback);
+        void post(std::string url, int timeout, std::shared_ptr<std::map<std::string, std::string>> header, std::shared_ptr<std::map<std::string, std::string>> form, std::function<void(std::shared_ptr<common_callback>ccb, std::shared_ptr<ahttp_request>, std::shared_ptr<ahttp_response>)> callback);
 
         /**
          * 是否验证域名
@@ -91,13 +92,15 @@ namespace plan9
          * 设置调试模式，在调试模式下，会收集网络各阶段信息，状态机的迁移路径，默认不是debug模式
          * @param debug true表示debug模式
          */
-        void set_debug_mode(bool debug);
+        void set_debug_mode(bool debug, std::function<void(std::string)> callback);
 
         /**
          * 获取请求过程中网络相关数据信息
          * @return 返回kv格式的请求数据
          */
         std::shared_ptr<std::map<std::string, std::string>> get_network_info();
+
+        std::string get_network_info_string();
 
     private:
         class ahttp_impl;

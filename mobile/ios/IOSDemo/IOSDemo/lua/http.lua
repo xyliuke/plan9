@@ -56,7 +56,8 @@ function http:upload(param, url_str, path_, header_, form_, process_, callback)
 end
 
 function http:test_get(param, callback)
-    self:get("https://www.baidu.com", nil, function(result)
+    local u = "https://api.chesupai.cn/customer/index/data/?idfa=01D4B665-11AB-45FA-A8EB-2172CA06A566&osv=iOS11.2&net=data&screenWH=750%2C1334&deviceId=FDAB131D-04B6-475A-8C82-A48FC5EA4FEE&city_id=12&platform=1&dpi=326&versionId=2.9.0&deviceModel=iPhone&page_size=20&model=x86_64&sign=4b1a809279223c733a2acd097d34a1eb"
+    self:get(u, nil, function(result)
         callback(param, result.result.success, result.result.data, result.result.error, result.result.reason, nil)
     end)
 end

@@ -26,7 +26,6 @@ namespace plan9 {
          *     header 字典 header中设置值,可以为空
          *     form   字典  post请求时，表单值
          *     timeout 超时时间 默认为60s, 如果参数值为<=0,则表示不超时
-         *     model asyn/sync,异步或者同步，默认为异步
          */
         cmd_factory::instance().register_cmd("http", [=](JSONObject param) {
             using namespace std;
@@ -60,99 +59,9 @@ namespace plan9 {
 
                     string id = param["aux"]["id"].get_string();
                     log_wrap::net().d("http request ", id, " begin, the parameter : ", param.to_string());
-//                    if (args.has("model") && "sync" == args["model"].get_string()) {
-//                        if ("post" == type || has_form) {
-//                            easy_http::instance().post(url, header, form,
-//                                                       [=](int curl_code, std::string debug_trace, long http_state,
-//                                                           char *data, size_t len) {
-//                                                           uv_wrapper::post_serial_queue([=]() {
-//                                                               string s(data, len);
-//                                                               log_wrap::net().d("http request ", id,
-//                                                                                 " end, the result : ", debug_trace,
-//                                                                                 "\n", s);
-//                                                               if (async_http::is_ok(curl_code) && http_state == 200) {
-//                                                                   JSONObject ret(s);
-//                                                                   cmd_factory::instance().callback(param, true, ret);
-//                                                               } else {
-//                                                                   if (async_http::is_timeout(curl_code)) {
-//                                                                       cmd_factory::instance().callback(param,
-//                                                                                                        (int) http_state,
-//                                                                                                        "timeout");
-//                                                                   } else {
-//                                                                       cmd_factory::instance().callback(param,
-//                                                                                                        (int) http_state,
-//                                                                                                        debug_trace);
-//                                                                   }
-//                                                               }
-//                                                           });
-//                                                       });
-//                        } else {
-//                            easy_http::instance().get(url, header,
-//                                                      [=](int curl_code, std::string debug_trace, long http_state,
-//                                                          char *data, size_t len) {
-//                                                          uv_wrapper::post_serial_queue([=]() {
-//                                                              if (async_http::is_ok(curl_code) && http_state == 200) {
-//                                                                  string s(data, len);
-//                                                                  log_wrap::net().d("http request ", id,
-//                                                                                    " end, the result : ", debug_trace,
-//                                                                                    "\n", s);
-//                                                                  JSONObject ret(s);
-//                                                                  JSONObject new_ret;
-//                                                                  if (ret.is_object()) {
-//                                                                      new_ret = ret;
-//                                                                  } else {
-//                                                                      new_ret["data"] = ret;
-//                                                                  }
-//                                                                  cmd_factory::instance().callback(param, true,
-//                                                                                                   new_ret);
-//                                                              } else {
-//                                                                  log_wrap::net().d("http request ", id,
-//                                                                                    " end, the result : ", debug_trace);
-//                                                                  if (async_http::is_timeout(curl_code)) {
-//                                                                      cmd_factory::instance().callback(param,
-//                                                                                                       (int) http_state,
-//                                                                                                       "timeout");
-//                                                                  } else {
-//                                                                      cmd_factory::instance().callback(param,
-//                                                                                                       (int) http_state,
-//                                                                                                       debug_trace);
-//                                                                  }
-//                                                              }
-//                                                          });
-//                                                      });
-//                        }
-//                    } else {
                         if ("post" == type || has_form) {
-//                            async_http::instance().post(url, timeout, header, form,
-//                                                        [=](int curl_code, std::string debug_trace, long http_state,
-//                                                            char *data, size_t len) {
-//                                                            uv_wrapper::post_serial_queue([=]() {
-//                                                                string s(data, len);
-//                                                                log_wrap::net().d("http request ", id,
-//                                                                                  " end, the result : ", debug_trace,
-//                                                                                  "\n", s);
-//                                                                if (async_http::is_ok(curl_code) && http_state == 200) {
-//                                                                    JSONObject ret(s);
-//                                                                    cmd_factory::instance().callback(param, true, ret);
-//                                                                } else {
-//                                                                    if (async_http::is_timeout(curl_code)) {
-//                                                                        cmd_factory::instance().callback(param,
-//                                                                                                         (int) http_state,
-//                                                                                                         "timeout");
-//                                                                    } else {
-//                                                                        cmd_factory::instance().callback(param,
-//                                                                                                         (int) http_state,
-//                                                                                                         debug_trace);
-//                                                                    }
-//                                                                }
-//                                                            });
-//                                                        });
-                        } else {
-                            log_wrap::net().d("http get re");
-                            ahttp_wrapper::instance().get(url, timeout, header, [=](shared_ptr<common_callback> ccb, int http_code, string data) {
+                            ahttp_wrapper::instance().post(url, timeout, header, form, [=](shared_ptr<common_callback> ccb, int http_code, string data) {
                                 uv_wrapper::post_serial_queue([=]() {
-                                    log_wrap::net().d("http request ", id,
-                                                      " end, the result : ", data);
                                     if (ccb->success) {
                                         string s = data;
                                         JSONObject ret(s);
@@ -162,32 +71,19 @@ namespace plan9 {
                                     }
                                 });
                             });
-//                            async_http::instance().get(url, timeout, header,
-//                                                       [=](int curl_code, std::string debug_trace, long http_state,
-//                                                           char *data, size_t len) {
-//                                                           uv_wrapper::post_serial_queue([=]() {
-//                                                               string s(data, len);
-//                                                               log_wrap::net().d("http request ", id,
-//                                                                                 " end, the result : ", debug_trace,
-//                                                                                 "\n", s);
-//                                                               if (async_http::is_ok(curl_code) && http_state == 200) {
-//                                                                   JSONObject ret(s);
-//                                                                   cmd_factory::instance().callback(param, true, ret);
-//                                                               } else {
-//                                                                   if (async_http::is_timeout(curl_code)) {
-//                                                                       cmd_factory::instance().callback(param,
-//                                                                                                        (int) http_state,
-//                                                                                                        "timeout");
-//                                                                   } else {
-//                                                                       cmd_factory::instance().callback(param,
-//                                                                                                        (int) http_state,
-//                                                                                                        debug_trace);
-//                                                                   }
-//                                                               }
-//                                                           });
-//                                                       });
+                        } else {
+                            ahttp_wrapper::instance().get(url, timeout, header, [=](shared_ptr<common_callback> ccb, int http_code, string data) {
+                                uv_wrapper::post_serial_queue([=]() {
+                                    if (ccb->success) {
+                                        string s = data;
+                                        JSONObject ret(s);
+                                        cmd_factory::instance().callback(param, true, ret);
+                                    } else {
+                                        cmd_factory::instance().callback(param, ccb->error_code, ccb->reason);
+                                    }
+                                });
+                            });
                         }
-//                    }
                 } else {
                     log_wrap::net().e("http request parameter error, the param : ", param.to_string());
                     cmd_factory::instance().callback(param, -1, "parameter error");

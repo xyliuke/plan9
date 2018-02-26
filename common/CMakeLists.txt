@@ -6,7 +6,7 @@ set(SYSDEPMEM "macosx")
 set(CMAKE_OSX_ARCHITECTURES  x86_64)
 
 #添加搜索头文件路径
-include_directories(../3rd ../3rd/boost_1_63_0 ../3rd/googletest/googletest/include ../3rd/zlib/ ../3rd/unzip ../3rd/curl ../3rd/sqlite
+include_directories(../3rd ../3rd/boost_1_63_0 ../3rd/googletest/googletest/include ../3rd/zlib/ ../3rd/unzip ../3rd/sqlite
         ../3rd/libuv-1.x/include ../3rd/libuv-1.x/src ../3rd/openssl_header)
 #添加搜索库路径
 link_directories(../3rd/boost_1_63_0/lib ../3rd/googletest/googletest ../3rd/sqlite ../3rd/libuv-1.x/lib/macosx ../3rd/openssl-1.0.2l)
@@ -19,7 +19,7 @@ set(SOURCE_FILES main.cpp)
 include_directories(header)
 include_directories(src)
 
-aux_source_directory(../3rd/jsoncpp/dist JSONCPP_SRC)
+#aux_source_directory(../3rd/jsoncpp/dist JSONCPP_SRC)
 #aux_source_directory(../3rd/7z/C/ LZMA_SRC)
 aux_source_directory(../3rd/zlib/ ZLIB_SRC)
 aux_source_directory(../3rd/unzip/ ZIP_SRC)
@@ -72,5 +72,5 @@ add_executable(common ${SOURCE_FILES} ${COMMADNER_SRC} ${TEST_SRC} ${JSONCPP_SRC
 #add_library(common SHARED ${SOURCE_FILES} ${COMMADNER_SRC} ${JSONCPP_SRC} ${JSONWRAP_SRC} ${UTIL_SRC} ${LOG_SRC} ${LUA_SRC} ${INIT_SRC} ${DATABASE_SRC})
 
 
-target_link_libraries(common boost_system boost_thread boost_filesystem boost_date_time gtest curl uv ssl crypto ${COREFOUNDATION} ${SECURITY}
+target_link_libraries(common boost_system boost_thread boost_filesystem boost_date_time gtest uv ssl crypto ${COREFOUNDATION} ${SECURITY}
         ${CFNETWORK})

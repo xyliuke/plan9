@@ -590,9 +590,20 @@ namespace plan9
 
         void get(std::string url, int timeout, std::shared_ptr<std::map<std::string, std::string>> header, std::function<void(std::shared_ptr<common_callback>ccb, std::shared_ptr<ahttp_request>, std::shared_ptr<ahttp_response>)> callback) {
             std::shared_ptr<ahttp_request> req = std::make_shared<ahttp_request>();
+            req->set_method(ahttp_request::METHOD_GET);
             req->set_timeout(timeout);
             req->set_url(url);
             req->append_header(header);
+            exec(req, callback);
+        }
+
+        void post(std::string url, int timeout, std::shared_ptr<std::map<std::string, std::string>> header, std::shared_ptr<std::map<std::string, std::string>> form, std::function<void(std::shared_ptr<common_callback>ccb, std::shared_ptr<ahttp_request>, std::shared_ptr<ahttp_response>)> callback) {
+            std::shared_ptr<ahttp_request> req = std::make_shared<ahttp_request>();
+            req->set_method(ahttp_request::METHOD_POST);
+            req->set_timeout(timeout);
+            req->set_url(url);
+            req->append_header(header);
+            req->append_body_data(form);
             exec(req, callback);
         }
 
@@ -639,18 +650,41 @@ namespace plan9
         }
 
         void set_dns_resolve(std::function<void(std::string url, int port, std::function<void(std::shared_ptr<common_callback>, std::shared_ptr<std::vector<std::string>>)>)> callback) {
-            this->dns_resolve_callback = callback;
+            this->dns_resolve_callback = std::move(callback);
         }
 
         std::shared_ptr<std::map<std::string, std::string>> get_debug_info() {
             return info->get_info();
         };
 
-        void set_debug_mode(bool debug) {
+        std::string get_network_info_string() {
+            using namespace std;
+            auto m = get_debug_info();
+            auto it = m->begin();
+            stringstream ss;
+            while (it != m->end()) {
+                ss << it->first;
+                ss << ":";
+                ss << it->second;
+                ss << "\n";
+                it ++;
+            }
+            return ss.str();
+        }
+
+        void set_debug_mode(bool debug, std::function<void(std::string)> callback) {
             debug_mode = debug;
-            set_trace(debug, [=](std::string trace){
-                std::cout << std::chrono::system_clock::now().time_since_epoch().count() / 1000 << "\tid : " << id << "\t" << trace << std::endl;
-            });
+            if (debug_mode) {
+                debug_callback = callback;
+                if (debug_callback) {
+                    set_trace(debug, callback);
+                } else {
+                    set_trace(debug, [=](std::string trace){
+                        std::cout << std::chrono::system_clock::now().time_since_epoch().count() / 1000 << "\tid : " << id << "\t" << trace << std::endl;
+                    });
+                }
+            }
+
         }
     private:
         static const std::string FETCH;//开始执行请求数据操作
@@ -687,7 +721,7 @@ namespace plan9
             }
 
             void on_exit(std::string event, state_machine *fsm) override {
-                ahttp_impl* http = (ahttp_impl*)fsm;
+                auto http = (ahttp_impl*)fsm;
                 //添加超时功能
                 if (http->request->get_timeout() > 0) {
                     http->timer_id = uv_wrapper::post_timer([http](){
@@ -700,7 +734,7 @@ namespace plan9
         //开始执行请求
         struct begin_state : public state {
             void on_entry(std::string event, state_machine *fsm) override {
-                ahttp_impl* impl = (ahttp_impl*)fsm;
+                auto impl = (ahttp_impl*)fsm;
                 impl->set_fetch_time();
                 auto next = [=]() {
                     impl->request->set_uesd_proxy(ahttp_impl::is_use_proxy());
@@ -747,7 +781,7 @@ namespace plan9
         };
         struct dns_begin_state : public state {
             void on_entry(std::string event, state_machine *fsm) override {
-                ahttp_impl* http = (ahttp_impl*)fsm;
+                auto http = (ahttp_impl*)fsm;
                 http->set_dns_start_time();
                 http->process_event(DNS_RESOLVE);
                 http->resolve();
@@ -767,7 +801,7 @@ namespace plan9
         //dns解析完成
         struct dns_end_state : public state {
             void on_entry(std::string event, state_machine *fsm) override {
-                ahttp_impl* impl = (ahttp_impl*)fsm;
+                auto impl = (ahttp_impl*)fsm;
                 if (event == SWITCH_IP) {
                     //换下一个IP
                     impl->change_ip();
@@ -783,7 +817,7 @@ namespace plan9
         //连接中
         struct connect_begin_state : public state {
             void on_entry(std::string event, state_machine *fsm) override {
-                ahttp_impl* http = (ahttp_impl*)fsm;
+                auto http = (ahttp_impl*)fsm;
                 http->set_connect_start_time();
                 http->process_event(OPEN);
                 http->connect();
@@ -803,7 +837,7 @@ namespace plan9
         //连接完成
         struct connected_state : public state {
             void on_entry(std::string event, state_machine *fsm) override {
-                ahttp_impl* http = (ahttp_impl*)fsm;
+                auto http = (ahttp_impl*)fsm;
                 http->set_connect_end_time();
                 http->set_local_info();
                 if (http->is_ssl_connect()) {
@@ -812,6 +846,7 @@ namespace plan9
                     if (ssl) {
                         ssl->validate_domain(http->validate_domain);
                         ssl->validate_cert(http->validate_cert);
+                        ssl->set_debug_mode(http->debug_mode, http->debug_callback);
                     }
                     http->process_event(SSL_CONNECT);
                 } else {
@@ -826,7 +861,7 @@ namespace plan9
         //断开连接
         struct disconnect_state : public state {
             void on_entry(std::string event, state_machine *fsm) override {
-                ahttp_impl* http = (ahttp_impl*)fsm;
+                auto http = (ahttp_impl*)fsm;
                 http->process_event(GIVE_UP);
             }
 
@@ -836,7 +871,7 @@ namespace plan9
         //ssl ing
         struct ssl_ing_state : public state {
             void on_entry(std::string event, state_machine *fsm) override {
-                ahttp_impl* http = (ahttp_impl*)fsm;
+                auto http = (ahttp_impl*)fsm;
                 http->set_ssl_start_time();
             }
 
@@ -846,7 +881,7 @@ namespace plan9
         //ssl end
         struct ssl_end_state : public state {
             void on_entry(std::string event, state_machine *fsm) override {
-                ahttp_impl* http = (ahttp_impl*)fsm;
+                auto http = (ahttp_impl*)fsm;
                 http->set_ssl_end_time();
                 http->process_event(READY_SEND);
             }
@@ -857,7 +892,7 @@ namespace plan9
         //发送数据中
         struct send_begin_state : public state {
             void on_entry(std::string event, state_machine *fsm) override {
-                ahttp_impl* http = (ahttp_impl*)fsm;
+                auto http = (ahttp_impl*)fsm;
                 http->set_request_start_time();
                 http->process_event(SEND);
                 http->send();
@@ -877,7 +912,7 @@ namespace plan9
         //发送数据结束
         struct send_end_state : public state {
             void on_entry(std::string event, state_machine *fsm) override {
-                ahttp_impl* http = (ahttp_impl*)fsm;
+                auto http = (ahttp_impl*)fsm;
                 http->set_request_end_time();
                 http->process_event(READY_RECV);
             }
@@ -888,7 +923,7 @@ namespace plan9
         //读取数据中
         struct read_begin_state : public state {
             void on_entry(std::string event, state_machine *fsm) override {
-                ahttp_impl* http = (ahttp_impl*)fsm;
+                auto http = (ahttp_impl*)fsm;
                 http->set_response_start_time();
                 http->process_event(RECV);
             }
@@ -907,7 +942,7 @@ namespace plan9
         //读取数据结束
         struct read_end_state : public state {
             void on_entry(std::string event, state_machine *fsm) override {
-                ahttp_impl* http = (ahttp_impl*)fsm;
+                auto http = (ahttp_impl*)fsm;
                 //TODO 判断Redirect/Forward情况
                 if (event == REDIRECT_OUTER || event == REDIRECT_INNER || event == FORWARD) {
 
@@ -924,7 +959,7 @@ namespace plan9
         //请求结束状态
         struct end_state : public state {
             void on_entry(std::string event, state_machine *fsm) override {
-                ahttp_impl* http = (ahttp_impl*)fsm;
+                auto http = (ahttp_impl*)fsm;
                 if (event != TIME_OUT) {
                     http->cancel_timer();
                 }
@@ -953,6 +988,7 @@ namespace plan9
         bool low_priority;
         std::shared_ptr<http_info> info;
         bool debug_mode;
+        std::function<void(std::string)> debug_callback;
         static std::string proxy_host;
         static int proxy_port;
         static bool auto_use_proxy;
@@ -1029,7 +1065,7 @@ namespace plan9
                 *size = 0;
                 if (http && url_tcp->find(http->get_uni_domain()) != url_tcp->end()) {
                     auto list = (*url_tcp)[http->get_uni_domain()];
-                    if (list->size() > 0) {
+                    if (!list->empty()) {
                         *size = (int)(list->size());
                         return true;
                     }
@@ -1039,22 +1075,22 @@ namespace plan9
 
             void connect(ahttp_impl* impl) {
                 int tcp_id = uv_wrapper::connect(get_ip(impl), get_port(impl), impl->is_ssl_connect(), impl->request->get_domain(),
-                        [=](std::shared_ptr<common_callback> ccb, int tcp_id) {
+                        [=](std::shared_ptr<common_callback> ccb, int tcp_id_) {
                             impl->ccb = ccb;
                             if (ccb->success) {
-                                impl->tcp_id = tcp_id;
+                                impl->tcp_id = tcp_id_;
                                 impl->process_event(OPEN_SUCCESS);
                             } else {
                                 impl->process_event(CLOSE);
                             }
-                        }, [=](std::shared_ptr<common_callback> ccb, int tcp_id) {
+                        }, [=](std::shared_ptr<common_callback> ccb, int tcp_id_) {
                             impl->ccb = ccb;
                             if (ccb->success) {
                                 impl->process_event(SSL_CONNECT_SUCCESS);
                             } else {
                                 impl->process_event(CLOSE);
                             }
-                        }, [=](int tcp_id, std::shared_ptr<char> data, int len) {
+                        }, [=](int tcp_id_, std::shared_ptr<char> data, int len) {
                             ahttp_impl* http = get_http(tcp_id);
                             if (http) {
                                 bool finish = http->response->append_response_data(data, len);
@@ -1062,9 +1098,9 @@ namespace plan9
                                     http->process_event(RECV_FINISH);
                                 }
                             }
-                        }, [=](std::shared_ptr<common_callback> ccb, int tcp_id) {
+                        }, [=](std::shared_ptr<common_callback> ccb, int tcp_id_) {
                             impl->ccb = ccb;
-                            close(tcp_id);
+                            close(tcp_id_);
                         });
                 impl->tcp_id = tcp_id;
                 push(tcp_id, impl);
@@ -1633,6 +1669,13 @@ namespace plan9
         impl->get(url, timeout, header, callback);
     }
 
+    void ahttp1::post(std::string url, int timeout, std::shared_ptr<std::map<std::string, std::string>> header,
+                      std::shared_ptr<std::map<std::string, std::string>> form,
+                      std::function<void(std::shared_ptr<common_callback> ccb, std::shared_ptr<ahttp_request>,
+                                         std::shared_ptr<ahttp_response>)> callback) {
+        impl->post(url, timeout, header, form, callback);
+    }
+
     void ahttp1::is_validate_cert(bool validate) {
         impl->is_validate_cert(validate);
     }
@@ -1661,7 +1704,11 @@ namespace plan9
         return impl->get_debug_info();
     }
 
-    void ahttp1::set_debug_mode(bool debug) {
-        impl->set_debug_mode(debug);
+    std::string ahttp1::get_network_info_string() {
+        return impl->get_network_info_string();
+    }
+
+    void ahttp1::set_debug_mode(bool debug, std::function<void(std::string)> callback) {
+        impl->set_debug_mode(debug, callback);
     }
 }

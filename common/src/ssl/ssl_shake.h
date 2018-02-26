@@ -27,6 +27,8 @@ namespace plan9
         bool is_domain_invalidation() override;
         bool is_cert_invalidation() override;
 
+        void set_debug_mode(bool debug, std::function<void(std::string)> callback) override;
+
     private:
         class ssl_shake_impl;
         std::shared_ptr<ssl_shake_impl> impl;

@@ -18,6 +18,9 @@ namespace plan9
         static ahttp_wrapper instance();
 
         int get(std::string url, int timeout, std::shared_ptr<std::map<std::string, std::string>> header, std::function<void(std::shared_ptr<common_callback>, int http_code, std::string data)> callback);
+
+        int post(std::string url, int timeout, std::shared_ptr<std::map<std::string, std::string>> header, std::shared_ptr<std::map<std::string, std::string>> form, std::function<void(std::shared_ptr<common_callback>, int http_code, std::string data)> callback);
+
     private:
         ahttp_wrapper();
         class ahttp_wrapper_impl;

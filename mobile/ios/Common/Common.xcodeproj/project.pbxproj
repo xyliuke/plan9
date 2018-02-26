@@ -25,7 +25,6 @@
 		1FB197581C2CE4FE00CFC44F /* JsonHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 1FB197551C2CE4FE00CFC44F /* JsonHelper.m */; };
 		1FB198001C2CF86500CFC44F /* cmd_factory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1FB197A81C2CF86500CFC44F /* cmd_factory.cpp */; };
 		1FB198021C2CF86500CFC44F /* common.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1FB197AD1C2CF86500CFC44F /* common.cpp */; };
-		1FB198031C2CF86500CFC44F /* json_wrap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1FB197B01C2CF86500CFC44F /* json_wrap.cpp */; };
 		1FB198041C2CF86500CFC44F /* log.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1FB197B31C2CF86500CFC44F /* log.cpp */; };
 		1FB198051C2CF86500CFC44F /* log_wrap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1FB197B51C2CF86500CFC44F /* log_wrap.cpp */; };
 		1FB198061C2CF86500CFC44F /* lapi.c in Sources */ = {isa = PBXBuildFile; fileRef = 1FB197B81C2CF86500CFC44F /* lapi.c */; };
@@ -67,7 +66,6 @@
 		1FB1982A1C2CF86500CFC44F /* time.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1FB197FA1C2CF86500CFC44F /* time.cpp */; };
 		1FB1982B1C2CF86500CFC44F /* util.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1FB197FC1C2CF86500CFC44F /* util.cpp */; };
 		1FB1982C1C2CF86500CFC44F /* UUID.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1FB197FE1C2CF86500CFC44F /* UUID.cpp */; };
-		1FB198351C2CFA7600CFC44F /* jsoncpp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1FB198341C2CFA7600CFC44F /* jsoncpp.cpp */; };
 		1FDCF7BD1E95F3D800295D42 /* algo_init.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1FDCF7B31E95F3D800295D42 /* algo_init.cpp */; };
 		1FDCF7BE1E95F3D800295D42 /* database_init.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1FDCF7B51E95F3D800295D42 /* database_init.cpp */; };
 		1FDCF7BF1E95F3D800295D42 /* file_init.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1FDCF7B71E95F3D800295D42 /* file_init.cpp */; };
@@ -149,8 +147,6 @@
 		1FB197A81C2CF86500CFC44F /* cmd_factory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cmd_factory.cpp; sourceTree = "<group>"; };
 		1FB197AD1C2CF86500CFC44F /* common.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = common.cpp; sourceTree = "<group>"; };
 		1FB197AE1C2CF86500CFC44F /* common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = common.h; sourceTree = "<group>"; };
-		1FB197B01C2CF86500CFC44F /* json_wrap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = json_wrap.cpp; sourceTree = "<group>"; };
-		1FB197B11C2CF86500CFC44F /* json_wrap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = json_wrap.h; sourceTree = "<group>"; };
 		1FB197B31C2CF86500CFC44F /* log.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = log.cpp; sourceTree = "<group>"; };
 		1FB197B41C2CF86500CFC44F /* log.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = log.h; sourceTree = "<group>"; };
 		1FB197B51C2CF86500CFC44F /* log_wrap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = log_wrap.cpp; sourceTree = "<group>"; };
@@ -225,7 +221,6 @@
 		1FB197FD1C2CF86500CFC44F /* util.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = util.h; sourceTree = "<group>"; };
 		1FB197FE1C2CF86500CFC44F /* UUID.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UUID.cpp; sourceTree = "<group>"; };
 		1FB197FF1C2CF86500CFC44F /* UUID.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UUID.h; sourceTree = "<group>"; };
-		1FB198341C2CFA7600CFC44F /* jsoncpp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = jsoncpp.cpp; path = ../../../3rd/jsoncpp/dist/jsoncpp.cpp; sourceTree = "<group>"; };
 		1FDCF7B31E95F3D800295D42 /* algo_init.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = algo_init.cpp; sourceTree = "<group>"; };
 		1FDCF7B41E95F3D800295D42 /* algo_init.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = algo_init.h; sourceTree = "<group>"; };
 		1FDCF7B51E95F3D800295D42 /* database_init.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = database_init.cpp; sourceTree = "<group>"; };
@@ -416,7 +411,6 @@
 				1F209A8F1CAB77BE0011D40B /* algorithm */,
 				1F40C34B1C473D27006EFE0A /* thread */,
 				1FB71D0F1C45F48E00412128 /* network */,
-				1FB198341C2CFA7600CFC44F /* jsoncpp.cpp */,
 				1FB197A71C2CF86500CFC44F /* commander */,
 				1FB197AC1C2CF86500CFC44F /* init */,
 				1FB197AF1C2CF86500CFC44F /* json */,
@@ -462,8 +456,6 @@
 			children = (
 				1FFB0CDE1E8E6D6900AC72E3 /* JSONObject.cpp */,
 				1FFB0CDF1E8E6D6900AC72E3 /* JSONObject.h */,
-				1FB197B01C2CF86500CFC44F /* json_wrap.cpp */,
-				1FB197B11C2CF86500CFC44F /* json_wrap.h */,
 			);
 			name = json;
 			path = ../../../common/src/json;
@@ -781,7 +773,6 @@
 				1FB198161C2CF86500CFC44F /* lmathlib.c in Sources */,
 				1FB198101C2CF86500CFC44F /* ldump.c in Sources */,
 				1FB1981D1C2CF86500CFC44F /* lstate.c in Sources */,
-				1FB198351C2CFA7600CFC44F /* jsoncpp.cpp in Sources */,
 				1FFB0CF01E8E6F4500AC72E3 /* iowin32.c in Sources */,
 				1FB1981C1C2CF86500CFC44F /* lparser.c in Sources */,
 				1F209AD01CAB79D70011D40B /* adler32.c in Sources */,
@@ -832,7 +823,6 @@
 				1F209AD21CAB79D70011D40B /* crc32.c in Sources */,
 				1FB1980B1C2CF86500CFC44F /* lcorolib.c in Sources */,
 				1FB197581C2CE4FE00CFC44F /* JsonHelper.m in Sources */,
-				1FB198031C2CF86500CFC44F /* json_wrap.cpp in Sources */,
 				E38F850B202DD5B000C8A8C7 /* cert.cpp in Sources */,
 				1F209AD91CAB79D70011D40B /* uncompr.c in Sources */,
 				1FB1980C1C2CF86500CFC44F /* lctype.c in Sources */,
