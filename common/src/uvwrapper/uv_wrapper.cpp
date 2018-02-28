@@ -19,7 +19,7 @@ namespace plan9 {
     struct uv_content_s {
         uv_content_s() : tcp_id(-1), connect_callback(nullptr), ssl_connect_callback(nullptr),
                          read_callback(nullptr), close_callback(nullptr), read_buf(nullptr),
-                         write_callback(nullptr), ssl_enable(false) {
+                         write_callback(nullptr), ssl_enable(false), raw_read_bytes(0) {
         }
 
         ~uv_content_s() {
@@ -31,6 +31,19 @@ namespace plan9 {
                 read_buf = nullptr;
             }
         }
+
+        void append_read_bytes(unsigned long bytes) {
+            raw_read_bytes += bytes;
+        }
+
+        unsigned long get_read_bytes() {
+            return raw_read_bytes;
+        }
+
+        void clear_read_bytes() {
+            raw_read_bytes = 0;
+        }
+
         std::string remote_ip;
         int remote_port;
         std::string local_ip;
@@ -41,10 +54,11 @@ namespace plan9 {
         uv_tcp_t* tcp;
         std::function<void(std::shared_ptr<common_callback>, int)> connect_callback;
         std::function<void(std::shared_ptr<common_callback>, int tcp_id)> ssl_connect_callback;
-        std::function<void(int tcp_id, std::shared_ptr<char> data, int len)> read_callback;
+        std::function<void(int tcp_id, std::shared_ptr<char> data, int len, unsigned long total_raw_len)> read_callback;
         std::function<void(std::shared_ptr<common_callback>, int tcp_id)> close_callback;
         std::function<void(std::shared_ptr<common_callback>)> write_callback;
         uv_buf_t* read_buf;
+        unsigned long raw_read_bytes;
     };
 
     static std::map<int, std::shared_ptr<uv_content_s>> tcp_id_2_content;
@@ -447,6 +461,7 @@ namespace plan9 {
             uv_content_s* content = (uv_content_s*)(handle->data);
             if (content->ssl_enable && content->ssl_impl) {
                 if (nread > 0) {
+                    content->append_read_bytes(nread);
                     content->ssl_impl->on_read(content->tcp_id, buf->base, nread, [=](std::shared_ptr<plan9::common_callback> ccb, std::shared_ptr<char> data, long len) mutable {
                         if (ccb->success) {
                             if (len == 0) {
@@ -459,7 +474,7 @@ namespace plan9 {
                                 }
                             } else {
                                 if (content->read_callback) {
-                                    content->read_callback(content->tcp_id, data, len);
+                                    content->read_callback(content->tcp_id, data, len, content->get_read_bytes());
                                 }
                             }
                         } else {
@@ -471,10 +486,11 @@ namespace plan9 {
                 }
             } else {
                 if (nread > 0) {
+                    content->append_read_bytes(nread);
                     if (content->read_callback) {
                         std::shared_ptr<char> data(new char[buf->len]{});
                         memcpy(data.get(), buf->base, buf->len);
-                        content->read_callback(content->tcp_id, data, nread);
+                        content->read_callback(content->tcp_id, data, nread, content->get_read_bytes());
                     }
                 } else {
                     uv_wrapper::close(content->tcp_id);
@@ -484,19 +500,19 @@ namespace plan9 {
     }
 
     static void alloc_callback(uv_handle_t* handle, size_t suggested_size, uv_buf_t* buf) {
-        if (handle != nullptr && handle->data != nullptr) {
-            uv_content_s* content = (uv_content_s*)handle->data;
-            static int default_size = 64 * 1024;
-            if (content->read_buf == nullptr) {
-                uv_buf_t* b = new uv_buf_t;
-                b->base = (char*)malloc(default_size);
-                b->len = default_size;
-                content->read_buf = b;
-            }
-            *buf = *(content->read_buf);
-        } else {
+//        if (handle != nullptr && handle->data != nullptr) {
+//            uv_content_s* content = (uv_content_s*)handle->data;
+//            static int default_size = 64 * 1024;
+//            if (content->read_buf == nullptr) {
+//                uv_buf_t* b = new uv_buf_t;
+//                b->base = (char*)malloc(default_size);
+//                b->len = default_size;
+//                content->read_buf = b;
+//            }
+//            *buf = *(content->read_buf);
+//        } else {
             *buf = uv_buf_init((char*)malloc(suggested_size), suggested_size);
-        }
+//        }
     }
 
 
@@ -512,7 +528,7 @@ namespace plan9 {
             char ip[30];
             uv_ip4_name(in, ip, 30);
             content->local_ip = std::string(ip);
-            content->local_port = in->sin_port;
+            content->local_port = ntohs(in->sin_port);
             if (handle->type == UV_CONNECT) {
                 if (status >= 0) {
                     auto tcp_handle = content->tcp;
@@ -542,7 +558,7 @@ namespace plan9 {
     }
 
     int uv_wrapper::connect(std::string ip, int port, std::function<void(std::shared_ptr<common_callback>, int tcp_id)> connect_callback,
-            std::function<void(int, std::shared_ptr<char>, int len)> read_callback,
+            std::function<void(int, std::shared_ptr<char>, int len, unsigned long total_raw_len)> read_callback,
             std::function<void(std::shared_ptr<common_callback>, int tcp_id)> close_callback) {
         return connect(ip, port, false, "", connect_callback, nullptr, read_callback, close_callback);
     }
@@ -550,12 +566,26 @@ namespace plan9 {
     int uv_wrapper::connect(std::string ip, int port, bool ssl_enable, std::string host,
             std::function<void(std::shared_ptr<common_callback>, int)> connect_callback,
             std::function<void(std::shared_ptr<common_callback>, int tcp_id)> ssl_connect_callback,
-            std::function<void(int tcp_id, std::shared_ptr<char> data, int len)> read_callback,
+            std::function<void(int tcp_id, std::shared_ptr<char> data, int len, unsigned long total_raw_len)> read_callback,
             std::function<void(std::shared_ptr<common_callback>, int tcp_id)> close_callback) {
+        int ret = connect(ip, port, ssl_enable, host);
+        set_connected_callback(ret, connect_callback);
+        set_ssl_connected_callback(ret, ssl_connect_callback);
+        set_read_callback(ret, read_callback);
+        set_disconnected_callback(ret, close_callback);
+        return ret;
+    }
+
+    int uv_wrapper::connect_ssl(std::string ip, int port, std::string host,
+            std::function<void(std::shared_ptr<common_callback>, int)> connect_callback,
+            std::function<void(std::shared_ptr<common_callback>, int tcp_id)> ssl_connect_callback,
+            std::function<void(int tcp_id, std::shared_ptr<char> data, int len, unsigned long total_raw_len)> read_callback,
+            std::function<void(std::shared_ptr<common_callback>, int tcp_id)> close_callback) {
+        return connect(ip, port, true, host, connect_callback, ssl_connect_callback, read_callback, close_callback);
+    }
+
+    int uv_wrapper::connect(std::string ip, int port, bool ssl_enable, std::string host) {
         if (loop == nullptr) {
-            if (connect_callback) {
-                connect_callback(common_callback::get(false, -1, "loop must be init"), -1);
-            }
             return -1;
         }
 
@@ -584,11 +614,6 @@ namespace plan9 {
             }
         }
 
-        content->connect_callback = connect_callback;
-        content->ssl_connect_callback = ssl_connect_callback;
-        content->read_callback = read_callback;
-        content->close_callback = close_callback;
-
         tcp_id_2_content[count] = content;
 
         req->data = content.get();
@@ -602,12 +627,39 @@ namespace plan9 {
         return ret;
     }
 
-    int uv_wrapper::connect_ssl(std::string ip, int port, std::string host,
-            std::function<void(std::shared_ptr<common_callback>, int)> connect_callback,
-            std::function<void(std::shared_ptr<common_callback>, int tcp_id)> ssl_connect_callback,
-            std::function<void(int tcp_id, std::shared_ptr<char> data, int len)> read_callback,
-            std::function<void(std::shared_ptr<common_callback>, int tcp_id)> close_callback) {
-        return connect(ip, port, true, host, connect_callback, ssl_connect_callback, read_callback, close_callback);
+    void uv_wrapper::set_connected_callback(int tcp_id, std::function<void(std::shared_ptr<common_callback>, int)> callback) {
+        if (tcp_id_2_content.find(tcp_id) != tcp_id_2_content.end()) {
+            auto content = tcp_id_2_content[tcp_id];
+            content->connect_callback = callback;
+        }
+    }
+
+    void uv_wrapper::set_ssl_connected_callback(int tcp_id, std::function<void(std::shared_ptr<common_callback>, int)> callback) {
+        if (tcp_id_2_content.find(tcp_id) != tcp_id_2_content.end()) {
+            auto content = tcp_id_2_content[tcp_id];
+            content->ssl_connect_callback = callback;
+        }
+    }
+
+    void uv_wrapper::set_read_callback(int tcp_id, std::function<void(int tcp_id, std::shared_ptr<char> data, int len, unsigned long total_raw_len)> callback) {
+        if (tcp_id_2_content.find(tcp_id) != tcp_id_2_content.end()) {
+            auto content = tcp_id_2_content[tcp_id];
+            content->read_callback = callback;
+        }
+    }
+
+    void uv_wrapper::set_disconnected_callback(int tcp_id, std::function<void(std::shared_ptr<common_callback>, int)> callback) {
+        if (tcp_id_2_content.find(tcp_id) != tcp_id_2_content.end()) {
+            auto content = tcp_id_2_content[tcp_id];
+            content->close_callback = callback;
+        }
+    }
+
+    void uv_wrapper::clear_read_bytes(int tcp_id) {
+        if (tcp_id_2_content.find(tcp_id) != tcp_id_2_content.end()) {
+            auto content = tcp_id_2_content[tcp_id];
+            content->clear_read_bytes();
+        }
     }
 
     void uv_wrapper::reconnect(int tcp_id) {

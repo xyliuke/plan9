@@ -16,6 +16,7 @@
 #include <vector>
 #include <cert/cert.h>
 #include <sstream>
+#include <common/char_array.h>
 
 
 namespace plan9
@@ -184,7 +185,7 @@ namespace plan9
             }
         }
 
-        ssl_shake_impl() : buf((char*)malloc(buf_len)), ctx(nullptr), validate_cert_bool(false), validate_domain_bool(false),
+        ssl_shake_impl() : buf((char*)malloc(buf_len)), validate_cert_bool(false), validate_domain_bool(false),
                         has_validated_cert(tri_undefined), invalidate_domain_result(false), invalidate_cert_result(false),
                         debug_mode(false) , debug_callback(nullptr), has_debug_cert(false) {
             ssl = SSL_new(get_ssl_ctx());
@@ -213,10 +214,6 @@ namespace plan9
             if (ssl != nullptr) {
                 SSL_free(ssl);
                 ssl = nullptr;
-            }
-            if (ctx != nullptr) {
-                SSL_CTX_free(ctx);
-                ctx = nullptr;
             }
         }
         void set_host(std::string host) {
@@ -258,26 +255,32 @@ namespace plan9
                 if (callback) {
                     int ret = BIO_write(read_bio, data, (int)len);
                     if (ret >= 0) {
-                        static int num = 1024 * 64;
-                        std::shared_ptr<char> buf(new char[num]{});
-                        ret = SSL_read(ssl, buf.get(), num);
-                        if (ret <= 0) {
-                            int e = SSL_get_error(ssl, ret);
+                        static int num = 10240;
+                        auto array = std::make_shared<char_array>(num);
+                        char buf[num];
+                        int ret_read = SSL_read(ssl, buf, num);
+                        std::shared_ptr<common_callback> ccb = std::make_shared<common_callback>();
+                        if (ret_read <= 0) {
+                            int e = SSL_get_error(ssl, ret_read);
                             if (e == SSL_ERROR_WANT_READ) {
                                 return;
                             }
+                            if (array->get_len() < 0) {
+                                ccb->success = false;
+                                ccb->error_code = -1;
+                                ccb->reason = "ssl read error";
+                            } else if (ret_read == 0){
+                                ccb->success = false;
+                                ccb->error_code = -2;
+                                ccb->reason = "ssl close";
+                            }
+                        } else {
+                            array->append(buf, ret_read);
+                            while ((ret_read = SSL_read(ssl, buf, num)) > 0) {
+                                array->append(buf, ret_read);
+                            }
                         }
-                        std::shared_ptr<common_callback> ccb = std::make_shared<common_callback>();
-                        if (ret < 0) {
-                            ccb->success = false;
-                            ccb->error_code = -1;
-                            ccb->reason = "ssl read error";
-                        } else if (ret == 0){
-                            ccb->success = false;
-                            ccb->error_code = -2;
-                            ccb->reason = "ssl close";
-                        }
-                        callback(ccb, buf, ret);
+                        callback(ccb, array->get_data(), array->get_len());
                     }
                 }
             } else {
@@ -357,6 +360,7 @@ namespace plan9
         };
 
         SSL_CTX* get_ssl_ctx() {
+            static SSL_CTX* ctx = nullptr;
             if (!ctx) {
                 SSL_library_init();
                 OpenSSL_add_all_algorithms();
@@ -383,7 +387,6 @@ namespace plan9
             }
         }
     private:
-        SSL_CTX* ctx;
         SSL* ssl;
         BIO* read_bio;
         BIO* write_bio;

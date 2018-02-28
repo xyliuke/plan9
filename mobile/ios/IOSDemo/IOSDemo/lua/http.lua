@@ -57,6 +57,9 @@ end
 
 function http:test_get(param, callback)
     local u = "https://api.chesupai.cn/customer/index/data/?idfa=01D4B665-11AB-45FA-A8EB-2172CA06A566&osv=iOS11.2&net=data&screenWH=750%2C1334&deviceId=FDAB131D-04B6-475A-8C82-A48FC5EA4FEE&city_id=12&platform=1&dpi=326&versionId=2.9.0&deviceModel=iPhone&page_size=20&model=x86_64&sign=4b1a809279223c733a2acd097d34a1eb"
+    u = "https://www.baidu.com"
+    u = "http://api.chesupai.cn/customer/detail/info?id=1429449&idfa=11BFBC7A-98EF-4B37-A216-E8DAF0ABAB8B&osv=iOS8.1&net=wifi&screenWH=750%252C1334&deviceId=3200A4C2-C469-469D-A42A-920B1A5A0216&deviceModel=iPhoneSimulator&platform=1&dpi=326&versionId=2.7.3&model=x86_64&pushTYpe=0&sign=9102c932d5e96cd5129b1c35f9baee28";
+-- u = "https://api.chesupai.cn"
     self:get(u, nil, function(result)
         callback(param, result.result.success, result.result.data, result.result.error, result.result.reason, nil)
     end)

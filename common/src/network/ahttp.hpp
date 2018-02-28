@@ -198,6 +198,8 @@ namespace plan9 {
         std::string to_string();
         //内部使用
         bool append_response_data(std::shared_ptr<char> data, int len);
+
+        float get_compress_rate();
     private:
         class ahttp_response_impl;
         std::shared_ptr<ahttp_response_impl> impl;

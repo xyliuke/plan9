@@ -7,6 +7,8 @@
 #include <set>
 #include <iostream>
 #include <sstream>
+#include <log/log_wrap.h>
+#include <iomanip>
 #include "ahttp1.h"
 #include "state/state_machine.h"
 #include "uvwrapper/uv_wrapper.hpp"
@@ -224,6 +226,12 @@ namespace plan9
             push("response_bytes", ss.str());
         }
 
+        void set_raw_response_data_size(unsigned long size) {
+            std::stringstream ss;
+            ss << size;
+            push("raw_response_bytes", ss.str());
+        }
+
         void set_local_ip_port(std::string ip, int port) {
             std::stringstream ss;
             ss << ip;
@@ -238,6 +246,10 @@ namespace plan9
             ss << ":";
             ss << port;
             push("local", ss.str());
+        }
+
+        void set_compress_rate(float rate) {
+            push("compress_rate", rate);
         }
 
         std::shared_ptr<std::map<std::string, std::string>> get_info() {
@@ -259,6 +271,12 @@ namespace plan9
             if (info) {
                 (*info)[key] = value;
             }
+        }
+        void push(std::string key, float value) {
+            std::ostringstream ss;
+            ss << std::setprecision(2);
+            ss << value;
+            push(key, ss.str());
         }
         long fetch;
     };
@@ -758,7 +776,6 @@ namespace plan9
             void on_entry(std::string event, state_machine *fsm) override {
                 auto http = (ahttp_impl*)fsm;
                 http->set_connect_end_time();
-                http->set_local_info();
                 if (http->is_ssl_connect()) {
                     //HTTPS
                     auto ssl = uv_wrapper::get_ssl_impl_by_tcp_id(http->tcp_id);
@@ -813,6 +830,7 @@ namespace plan9
             void on_entry(std::string event, state_machine *fsm) override {
                 auto http = (ahttp_impl*)fsm;
                 http->set_request_start_time();
+                http->set_local_info();
                 http->process_event(SEND);
                 http->send();
             }
@@ -843,7 +861,6 @@ namespace plan9
         struct read_begin_state : public state {
             void on_entry(std::string event, state_machine *fsm) override {
                 auto http = (ahttp_impl*)fsm;
-                http->set_response_start_time();
                 http->process_event(RECV);
             }
 
@@ -938,7 +955,7 @@ namespace plan9
                     }
                     impl->process_event(PUSH_WAITING_QUEUE);
                 } else {
-                    if (reused && size == 0) {
+                    if (reused) {
                         assign_reused_tcp(impl);
                     } else {
                         push_unconnect_queue(impl);
@@ -1009,11 +1026,15 @@ namespace plan9
                             } else {
                                 impl->process_event(CLOSE);
                             }
-                        }, [=](int tcp_id_, std::shared_ptr<char> data, int len) {
-                            ahttp_impl* http = get_http(tcp_id);
+                        }, [=](int tcp_id_, std::shared_ptr<char> data, int len, unsigned long total_raw_len) {
+                            ahttp_impl* http = get_http(tcp_id_);
                             if (http) {
+                                if (http->response->get_response_length() == 0) {
+                                    http->set_response_start_time();
+                                }
                                 bool finish = http->response->append_response_data(data, len);
                                 if (finish) {
+                                    http->set_raw_response_data_size(total_raw_len);
                                     http->process_event(RECV_FINISH);
                                 }
                             }
@@ -1350,7 +1371,7 @@ namespace plan9
 
         bool is_reused_tcp() {
             int size;
-            return mgr->is_reused_tcp(this, &size) && size == 0;
+            return mgr->is_reused_tcp(this, &size) && size > 0;
         }
 
         void remove_http() {
@@ -1466,6 +1487,13 @@ namespace plan9
         void set_response_data_size() {
             if (debug_mode) {
                 info->set_response_data_size((int)response->get_response_length());
+                info->set_compress_rate(response->get_compress_rate());
+            }
+        }
+
+        void set_raw_response_data_size(unsigned long bytes) {
+            if (debug_mode) {
+                info->set_raw_response_data_size(bytes);
             }
         }
 

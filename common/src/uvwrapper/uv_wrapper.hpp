@@ -58,19 +58,28 @@ namespace plan9 {
 
         //TCP 相关
         static int connect(std::string ip, int port, std::function<void(std::shared_ptr<common_callback>, int tcp_id)> connect_callback,
-                            std::function<void(int tcp_id, std::shared_ptr<char> data, int len)> read_callback,
+                            std::function<void(int tcp_id, std::shared_ptr<char> data, int len, unsigned long total_raw_len)> read_callback,
                             std::function<void(std::shared_ptr<common_callback>, int tcp_id)> close_callback);
 
         static int connect(std::string ip, int port, bool ssl_enable, std::string host, std::function<void(std::shared_ptr<common_callback>, int)> connect_callback,
                 std::function<void(std::shared_ptr<common_callback>, int tcp_id)> ssl_connect_callback,
-                std::function<void(int tcp_id, std::shared_ptr<char> data, int len)> read_callback,
+                std::function<void(int tcp_id, std::shared_ptr<char> data, int len, unsigned long total_raw_len)> read_callback,
                 std::function<void(std::shared_ptr<common_callback>, int tcp_id)> close_callback);
 
         static int connect_ssl(std::string ip, int port, std::string host,
                 std::function<void(std::shared_ptr<common_callback>, int)> connect_callback,
                 std::function<void(std::shared_ptr<common_callback>, int tcp_id)> ssl_connect_callback,
-                std::function<void(int tcp_id, std::shared_ptr<char> data, int len)> read_callback,
+                std::function<void(int tcp_id, std::shared_ptr<char> data, int len, unsigned long total_raw_len)> read_callback,
                 std::function<void(std::shared_ptr<common_callback>, int tcp_id)> close_callback);
+
+
+        static int connect(std::string ip, int port, bool ssl_enable, std::string host);
+        static void set_connected_callback(int tcp_id, std::function<void(std::shared_ptr<common_callback>, int)> callback);
+        static void set_ssl_connected_callback(int tcp_id, std::function<void(std::shared_ptr<common_callback>, int)> callback);
+        static void set_read_callback(int tcp_id, std::function<void(int tcp_id, std::shared_ptr<char> data, int len, unsigned long total_raw_len)> callback);
+        static void set_disconnected_callback(int tcp_id, std::function<void(std::shared_ptr<common_callback>, int)> callback);
+
+        static void clear_read_bytes(int tcp_id);
 
         static void reconnect(int tcp_id);
 

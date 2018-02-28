@@ -691,7 +691,8 @@ namespace plan9 {
             if (http_header_end_position > 0) {
                 if (data_buf_size - data_len < len) {
                     //空间不够
-                    data_buf = (char*) realloc(data_buf, data_len + (len << 2));
+                    data_buf_size = data_len + (len << 2);
+                    data_buf = (char*) realloc(data_buf, data_buf_size);
                 }
                 memcpy(data_buf + data_len, data, len);
                 data_len += len;
@@ -703,7 +704,7 @@ namespace plan9 {
             }
             return true;
         }
-
+        //TODO gzip压缩下的数据写入文件
         bool fill_body_to_file(char* data, int len) {
             if (!ofstream) {
                 ofstream.reset(new std::ofstream);
@@ -734,6 +735,16 @@ namespace plan9 {
                 }
             }
             return false;
+        }
+
+        float get_compress_rate() {
+            if (data_len > 0) {
+                int http_size = data_len + header_len + 14;
+                return float(total_len) / float(http_size);
+            } else {
+                return 1;
+            }
+
         }
 
         void set_response_file(std::string file) {
@@ -822,13 +833,15 @@ namespace plan9 {
                     std::string zip = get_header_string("Content-Encoding");
                     if ("gzip" == zip) {
                         unsigned long len = 0;
-                        char* new_data = zlib_wrap::ungzip(data_buf + data_real_index, data_real_len, &len);
+                        char *new_data = zlib_wrap::ungzip(data_buf + data_real_index, data_real_len, &len);
                         if (len > 0) {
                             free(data_buf);
                             data_buf = new_data;
                             data_len = (int)len;
                             data_buf_size = (int)len;
                         }
+                    } else if ("deflate" == zip) {
+                        //TODO 添加deflate算法的支持
                     } else {
                         char* new_data = (char*) malloc(data_real_len);
                         memcpy(new_data, data_buf + data_real_index, data_real_len);
@@ -854,7 +867,7 @@ namespace plan9 {
         }
 
         long get_len() {
-            return total_len;
+            return data_len + header_len;
         }
 
         long get_content_length() {
@@ -920,8 +933,10 @@ namespace plan9 {
                 return std::string(header_buf, header_len);
             } else {
                 std::stringstream ss;
-                ss.write(header_buf, header_len);
-                ss.write(data_buf, data_len);
+                ss << std::string(header_buf, header_len);
+                ss << std::string(data_buf, data_len);
+//                ss.write(header_buf, header_len);
+//                ss.write(data_buf, data_len);
                 return ss.str();
             }
         }
@@ -965,6 +980,10 @@ namespace plan9 {
 
     bool ahttp_response::append_response_data(std::shared_ptr<char> data, int len) {
         return impl->append_response_data(data, len);
+    }
+
+    float ahttp_response::get_compress_rate() {
+        return impl->get_compress_rate();
     }
 
     void ahttp_response::set_response_data_file(std::string file) {
@@ -1282,7 +1301,7 @@ namespace plan9 {
                 if (http->request->is_use_ssl()) {
                     connected_callback(ccb, tcp_id);
                 }
-            }, [=](int tcp_id, std::shared_ptr<char>data, int len) {
+            }, [=](int tcp_id, std::shared_ptr<char>data, int len, unsigned long total_raw_len) {
                 auto http_list = get_http_list(tcp_id);
                 if (http_list) {
                     if (http_list->size() > 0) {
@@ -1443,7 +1462,7 @@ namespace plan9 {
 
                         content->add_connected_list(tcp_id, http);
                         send_op(tcp_id);
-                    }, [=](int tcp_id, std::shared_ptr<char> data, int len) {
+                    }, [=](int tcp_id, std::shared_ptr<char> data, int len, unsigned long total_raw_len) {
                         mutex.lock();
                         auto http_list = get_http_list(tcp_id);
                         mutex.unlock();
